@@ -1,0 +1,37 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h2 class="title">Sign In</h2>
+    <p class="subtitle">Access your hosting dashboard</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
+        <input type="email" formControlName="email" placeholder="Email" />
+      </label>
+      <div class="error" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
+        <small *ngIf="form.controls['email'].errors?.['required']">Email is required</small>
+        <small *ngIf="form.controls['email'].errors?.['email']">Enter a valid email</small>
+      </div>
+
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+        <input type="password" formControlName="password" placeholder="Password" />
+      </label>
+      <div class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
+        <small>Password is required</small>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn primary" type="submit" [disabled]="loading">{{ loading ? 'Signing in...' : 'Sign In' }}</button>
+      </div>
+
+      <div class="form-footer">
+        <span>Don't have an account? <a routerLink="/signup">Sign Up</a></span>
+      </div>
+
+      <div class="server-error" *ngIf="error">
+        <small>{{ error }}</small>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+@media screen and (max-width: 480px) {
+footer .partners img {
+    max-height: 90px;
+    margin: 0 2rem;
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+footer .partners img:hover {
+    filter: grayscale(0%);
+    transform: scale(1.1);
+}
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem 0;
+    }
+
+    .nav-link {
+        padding: 0.5rem 1rem;
+    }
+
+    footer .partners img {
+        max-height: 40px;
+        margin: 0.5rem;
+    }
+}
+}

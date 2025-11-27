@@ -1,0 +1,148 @@
+/* --- General Page --- */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  background: #f5f7fa; /* light gray background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px 20px 40px;
+  padding-top: 80px;
+  box-sizing: border-box;
+}
+
+/* --- Auth Card --- */
+.auth-card {
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Title & Subtitle --- */
+.auth-card .title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #1f2937; /* dark gray */
+}
+
+.auth-card .subtitle {
+  font-size: 0.95rem;
+  color: #6b7280; /* medium gray */
+  margin-bottom: 25px;
+}
+
+/* --- Form Labels --- */
+.input-label {
+  display: flex;
+  align-items: center;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  transition: background 0.3s;
+}
+
+.input-label:hover {
+  background: #e5e7eb;
+}
+
+/* --- Input Icons --- */
+.input-icon {
+  margin-right: 8px;
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+/* --- Inputs --- */
+.input-label input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 1rem;
+  color: #111827;
+}
+
+/* --- Error Messages --- */
+.error small {
+  color: #ef4444; /* red */
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 4px;
+}
+
+/* --- Server Error --- */
+.server-error small {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 15px;
+  display: block;
+}
+
+/* --- Form Actions --- */
+.form-actions {
+  margin-top: 20px;
+}
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #ffffff;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(90deg, #4338ca, #4f46e5);
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Form Footer --- */
+.form-footer {
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.form-footer a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.form-footer a:hover {
+  color: #3730a3;
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 30px 20px;
+  }
+}

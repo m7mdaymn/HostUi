@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h2 class="title">Create account</h2>
+    <p class="subtitle">Start your hosting journey — simple, secure, fast</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-solid fa-user"></i></span>
+        <input type="text" formControlName="name" placeholder="Full name" />
+      </label>
+      <div class="error" *ngIf="form.controls['name'].touched && form.controls['name'].invalid"><small>Name is required (min 2 chars)</small></div>
+
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
+        <input type="email" formControlName="email" placeholder="Email" />
+      </label>
+      <div class="error" *ngIf="form.controls['email'].touched && form.controls['email'].invalid"><small>Enter a valid email</small></div>
+
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-brands fa-whatsapp"></i></span>
+        <input type="tel" formControlName="phone" placeholder="Phone (WhatsApp)" />
+      </label>
+      <div class="error" *ngIf="form.controls['phone'].touched && form.controls['phone'].invalid"><small>Phone is required</small></div>
+
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+        <input type="password" formControlName="password" placeholder="Password" />
+      </label>
+      <div class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid"><small>Minimum 8 characters</small></div>
+
+      <label class="input-label">
+        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+        <input type="password" formControlName="confirmPassword" placeholder="Confirm password" />
+      </label>
+      <div class="error" *ngIf="form.controls['confirmPassword'].touched && !passwordsMatch()"><small>Passwords must match</small></div>
+
+      <div class="form-actions">
+        <button class="btn primary" type="submit" [disabled]="loading">{{ loading ? 'Signing up...' : 'Sign Up' }}</button>
+      </div>
+
+      <div class="form-footer">
+        <span>Already have an account? <a routerLink="/signin">Sign In</a></span>
+      </div>
+
+      <div class="server-error" *ngIf="error"><small>{{ error }}</small></div>
+    </form>
+  </div>
+</div>
