@@ -16,7 +16,13 @@ export interface User {
 
 export interface AuthResponse {
   message: string;
-  user?: User;
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
 @Injectable({
@@ -48,44 +54,40 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post(API_ENDPOINTS.AUTH.LOGIN, credentials).pipe(
-      map((response: any): AuthResponse => {
-        console.log('🔑 Raw login response:', response);
-
-        const nameMatch = response.message?.match(/Welcome (.+)!/);
-        const name = nameMatch ? nameMatch[1].trim() : (response.user?.name || 'User');
-
-        // Determine role:
-        // - Prefer server-provided role if present
-        // - Fallback: treat known seeded admin email as admin
-        const serverRole = response.user?.role?.toString().toLowerCase();
-        const emailLower = (credentials.email || '').toString().toLowerCase();
+    return this.http.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials).pipe(
+      map((response: AuthResponse): AuthResponse => {
+        console.log('🔑 Login response:', response);
+        // Map backend role string to frontend role type
+        const backendRole = response.user.role.toLowerCase();
         let role: 'admin' | 'customer' | 'moderator' = 'customer';
 
-        if (serverRole === 'admin' || serverRole === 'administrator') {
+        if (backendRole === 'admin') {
           role = 'admin';
-        } else if (emailLower === 'ahmed@admin.com') {
-          // Seeded admin account in DB — ensure client recognizes it as admin
-          role = 'admin';
+        } else if (backendRole === 'moderator') {
+          role = 'moderator';
+        } else {
+          role = 'customer';
         }
 
+        // Create frontend User object
         const user: User = {
-          id: response.user?.id,
-          name,
-          email: credentials.email,
-          role,
-          phoneNumber: response.user?.phoneNumber || ''
+          id: response.user.id,
+          name: response.user.name,
+          email: response.user.email,
+          role: role
         };
 
+        // Store token and user
+        this.setAuthToken(response.token);
         this.setUser(user);
 
-        console.log('✅ Login user created:', user);
-        return { message: response.message || 'Login successful', user };
+        console.log('✅ Login successful:', { user, hasToken: !!response.token });
+        return response;
       }),
       tap((response: AuthResponse) => {
-        if (response.user) {
-          // ensure current value has correct role
-          this.currentUserSubject.next(response.user);
+        const currentUser = this.getCurrentUser();
+        if (currentUser) {
+          this.currentUserSubject.next(currentUser);
         }
       }),
       catchError(this.handleError('Login failed'))
@@ -103,7 +105,7 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getCurrentUser();
+    return !!this.getCurrentUser() && !!this.getAuthToken();
   }
 
   getCurrentUser(): User | null {
@@ -119,7 +121,11 @@ export class AuthService {
     return this.getCurrentUserRole() === 'admin';
   }
 
-  updateUserRole(user: User, role: 'admin' | 'customer' = 'customer'): void {
+  isModerator(): boolean {
+    return this.getCurrentUserRole() === 'moderator';
+  }
+
+  updateUserRole(user: User, role: 'admin' | 'customer' | 'moderator'): void {
     const updatedUser: User = { ...user, role };
     this.setUser(updatedUser);
     console.log('🔄 User role updated:', updatedUser.role);
@@ -127,7 +133,8 @@ export class AuthService {
 
   hasValidSession(): boolean {
     const user = this.getStoredUser();
-    return !!user && !!user.name && !!user.email;
+    const token = this.getAuthToken();
+    return !!user && !!user.name && !!user.email && !!token;
   }
 
   private setUser(user: User): void {
@@ -169,7 +176,7 @@ export class AuthService {
       if (error.status === 0) {
         errorMessage = 'Unable to connect to server';
       } else if (error.status === 401) {
-        errorMessage = 'Invalid credentials';
+        errorMessage = 'Invalid email or password';
       } else if (error.status === 400) {
         errorMessage = 'Invalid request data';
       } else if (error.status >= 500) {
@@ -201,14 +208,21 @@ export class AuthService {
     return null;
   }
 
-  setTestUser(email: string, name: string = 'Test User', role: 'admin' | 'customer' = 'customer'): void {
+  // For HTTP interceptors - get token for API requests
+  getToken(): string | null {
+    return this.getAuthToken();
+  }
+
+  setTestUser(email: string, name: string = 'Test User', role: 'admin' | 'customer' | 'moderator' = 'customer'): void {
     const testUser: User = {
+      id: 1,
       name,
       email,
       role,
       phoneNumber: '+1234567890'
     };
     this.setUser(testUser);
+    this.setAuthToken('test-jwt-token');
     console.log('🧪 Test user set:', testUser);
   }
 

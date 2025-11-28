@@ -13,29 +13,28 @@ import { TranslateService } from '../../core/services/translate.service';
 })
 export class HeaderComponent {
   private router = inject(Router);
-  currentUrl = '/home';
-  isScrolled = false;
-  currentLang = 'en';
-
   private translate = inject(TranslateService);
 
+  isScrolled = false;
+  mobileMenuOpen = false;
+  currentLang = 'en';
+  currentUrl = '/home';
+
   constructor() {
-    this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.currentUrl = event.urlAfterRedirects;
-      });
     this.currentLang = this.translate.current;
     this.translate.lang.subscribe(l => this.currentLang = l);
+
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => {
+        this.currentUrl = e.urlAfterRedirects;
+        this.mobileMenuOpen = false;
+      });
   }
 
-  @HostListener('window:scroll', [])
+  @HostListener('window:scroll')
   onWindowScroll() {
     this.isScrolled = window.scrollY > 50;
-  }
-
-  isActive(path: string): boolean {
-    return this.currentUrl === path || this.currentUrl.startsWith(path);
   }
 
   toggleLang() {
@@ -43,5 +42,7 @@ export class HeaderComponent {
     this.translate.setLang(next as any);
   }
 
-  text(key: string) { return this.translate.t(key); }
+  text(key: string) {
+    return this.translate.t(key);
+  }
 }

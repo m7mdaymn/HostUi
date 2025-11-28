@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -7,10 +7,17 @@ import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { TranslateService } from '../../core/services/translate.service';
 
 interface Filters {
-  cores: string;
-  ram: string;
-  storage: string;
+  cores: string[];
+  ram: string[];
+  storage: string[];
   maxPrice: number | null;
+}
+
+interface FilterChip {
+  type: string;
+  value: string;
+  label: string;
+  icon: string;
 }
 
 @Component({
@@ -25,17 +32,23 @@ export class VpsComponent implements OnInit, OnDestroy {
   loading = false;
   error: string | null = null;
 
-  // Applied filters (only updated on submit)
-  filters: Filters = { cores: '', ram: '', storage: '', maxPrice: null };
+  filters: Filters = {
+    cores: [],
+    ram: [],
+    storage: [],
+    maxPrice: null
+  };
 
-  // Temporary filters (for preview in sidebar)
-  tempFilters: Filters = { cores: '', ram: '', storage: '', maxPrice: null };
+  // 🔥 FIXED OPTIONS - Match your API data
+  cpuOptions = ['1', '2', '4', '6', '8', '12', '16'];
+  ramOptions = ['1', '2', '4', '8', '16', '32', '64'];
+  storageOptions = ['ssd', 'nvme', 'hdd'];
 
   filtered: any[] = [];
-  filtersApplied = false;
   filterSidebarOpen = false;
 
   private translate = inject(TranslateService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -59,110 +72,203 @@ export class VpsComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.products = Array.isArray(res) ? res : (res.data || res || []);
         this.filtered = [...this.products];
+        this.updateFilterOptions();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('VPS load error', err);
         this.error = 'Unable to load VPS plans. Please try again later.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  submitFilters(): void {
-    if (this.getPreviewCount() === 0) return;
+  // 🔥 UPDATE FILTER OPTIONS BASED ON REAL DATA
+  updateFilterOptions(): void {
+    const availableCores = [...new Set(this.products.map(p =>
+      String(p.cores || p.Cores || '0')
+    ).filter(c => this.cpuOptions.includes(c)))];
 
-    this.filters = { ...this.tempFilters };
-    this.applyFilters();
-    this.filtersApplied = this.getActiveFilterCount() > 0;
-    this.closeFilterSidebar();
+    const availableRam = [...new Set(this.products.map(p =>
+      String(p.ramGB || p.RamGB || p.RAM || '0')
+    ).filter(r => this.ramOptions.includes(r)))];
+
+    this.cpuOptions = availableCores.length > 0 ? availableCores : this.cpuOptions;
+    this.ramOptions = availableRam.length > 0 ? availableRam : this.ramOptions;
   }
 
-  resetTempFilters(): void {
-    this.tempFilters = { cores: '', ram: '', storage: '', maxPrice: null };
+  // 🔥 ✅ MISSING METHODS ADDED HERE
+  isCoreSelected(core: string): boolean {
+    return this.filters.cores.includes(core);
   }
 
-  resetFilters(): void {
-    this.filters = { cores: '', ram: '', storage: '', maxPrice: null };
-    this.tempFilters = { ...this.filters };
-    this.filtered = [...this.products];
-    this.filtersApplied = false;
-    this.closeFilterSidebar();
+  toggleCore(core: string): void {
+    const index = this.filters.cores.indexOf(core);
+    if (index > -1) {
+      this.filters.cores.splice(index, 1);
+    } else {
+      this.filters.cores.push(core);
+    }
+    this.onFilterChange();
   }
 
-  applyFilters(): void {
-    if (!this.filtersApplied) return;
+  isRamSelected(ram: string): boolean {
+    return this.filters.ram.includes(ram);
+  }
+
+  toggleRam(ram: string): void {
+    const index = this.filters.ram.indexOf(ram);
+    if (index > -1) {
+      this.filters.ram.splice(index, 1);
+    } else {
+      this.filters.ram.push(ram);
+    }
+    this.onFilterChange();
+  }
+
+  isStorageSelected(type: string): boolean {
+    return this.filters.storage.includes(type);
+  }
+
+  toggleStorage(type: string): void {
+    const index = this.filters.storage.indexOf(type);
+    if (index > -1) {
+      this.filters.storage.splice(index, 1);
+    } else {
+      this.filters.storage.push(type);
+    }
+    this.onFilterChange();
+  }
+
+  onPriceChange(): void {
+    this.onFilterChange();
+  }
+
+  // 🔥 FIXED INSTANT FILTERING - ROBUST MATCHING
+  onFilterChange(): void {
+    this.applyInstantFilter();
+  }
+
+  applyInstantFilter(): void {
+    console.log('🔥 Applying filters:', this.filters);
 
     this.filtered = this.products.filter(p => {
-      if (this.filters.cores) {
-        const cores = p.cores || p.Cores || '';
-        if (String(cores) !== String(this.filters.cores)) return false;
+      // 🔥 CPU Cores
+      if (this.filters.cores.length > 0) {
+        const cores = String(p.cores || p.Cores || p.cpu || p.CPU || '0');
+        if (!this.filters.cores.includes(cores)) return false;
       }
 
-      if (this.filters.ram) {
-        const ram = p.ramGB || p.RamGB || p.RAM || '';
-        if (String(ram) !== String(this.filters.ram)) return false;
+      // 🔥 RAM
+      if (this.filters.ram.length > 0) {
+        const ram = String(p.ramGB || p.RamGB || p.RAM || p.ram || '0');
+        if (!this.filters.ram.includes(ram)) return false;
       }
 
-      if (this.filters.storage) {
-        const st = (p.storageType || p.StorageType || '').toLowerCase();
-        if (!st.includes(String(this.filters.storage).toLowerCase())) return false;
+      // 🔥 Storage Type
+      if (this.filters.storage.length > 0) {
+        const storageType = (p.storageType || p.StorageType || p.storage || p.Storage || '').toLowerCase();
+        const hasMatch = this.filters.storage.some(type =>
+          storageType.includes(type.toLowerCase())
+        );
+        if (!hasMatch) return false;
       }
 
-      if (this.filters.maxPrice != null) {
-        const price = parseFloat(p.price || p.Price || 0);
-        if (isNaN(price) || price > this.filters.maxPrice!) return false;
+      // 🔥 Price filter
+      if (this.filters.maxPrice != null && this.filters.maxPrice > 0) {
+        const price = parseFloat(p.price || p.Price || p.cost || '0');
+        if (isNaN(price) || price > this.filters.maxPrice) return false;
       }
 
       return true;
     });
-  }
 
-  getPreviewCount(): number {
-    return this.products.filter(p => {
-      if (this.tempFilters.cores) {
-        const cores = p.cores || p.Cores || '';
-        if (String(cores) !== String(this.tempFilters.cores)) return false;
-      }
-      if (this.tempFilters.ram) {
-        const ram = p.ramGB || p.RamGB || p.RAM || '';
-        if (String(ram) !== String(this.tempFilters.ram)) return false;
-      }
-      if (this.tempFilters.storage) {
-        const st = (p.storageType || p.StorageType || '').toLowerCase();
-        if (!st.includes(String(this.tempFilters.storage).toLowerCase())) return false;
-      }
-      if (this.tempFilters.maxPrice != null) {
-        const price = parseFloat(p.price || p.Price || 0);
-        if (isNaN(price) || price > this.tempFilters.maxPrice!) return false;
-      }
-      return true;
-    }).length;
+    console.log(`✅ Filtered results: ${this.filtered.length}/${this.products.length}`);
+    this.cdr.detectChanges();
   }
 
   getActiveFilterCount(): number {
-    let count = 0;
-    if (this.filters.cores) count++;
-    if (this.filters.ram) count++;
-    if (this.filters.storage) count++;
-    if (this.filters.maxPrice != null && this.filters.maxPrice > 0) count++;
-    return count;
+    return this.filters.cores.length +
+           this.filters.ram.length +
+           this.filters.storage.length +
+           (this.filters.maxPrice && this.filters.maxPrice > 0 ? 1 : 0);
   }
 
-  getActiveTempFilterCount(): number {
-    let count = 0;
-    if (this.tempFilters.cores) count++;
-    if (this.tempFilters.ram) count++;
-    if (this.tempFilters.storage) count++;
-    if (this.tempFilters.maxPrice != null && this.tempFilters.maxPrice > 0) count++;
-    return count;
+  getActiveFilterChips(): FilterChip[] {
+    const chips: FilterChip[] = [];
+
+    this.filters.cores.forEach(core => {
+      chips.push({
+        type: 'cores',
+        value: core,
+        label: `${core} Core${parseInt(core) > 1 ? 's' : ''}`,
+        icon: 'fa-solid fa-microchip'
+      });
+    });
+
+    this.filters.ram.forEach(ram => {
+      chips.push({
+        type: 'ram',
+        value: ram,
+        label: `${ram} GB RAM`,
+        icon: 'fa-solid fa-memory'
+      });
+    });
+
+    this.filters.storage.forEach(type => {
+      chips.push({
+        type: 'storage',
+        value: type,
+        label: type.toUpperCase(),
+        icon: 'fa-solid fa-hard-drive'
+      });
+    });
+
+    if (this.filters.maxPrice && this.filters.maxPrice > 0) {
+      chips.push({
+        type: 'price',
+        value: this.filters.maxPrice.toString(),
+        label: `Under $${this.filters.maxPrice}`,
+        icon: 'fa-solid fa-dollar-sign'
+      });
+    }
+
+    return chips;
+  }
+
+  removeFilterChip(type: string, value: string): void {
+    switch (type) {
+      case 'cores':
+        const coreIndex = this.filters.cores.indexOf(value);
+        if (coreIndex > -1) this.filters.cores.splice(coreIndex, 1);
+        break;
+      case 'ram':
+        const ramIndex = this.filters.ram.indexOf(value);
+        if (ramIndex > -1) this.filters.ram.splice(ramIndex, 1);
+        break;
+      case 'storage':
+        const storageIndex = this.filters.storage.indexOf(value);
+        if (storageIndex > -1) this.filters.storage.splice(storageIndex, 1);
+        break;
+      case 'price':
+        this.filters.maxPrice = null;
+        break;
+    }
+    this.applyInstantFilter();
+  }
+
+  resetFilters(): void {
+    this.filters = { cores: [], ram: [], storage: [], maxPrice: null };
+    this.filtered = [...this.products];
+    this.cdr.detectChanges();
   }
 
   toggleFilterSidebar(): void {
     this.filterSidebarOpen = !this.filterSidebarOpen;
     if (this.filterSidebarOpen) {
       document.body.style.overflow = 'hidden';
-      this.tempFilters = { ...this.filters };
     } else {
       document.body.style.overflow = '';
     }
@@ -191,16 +297,11 @@ export class VpsComponent implements OnInit, OnDestroy {
     });
 
     scored.sort((a, b) => b.score - a.score);
-    const top3 = scored.slice(0, 3);
-
-    if (top3.length === 3) {
-      return [top3[1].product, top3[0].product, top3[2].product];
-    }
-    return top3.map(s => s.product);
+    return scored.slice(0, 3).map(s => s.product);
   }
 
   trackByFn(index: number, item: any): any {
-    return item.id || index;
+    return item.id || item.Id || index;
   }
 
   orderNow(id: number) {

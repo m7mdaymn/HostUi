@@ -1,35 +1,62 @@
 <header class="header-section" [class.scrolled]="isScrolled">
-   <div class="container">
-      <div class="header-wrapper">
-         <div class="logo-menu">
-            <a [routerLink]="'/home'" class="logo">
-               <img src="assets/img/logo/logo2.png" alt="TopServers Logo">
-            </a>
-         </div>
-         <div class="header-bar d-lg-none">
-            <span></span><span></span><span></span>
-         </div>
-         <ul class="main-menu">
-            <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><a [routerLink]="'/home'"><span><i class="fa-solid fa-house"></i></span><span>{{ text('home') }}</span></a></li>
-            <li routerLinkActive="active">
-               <a href="#0">{{ text('hosting') }} <i class="fas fa-chevron-down"></i></a>
-               <ul class="sub-menu">
-                  <li class="subtwohober"><a [routerLink]="'/dedicated'"><span class="icon"><i class="fa-brands fa-audible"></i></span><span>{{ text('dedicated') }}</span></a></li>
-                  <li class="subtwohober"><a [routerLink]="'/vps'"><span class="icon"><i class="fa-solid fa-cloud"></i></span><span>{{ text('vps') }}</span></a></li>
-               </ul>
-            </li>
-            <li routerLinkActive="active"><a [routerLink]="'/promos'">{{ text('promos') }}</a></li>
-            <li routerLinkActive="active">
-               <a href="#">{{ text('headerAccount') }} <i class="fas fa-chevron-down"></i></a>
-               <ul class="sub-menu">
-                  <li routerLinkActive="active"><a [routerLink]="'/signin'"><span>{{ text('signIn') }}</span></a></li>
-                  <li routerLinkActive="active"><a [routerLink]="'/signup'"><span>{{ text('signUp') }}</span></a></li>
-               </ul>
-            </li>
-         </ul>
-         <a [routerLink]="'/contact'" class="cmn--btn"><span>{{ text('contact') }}</span></a>
-         <button class="lang-toggle btn" (click)="toggleLang()">{{ currentLang === 'en' ? 'AR' : 'EN' }}</button>
-      </div>
-   </div>
-</header>
+  <div class="container">
+    <div class="header-wrapper">
 
+      <div class="logo-menu">
+        <a [routerLink]="'/home'" class="logo">
+          <img src="assets/img/logo/logo2.png" alt="TopServers Logo">
+        </a>
+      </div>
+
+      <div class="header-bar d-lg-none" (click)="mobileMenuOpen = !mobileMenuOpen" [class.active]="mobileMenuOpen">
+        <span></span><span></span><span></span>
+      </div>
+
+      <ul class="main-menu" [class.open]="mobileMenuOpen">
+        <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="'/home'"><i class="fa-solid fa-house"></i> {{ text('home') }}</a>
+        </li>
+
+        <li class="has-submenu" routerLinkActive="active">
+          <a href="javascript:void(0)">{{ text('hosting') }} <i class="fas fa-chevron-down"></i></a>
+          <ul class="sub-menu">
+            <li><a [routerLink]="'/dedicated'"><i class="fa-brands fa-audible"></i> {{ text('dedicated') }}</a></li>
+            <li><a [routerLink]="'/vps'"><i class="fa-solid fa-cloud"></i> {{ text('vps') }}</a></li>
+          </ul>
+        </li>
+
+        <li routerLinkActive="active"><a [routerLink]="'/promos'">{{ text('promos') }}</a></li>
+
+        <li class="has-submenu" routerLinkActive="active">
+          <a href="javascript:void(0)">{{ text('headerAccount') }} <i class="fas fa-chevron-down"></i></a>
+          <ul class="sub-menu">
+            <li><a [routerLink]="'/signin'">{{ text('signIn') }}</a></li>
+            <li><a [routerLink]="'/signup'">{{ text('signUp') }}</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="header-right">
+        <a [routerLink]="'/contact'" class="cmn--btn">{{ text('contact') }}</a>
+
+<button class="lang-toggle" (click)="toggleLang()">
+  <i class="fas fa-globe"></i>
+  <span class="lang-text">{{ currentLang === 'en' ? 'EN' : 'AR' }}</span>
+  <div class="flag-icon">
+    <img
+      [src]="currentLang === 'en'
+        ? 'https://flagcdn.com/48x36/gb.png'
+        : 'https://flagcdn.com/48x36/sa.png'"
+      [srcset]="currentLang === 'en'
+        ? 'https://flagcdn.com/96x72/gb.png 2x'
+        : 'https://flagcdn.com/96x72/sa.png 2x'"
+      width="24"
+      height="18"
+      alt="flag">
+  </div>
+</button>
+      </div>
+
+    </div>
+  </div>
+</header>
