@@ -3,10 +3,19 @@
     <h2 class="title">Sign In</h2>
     <p class="subtitle">Access your hosting dashboard</p>
 
+    <div class="success-message" *ngIf="success" role="alert">
+      <i class="fa-solid fa-check-circle"></i>
+      <small>{{ success }}</small>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label class="input-label">
         <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
-        <input type="email" formControlName="email" placeholder="Email" />
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Email"
+          [class.error]="form.controls['email'].touched && form.controls['email'].invalid" />
       </label>
       <div class="error" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
         <small *ngIf="form.controls['email'].errors?.['required']">Email is required</small>
@@ -15,21 +24,32 @@
 
       <label class="input-label">
         <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
-        <input type="password" formControlName="password" placeholder="Password" />
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Password"
+          [class.error]="form.controls['password'].touched && form.controls['password'].invalid" />
       </label>
       <div class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
-        <small>Password is required</small>
+        <small *ngIf="form.controls['password'].errors?.['required']">Password is required</small>
+        <small *ngIf="form.controls['password'].errors?.['minlength']">Password must be at least 6 characters</small>
       </div>
 
       <div class="form-actions">
-        <button class="btn primary" type="submit" [disabled]="loading">{{ loading ? 'Signing in...' : 'Sign In' }}</button>
+        <button
+          class="btn primary"
+          type="submit"
+          [disabled]="loading || form.invalid">
+          {{ loading ? 'Signing in...' : 'Sign In' }}
+        </button>
       </div>
 
       <div class="form-footer">
         <span>Don't have an account? <a routerLink="/signup">Sign Up</a></span>
       </div>
 
-      <div class="server-error" *ngIf="error">
+      <div class="server-error" *ngIf="error" role="alert">
+        <i class="fa-solid fa-exclamation-triangle"></i>
         <small>{{ error }}</small>
       </div>
     </form>

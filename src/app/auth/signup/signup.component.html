@@ -3,46 +3,94 @@
     <h2 class="title">Create account</h2>
     <p class="subtitle">Start your hosting journey — simple, secure, fast</p>
 
+    <div class="success-message" *ngIf="success" role="alert">
+      <i class="fa-solid fa-check-circle"></i>
+      <small>{{ success }}</small>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label class="input-label">
         <span class="input-icon"><i class="fa-solid fa-user"></i></span>
-        <input type="text" formControlName="name" placeholder="Full name" />
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="Full name"
+          [class.error]="form.controls['name'].touched && form.controls['name'].invalid" />
       </label>
-      <div class="error" *ngIf="form.controls['name'].touched && form.controls['name'].invalid"><small>Name is required (min 2 chars)</small></div>
+      <div class="error" *ngIf="form.controls['name'].touched && form.controls['name'].invalid">
+        <small *ngIf="form.controls['name'].errors?.['required']">Name is required</small>
+        <small *ngIf="form.controls['name'].errors?.['minlength']">Name must be at least 2 characters</small>
+        <small *ngIf="form.controls['name'].errors?.['maxlength']">Name is too long (max 50 characters)</small>
+      </div>
 
       <label class="input-label">
         <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
-        <input type="email" formControlName="email" placeholder="Email" />
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Email"
+          [class.error]="form.controls['email'].touched && form.controls['email'].invalid" />
       </label>
-      <div class="error" *ngIf="form.controls['email'].touched && form.controls['email'].invalid"><small>Enter a valid email</small></div>
+      <div class="error" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
+        <small *ngIf="form.controls['email'].errors?.['required']">Email is required</small>
+        <small *ngIf="form.controls['email'].errors?.['email']">Enter a valid email</small>
+      </div>
 
       <label class="input-label">
         <span class="input-icon"><i class="fa-brands fa-whatsapp"></i></span>
-        <input type="tel" formControlName="phone" placeholder="Phone (WhatsApp)" />
+        <input
+          type="tel"
+          formControlName="phone"
+          placeholder="Phone (WhatsApp)"
+          [class.error]="form.controls['phone'].touched && form.controls['phone'].invalid" />
       </label>
-      <div class="error" *ngIf="form.controls['phone'].touched && form.controls['phone'].invalid"><small>Phone is required</small></div>
+      <div class="error" *ngIf="form.controls['phone'].touched && form.controls['phone'].invalid">
+        <small *ngIf="form.controls['phone'].errors?.['required']">Phone number is required</small>
+        <small *ngIf="form.controls['phone'].errors?.['pattern']">Enter a valid phone number</small>
+      </div>
 
       <label class="input-label">
         <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
-        <input type="password" formControlName="password" placeholder="Password" />
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Password"
+          [class.error]="form.controls['password'].touched && form.controls['password'].invalid" />
       </label>
-      <div class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid"><small>Minimum 8 characters</small></div>
+      <div class="error" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
+        <small *ngIf="form.controls['password'].errors?.['required']">Password is required</small>
+        <small *ngIf="form.controls['password'].errors?.['minlength']">Password must be at least 8 characters</small>
+      </div>
 
       <label class="input-label">
         <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
-        <input type="password" formControlName="confirmPassword" placeholder="Confirm password" />
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="Confirm password"
+          [class.error]="form.controls['confirmPassword'].touched && !passwordsMatch()" />
       </label>
-      <div class="error" *ngIf="form.controls['confirmPassword'].touched && !passwordsMatch()"><small>Passwords must match</small></div>
+      <div class="error" *ngIf="form.controls['confirmPassword'].touched && !passwordsMatch()">
+        <small>Passwords must match</small>
+      </div>
 
       <div class="form-actions">
-        <button class="btn primary" type="submit" [disabled]="loading">{{ loading ? 'Signing up...' : 'Sign Up' }}</button>
+        <button
+          class="btn primary"
+          type="submit"
+          [disabled]="loading || form.invalid || !passwordsMatch()">
+          {{ loading ? 'Creating account...' : 'Create Account' }}
+        </button>
       </div>
 
       <div class="form-footer">
         <span>Already have an account? <a routerLink="/signin">Sign In</a></span>
       </div>
 
-      <div class="server-error" *ngIf="error"><small>{{ error }}</small></div>
+      <div class="server-error" *ngIf="error" role="alert">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <small>{{ error }}</small>
+      </div>
     </form>
   </div>
 </div>

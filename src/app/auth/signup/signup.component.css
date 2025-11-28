@@ -12,3 +12,50 @@
 .form-footer{margin-top:12px;text-align:center;color:var(--muted,#6b7280)}
 .server-error{margin-top:12px;color:#ef4444;text-align:center}
 @media(min-width:992px){.auth-page{min-height:calc(100vh - 120px)}}
+.success-message {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.success-message i {
+  font-size: 16px;
+}
+
+.server-error {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.server-error i {
+  font-size: 16px;
+}
+
+.input-label input.error {
+  border: 1px solid #ef4444 !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

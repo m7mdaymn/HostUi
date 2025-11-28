@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
@@ -13,6 +13,7 @@ import { filter } from 'rxjs';
 export class HeaderComponent {
   private router = inject(Router);
   currentUrl = '/home';
+  isScrolled = false;
 
   constructor() {
     this.router.events
@@ -20,6 +21,11 @@ export class HeaderComponent {
       .subscribe((event: NavigationEnd) => {
         this.currentUrl = event.urlAfterRedirects;
       });
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.isScrolled = window.scrollY > 50;
   }
 
   isActive(path: string): boolean {
