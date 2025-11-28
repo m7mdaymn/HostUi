@@ -1,0 +1,9 @@
+.admin-shell { display:flex; min-height:100vh; font-family:Segoe UI, Roboto, Arial; }
+.admin-main { flex:1; padding:24px; background:transparent; color:var(--admin-text); }
+.top { display:flex; justify-content:space-between; margin-bottom:12px; }
+.items-table { width:100%; border-collapse:collapse; background:transparent; }
+.items-table th, .items-table td { padding:10px; border-bottom:1px solid rgba(255,255,255,0.03); text-align:left; color:var(--admin-text) }
+.btn { padding:6px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); color:var(--admin-text); background:transparent }
+.btn.primary { background:linear-gradient(90deg,var(--admin-accent),var(--admin-accent-strong)); color:#042234; border:none }
+.btn.danger { background:var(--admin-danger); color:#fff; border:none }
+.error { color:var(--admin-danger); }

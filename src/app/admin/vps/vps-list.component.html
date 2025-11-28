@@ -1,0 +1,37 @@
+<div class="admin-shell">
+  <app-admin-sidebar></app-admin-sidebar>
+  <div class="admin-area">
+    <app-admin-topbar></app-admin-topbar>
+    <main class="admin-main">
+    <div class="top">
+      <h1>VPS Plans</h1>
+      <button class="btn primary" (click)="addNew()">Add VPS</button>
+    </div>
+
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <table *ngIf="!loading && vps.length" class="items-table">
+      <thead>
+        <tr><th>Id</th><th>Region</th><th>Cores</th><th>RAM</th><th>Storage</th><th>Price</th><th>Category</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of vps">
+          <td>{{ p.id }}</td>
+          <td>{{ p.region || p.Region }}</td>
+          <td>{{ p.cores || p.Cores }}</td>
+          <td>{{ p.ramGB || p.RamGB }}</td>
+          <td>{{ p.storageGB || p.StorageGB }} {{ p.storageType || p.StorageType }}</td>
+          <td>{{ p.price || p.Price }}</td>
+          <td>{{ p.category || p.Category }}</td>
+          <td>
+            <button class="btn" (click)="edit(p)">Edit</button>
+            <button class="btn danger" (click)="delete(p)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loading && !vps.length">No VPS plans found.</div>
+  </main>
+</div>

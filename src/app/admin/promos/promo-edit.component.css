@@ -1,0 +1,4 @@
+.admin-shell{display:flex}
+.admin-main{flex:1;padding:16px;background:transparent;color:var(--admin-text)}
+form div{margin-bottom:8px}
+.form-actions button{margin-right:8px}

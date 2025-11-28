@@ -24,13 +24,13 @@
             <!-- Services -->
             <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                <div class="widget-items">
-                  <div class="footer-head"><h5 class="title">Services</h5></div>
+                  <div class="footer-head"><h5 class="title">{{ text('footerServices') }}</h5></div>
                   <div class="content-area">
                      <ul class="quick-link">
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> VPS Hosting</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Dedicated Servers</a></li>
+                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> {{ text('vps') }}</a></li>
+                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> {{ text('dedicated') }}</a></li>
                         <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Custom Packages</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Promo Offers</a></li>
+                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> {{ text('promos') }}</a></li>
                      </ul>
                   </div>
                </div>
@@ -39,7 +39,7 @@
             <!-- VPS Categories -->
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                <div class="widget-items">
-                  <div class="footer-head"><h5 class="title">VPS Plans</h5></div>
+                  <div class="footer-head"><h5 class="title">{{ text('footerVpsPlans') }}</h5></div>
                   <div class="content-area">
                      <ul class="quick-link">
                         <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Low Space VPS (France)</a></li>
@@ -53,7 +53,7 @@
             <!-- Dedicated Servers -->
             <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                <div class="widget-items">
-                  <div class="footer-head"><h5 class="title">Dedicated Servers</h5></div>
+                  <div class="footer-head"><h5 class="title">{{ text('footerDedicated') }}</h5></div>
                   <div class="content-area">
                      <ul class="quick-link">
                         <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Intel Servers</a></li>
@@ -68,10 +68,10 @@
       </div>
 
       <div class="footer-bottom">
-         <p>Copyright © 2025 | Designed by <a href="https://wa.me/+201029907297">Nova Node</a></p>
+         <p [innerHTML]="text('copyrightBy')"></p>
          <ul class="footer-bottom-link">
-            <li><a href="https://wa.me/+201063194547">Privacy</a></li>
-            <li><a href="https://wa.me/+201063194547">Terms & Conditions</a></li>
+            <li><a href="https://wa.me/+201063194547">{{ text('footerPrivacy') }}</a></li>
+            <li><a href="https://wa.me/+201063194547">{{ text('footerTerms') }}</a></li>
          </ul>
       </div>
 

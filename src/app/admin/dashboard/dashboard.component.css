@@ -1,0 +1,14 @@
+.admin-shell { display:flex; min-height:100vh; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+.admin-main { flex:1; padding:24px; background:transparent; color:var(--admin-text); }
+.admin-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; color:var(--admin-text); }
+.muted { color:var(--admin-muted); }
+.stats { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+.stat-card { background:var(--admin-card-bg); padding:16px; border-radius:var(--radius); min-width:160px; box-shadow:0 6px 18px rgba(2,6,23,0.45); border:1px solid var(--admin-border) }
+.stat-card .label { color:var(--admin-muted); font-size:13px; }
+.stat-card .value { font-size:20px; font-weight:700; margin-top:6px; }
+.panels { display:flex; gap:12px; }
+.panel { flex:1; background:var(--admin-card-bg); padding:14px; border-radius:var(--radius); box-shadow:0 6px 18px rgba(2,6,23,0.35); border:1px solid var(--admin-border) }
+.chart-placeholder { height:180px; background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--admin-muted); }
+.recent-list { list-style:none; padding:0; margin:0; }
+.error { color: var(--admin-danger); }
+

@@ -5,12 +5,10 @@
          <div class="row">
             <div class="col-xl-8 col-lg-8 col-md-8">
                <div class="banner__content">
-                  <h1>
-                     Perfect <span class="text-base">Hosting</span> Service For You
-                  </h1>
+                  <h1 [innerHTML]="text('fullBannerTitle')"></h1>
                   <div class="btn__grp">
-                     <a href="promos.html" class="cmn--btn">
-                        <span>Get Hosting</span>
+                     <a routerLink="/promos" class="cmn--btn">
+                        <span>{{ text('getHosting') }}</span>
                      </a>
                   </div>
                </div>
@@ -25,24 +23,16 @@
 <section class="choose__section pt-80 pb-80">
    <div class="container">
       <div class="section__header section-center">
-         <h2 class="text-white wow fadeInDown" data-wow-delay="0.2s">
-            Why <span class="text-base">Choose Us</span>
-         </h2>
-         <p class="text-white wow fadeInDown" data-wow-delay="0.4s">
-                We go beyond servers to provide performance, security, and support that empowers your online success.
-         </p>
+         <h2 class="text-white wow fadeInDown" data-wow-delay="0.2s" [innerHTML]="text('whyChooseUs')"></h2>
+         <p class="text-white wow fadeInDown" data-wow-delay="0.4s">{{ text('chooseUsDesc') }}</p>
       </div>
       <div class="row g-4 justify-content-between align-items-center">
          <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-5">
             <ul class="choose__wrap">
                <li class="wow fadeInUp" data-wow-delay="0.2s">
                   <div class="content">
-                     <h5>
-                        Our Smart Work
-                     </h5>
-                     <p>
-                        Intelligent automation for optimal performance and hassle-free management.
-                     </p>
+                     <h5>{{ text('smartWorkTitle') }}</h5>
+                     <p>{{ text('smartWorkDesc') }}</p>
                   </div>
                   <div class="icon">
                      <i class="fa-solid fa-gear"></i>
@@ -50,12 +40,8 @@
                </li>
                <li class="wow fadeInUp" data-wow-delay="0.4s">
                   <div class="content">
-                     <h5>
-                        Email address when
-                     </h5>
-                     <p>
-                        Professional email hosting included with every plan to build your brand identity.
-                     </p>
+                     <h5>{{ text('emailTitle') }}</h5>
+                     <p>{{ text('emailDesc') }}</p>
                   </div>
                   <div class="icon">
                      <i class="fa-regular fa-envelope"></i>
@@ -63,12 +49,8 @@
                </li>
                <li class="wow fadeInUp" data-wow-delay="0.6s">
                   <div class="content">
-                     <h5>
-                        Dedicated 24/7 Support
-                     </h5>
-                     <p>
-                        Round-the-clock expert support from our in-house team, whenever you need it.
-                     </p>
+                     <h5>{{ text('supportTitle') }}</h5>
+                     <p>{{ text('supportDesc') }}</p>
                   </div>
                   <div class="icon">
                      <i class="fa-solid fa-headphones"></i>
@@ -88,12 +70,8 @@
                      <i class="fa-sharp fa-solid fa-server"></i>
                   </div>
                   <div class="content">
-                     <h5>
-                        Server Level Protection
-                     </h5>
-                     <p>
-                        Proactive, enterprise-grade security monitoring to defend against modern threats.
-                     </p>
+                     <h5>{{ text('serverProtectionTitle') }}</h5>
+                     <p>{{ text('serverProtectionDesc') }}</p>
                   </div>
                </li>
                <li class="wow fadeInUp" data-wow-delay="0.4s">
@@ -101,12 +79,8 @@
                      <i class="fas fa-cloud"></i>
                   </div>
                   <div class="content">
-                     <h5>
-                        Cloud Intergration
-                     </h5>
-                     <p>
-                        Scalable, resilient cloud infrastructure that grows with your traffic demands.
-                     </p>
+                     <h5>{{ text('cloudIntegrationTitle') }}</h5>
+                     <p>{{ text('cloudIntegrationDesc') }}</p>
                   </div>
                </li>
                <li class="wow fadeInUp" data-wow-delay="0.6s">
@@ -114,12 +88,8 @@
                      <i class="fa-solid fa-plane-departure"></i>
                   </div>
                   <div class="content">
-                     <h5>
-                        Hosting Plan
-                     </h5>
-                     <p>
-                        Find the perfect fit with our flexible plans, designed for projects of any size.
-                     </p>
+                     <h5>{{ text('hostingPlanTitle') }}</h5>
+                     <p>{{ text('hostingPlanDesc') }}</p>
                   </div>
                </li>
             </ul>
@@ -127,7 +97,7 @@
       </div>
       <div class="choose__btn mt-5 wow fadeInUp d-flex justify-content-center" data-wow-delay="0.2s">
          <a href="#0" class="cmn--btn">
-            <span>View More Advantages</span>
+            <span>{{ text('viewMoreAdvantages') }}</span>
          </a>
       </div>
    </div>
@@ -137,27 +107,23 @@
 <section class="atos__hosting pt-120 pb-120">
    <div class="container">
       <div class="section__header section__header__space">
-         <h2 class="wow fadeInDown" data-wow-delay="0.2s">
-            Our <span class="text-base">Services</span>
-         </h2>
-         <p class="text-black wow fadeInDown" data-wow-delay="0.4s">
-            Choose the hosting plan that best fits your needs and budget.
-         </p>
+         <h2 class="wow fadeInDown" data-wow-delay="0.2s" [innerHTML]="text('servicesTitle')"></h2>
+         <p class="text-black wow fadeInDown" data-wow-delay="0.4s">{{ text('servicesDesc') }}</p>
       </div>
       <div class="row g-4">
          <div class="col-xxl-3 col-xl-3 col-lg-3">
             <div class="atos__left__wrap">
                <ul class="nav nav-tabs" id="myTab" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab10" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">
+                     <button class="nav-link active" id="home-tab10" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">
                      <span class="icon"><i class="fa-solid fa-desktop"></i></span>
-                     <span>Dedicated Hosting</span>
+                     <span>{{ text('tabDedicated') }}</span>
                   </button>
                   </li>
                   <li class="nav-item" role="presentation">
                     <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
                      <span class="icon"><i class="fa-solid fa-cloud"></i></span>
-                     <span>VPS Hosting</span>
+                     <span>{{ text('tabVps') }}</span>
                   </button>
                   </li>
 
@@ -173,21 +139,19 @@
                            <img src="assets/img/tab/tabhost1.jpg" alt="t-img">
                         </div>
                         <div class="content">
-                           <h4>
-                              <span class="text-base">Deticated</span> Hosting
-                           </h4>
+                           <h4 [innerHTML]="text('tabDedicatedTitle')"></h4>
                            <ul class="tagging__listing">
                               <li>
                                  <span><i class="fa-solid fa-check"></i></span>
-                                 <span>Manage Web Apps More Collaboration</span>
+                                 <span>{{ text('tabListItem1') }}</span>
                               </li>
                               <li>
                                  <span><i class="fa-solid fa-check"></i></span>
-                                 <span>Ubdate Web Hosting Collaboration</span>
+                                 <span>{{ text('tabListItem2') }}</span>
                               </li>
                               <li>
                                  <span><i class="fa-solid fa-check"></i></span>
-                                 <span>Creative Web Domain Collaboration</span>
+                                 <span>{{ text('tabListItem3') }}</span>
                               </li>
                            </ul>
                         </div>
@@ -199,9 +163,7 @@
                            <img src="assets/img/tab/tabhost3.png" alt="t-img">
                         </div>
                         <div class="content">
-                           <h4>
-                              <span class="text-base">VPS</span> Hosting
-                           </h4>
+                           <h4 [innerHTML]="text('tabVpsTitle')"></h4>
                            <ul class="tagging__listing">
                               <li>
                                  <span><i class="fa-solid fa-check"></i></span>
@@ -237,12 +199,8 @@
 <section class="pricing__domain pt-120 pb-120">
    <div class="container">
          <div class="section__header section-center">
-            <h2 class="text-black wow fadeInDown" data-wow-delay="0.2s">
-               Premium <span class="text-base">Hosting</span>
-            </h2>
-            <p class="text-black wow fadeInDown" data-wow-delay="0.4s">
-               Choose the hosting plan that suits your business requirements and scale as you grow.
-            </p>
+            <h2 class="text-black wow fadeInDown" data-wow-delay="0.2s" [innerHTML]="text('premiumHosting')"></h2>
+            <p class="text-black wow fadeInDown" data-wow-delay="0.4s">{{ text('premiumDesc') }}</p>
          </div>
          <div class="host__domian__wrapper">
             <div class="row g-4 align-items-center">

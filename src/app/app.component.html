@@ -1,6 +1,12 @@
-<app-header></app-header>
+<ng-container *ngIf="showGlobalLayout">
+	<app-header></app-header>
+</ng-container>
 
 <router-outlet></router-outlet>
 
-<app-footer></app-footer>
-<app-floating-widget></app-floating-widget>
+<app-toast></app-toast>
+
+<ng-container *ngIf="showGlobalLayout">
+	<app-footer></app-footer>
+	<app-floating-widget></app-floating-widget>
+</ng-container>

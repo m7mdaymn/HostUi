@@ -1,0 +1,26 @@
+<div class="admin-shell">
+  <app-admin-sidebar></app-admin-sidebar>
+  <div class="admin-area">
+    <app-admin-topbar></app-admin-topbar>
+    <main class="admin-main">
+    <div class="top"><h1>Packages</h1><button class="btn primary" (click)="addNew()">Add Package</button></div>
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <table *ngIf="!loading && items.length" class="items-table">
+      <thead><tr><th>Id</th><th>Name</th><th>Duration (months)</th><th>Price</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let p of items">
+          <td>{{ p.id }}</td>
+          <td>{{ p.name || p.Name }}</td>
+          <td>{{ p.durationMonths || p.DurationMonths }}</td>
+          <td>{{ p.totalPrice || p.TotalPrice }}</td>
+          <td>
+            <button class="btn" (click)="edit(p)">Edit</button>
+            <button class="btn danger" (click)="delete(p)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!loading && !items.length">No packages found.</div>
+  </main>
+</div>

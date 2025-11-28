@@ -1,0 +1,7 @@
+.admin-sidebar { width:220px; background:var(--admin-surface); color:var(--admin-text); height:100vh; padding:18px 14px; box-sizing:border-box; border-right:1px solid var(--admin-border) }
+.admin-sidebar .brand { font-weight:700; font-size:16px; margin-bottom:14px; color:var(--admin-text) }
+.admin-sidebar ul { list-style:none; padding:0; margin:0 }
+.admin-sidebar li { margin:8px 0 }
+.admin-sidebar a { color:var(--admin-text); text-decoration:none; display:block; padding:10px 12px; border-radius:6px; transition:background .12s,color .12s,transform .12s }
+.admin-sidebar a:hover { background:rgba(255,255,255,0.03); color:var(--admin-accent); transform:translateX(3px) }
+.admin-sidebar .spacer { flex:1; height:12px }

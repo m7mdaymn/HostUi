@@ -1,7 +1,8 @@
-import { Component, inject, HostListener, ElementRef } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { TranslateService } from '../../core/services/translate.service';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,9 @@ export class HeaderComponent {
   private router = inject(Router);
   currentUrl = '/home';
   isScrolled = false;
+  currentLang = 'en';
+
+  private translate = inject(TranslateService);
 
   constructor() {
     this.router.events
@@ -21,6 +25,8 @@ export class HeaderComponent {
       .subscribe((event: NavigationEnd) => {
         this.currentUrl = event.urlAfterRedirects;
       });
+    this.currentLang = this.translate.current;
+    this.translate.lang.subscribe(l => this.currentLang = l);
   }
 
   @HostListener('window:scroll', [])
@@ -31,4 +37,11 @@ export class HeaderComponent {
   isActive(path: string): boolean {
     return this.currentUrl === path || this.currentUrl.startsWith(path);
   }
+
+  toggleLang() {
+    const next = this.currentLang === 'en' ? 'ar' : 'en';
+    this.translate.setLang(next as any);
+  }
+
+  text(key: string) { return this.translate.t(key); }
 }

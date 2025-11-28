@@ -1,4 +1,5 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, inject } from '@angular/core';
+import { TranslateService } from '../../core/services/translate.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -10,6 +11,9 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements AfterViewInit {
+  private translate = inject(TranslateService);
+
+  text(key: string) { return this.translate.t(key); }
   ngAfterViewInit(): void {
     console.log('HomeComponent ngAfterViewInit — initializing banner');
     try {

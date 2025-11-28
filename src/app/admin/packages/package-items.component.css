@@ -1,0 +1,5 @@
+.admin-shell{display:flex}
+.admin-main{flex:1;padding:24px;background:transparent;color:var(--admin-text)}
+.items-table{width:100%;border-collapse:collapse;background:transparent}
+.items-table th,.items-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--admin-text)}
+.btn{padding:6px 8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--admin-text);border-radius:6px}

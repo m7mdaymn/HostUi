@@ -1,0 +1,58 @@
+<div class="admin-shell">
+  <app-admin-sidebar></app-admin-sidebar>
+  <div class="admin-area">
+    <app-admin-topbar></app-admin-topbar>
+
+    <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="muted">Overview of system metrics and quick actions</p>
+      </div>
+      <div class="actions">
+        <button class="btn" (click)="onRefresh()">Refresh</button>
+        <button class="btn primary" (click)="onNew()">New</button>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="stat-card" role="button" (click)="goTo('users')" title="View users">
+        <div class="label">Total Users</div>
+        <div class="value">{{ stats?.totalUsers || stats?.totalUsersCount || stats?.users || 0 }}</div>
+      </div>
+      <div class="stat-card" role="button" (click)="goTo('vps')" title="View VPS plans">
+        <div class="label">VPS Plans</div>
+        <div class="value">{{ stats?.totalVps || stats?.vps || 0 }}</div>
+      </div>
+      <div class="stat-card" role="button" (click)="goTo('dedicated')" title="View dedicated servers">
+        <div class="label">Dedicated Servers</div>
+        <div class="value">{{ stats?.totalDedicated || stats?.dedicated || 0 }}</div>
+      </div>
+      <div class="stat-card" role="button" (click)="goTo('packages')" title="View packages">
+        <div class="label">Packages</div>
+        <div class="value">{{ stats?.totalPackages || stats?.packages || 0 }}</div>
+      </div>
+      <div class="stat-card" role="button" (click)="goTo('promos')" title="View promos">
+        <div class="label">Promos</div>
+        <div class="value">{{ stats?.totalPromos || stats?.promos || 0 }}</div>
+      </div>
+    </section>
+
+    <section class="panels">
+      <div class="panel">
+        <h3>Activity</h3>
+        <div class="chart-placeholder">Chart (placeholder)</div>
+      </div>
+      <div class="panel">
+        <h3>Recent Users</h3>
+        <div *ngIf="recentUsers.length; else noRecent">
+          <ul class="recent-list">
+            <li *ngFor="let u of recentUsers">{{ u.name || u.Name || u.Email || u.email }}</li>
+          </ul>
+        </div>
+        <ng-template #noRecent><div class="muted">No recent users</div></ng-template>
+      </div>
+    </section>
+  </main>
+</div>
+

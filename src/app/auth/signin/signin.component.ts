@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService, User } from '../../core/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -17,11 +17,13 @@ export class SigninComponent {
   loading = false;
   error: string | null = null;
   success: string | null = null;
+  returnUrl: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -58,7 +60,7 @@ export class SigninComponent {
     console.log('🚀 Redirecting user:', user.name, 'Role:', user.role);
 
     if (user.role?.toLowerCase() === 'admin') {
-      this.router.navigateByUrl('/dashboard');
+      this.router.navigateByUrl('/admin/dashboard');
     } else {
       this.router.navigateByUrl('/home');
     }
@@ -86,8 +88,15 @@ export class SigninComponent {
         if (user) {
           this.success = `Welcome back, ${user.name}!`;
 
+          // If a returnUrl is present (from guard), prefer it
+          this.returnUrl = this.returnUrl || this.route.snapshot.queryParams['returnUrl'] || null;
+
           setTimeout(() => {
-            this.redirectByRole(user);
+            if (this.returnUrl) {
+              this.router.navigateByUrl(this.returnUrl);
+            } else {
+              this.redirectByRole(user);
+            }
           }, 1500);
         } else {
           this.router.navigateByUrl('/home');

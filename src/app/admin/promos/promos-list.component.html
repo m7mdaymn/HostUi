@@ -1,0 +1,37 @@
+<div class="admin-shell">
+  <app-admin-sidebar></app-admin-sidebar>
+  <div class="admin-area">
+    <app-admin-topbar></app-admin-topbar>
+    <main class="admin-main">
+      <section class="admin-header">
+        <h2>Promos</h2>
+        <div class="actions">
+          <button (click)="load()">Refresh</button>
+          <button (click)="addNew()">New Promo</button>
+        </div>
+      </section>
+
+    <section *ngIf="loading">Loading promos...</section>
+    <section *ngIf="error" class="error">{{error}}</section>
+
+    <table *ngIf="!loading && items.length">
+      <thead>
+        <tr><th>Title</th><th>Type</th><th>Active</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let it of items">
+          <td>{{it.title || it.Name || it.Title}}</td>
+          <td>{{it.type || it.PromoType || '-'}}</td>
+          <td>{{(it.isActive || it.IsActive) ? 'Yes' : 'No'}}</td>
+          <td>
+            <button (click)="edit(it)">Edit</button>
+            <button (click)="toggleActive(it)">Toggle</button>
+            <button (click)="delete(it)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section *ngIf="!loading && !items.length">No promos found.</section>
+  </main>
+</div>

@@ -53,13 +53,28 @@ export class AuthService {
         console.log('🔑 Raw login response:', response);
 
         const nameMatch = response.message?.match(/Welcome (.+)!/);
-        const name = nameMatch ? nameMatch[1].trim() : 'User';
+        const name = nameMatch ? nameMatch[1].trim() : (response.user?.name || 'User');
+
+        // Determine role:
+        // - Prefer server-provided role if present
+        // - Fallback: treat known seeded admin email as admin
+        const serverRole = response.user?.role?.toString().toLowerCase();
+        const emailLower = (credentials.email || '').toString().toLowerCase();
+        let role: 'admin' | 'customer' | 'moderator' = 'customer';
+
+        if (serverRole === 'admin' || serverRole === 'administrator') {
+          role = 'admin';
+        } else if (emailLower === 'ahmed@admin.com') {
+          // Seeded admin account in DB — ensure client recognizes it as admin
+          role = 'admin';
+        }
 
         const user: User = {
+          id: response.user?.id,
           name,
           email: credentials.email,
-          role: 'customer',
-          phoneNumber: ''
+          role,
+          phoneNumber: response.user?.phoneNumber || ''
         };
 
         this.setUser(user);
@@ -68,7 +83,10 @@ export class AuthService {
         return { message: response.message || 'Login successful', user };
       }),
       tap((response: AuthResponse) => {
-        this.updateUserRole(response.user!);
+        if (response.user) {
+          // ensure current value has correct role
+          this.currentUserSubject.next(response.user);
+        }
       }),
       catchError(this.handleError('Login failed'))
     );

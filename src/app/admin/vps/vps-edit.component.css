@@ -1,0 +1,7 @@
+.admin-shell { display:flex; }
+.admin-main { flex:1; padding:24px; background:transparent; color:var(--admin-text); }
+.form { max-width:640px; background:var(--admin-card-bg); padding:18px; border-radius:var(--radius); box-shadow:var(--admin-elev); border:1px solid var(--admin-border) }
+.form label { display:block; margin-top:10px; font-weight:600; color:var(--admin-text) }
+.form input { width:100%; padding:8px; margin-top:6px; border:1px solid rgba(255,255,255,0.06); border-radius:6px; background:transparent; color:var(--admin-text) }
+.actions { margin-top:12px; display:flex; gap:8px; }
+.btn.primary { background:linear-gradient(90deg,var(--admin-accent),var(--admin-accent-strong)); color:#042234; border:none }

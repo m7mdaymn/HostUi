@@ -10,24 +10,26 @@
             <span></span><span></span><span></span>
          </div>
          <ul class="main-menu">
-            <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><a [routerLink]="'/home'"><span><i class="fa-solid fa-house"></i></span><span>Home</span></a></li>
+            <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><a [routerLink]="'/home'"><span><i class="fa-solid fa-house"></i></span><span>{{ text('home') }}</span></a></li>
             <li routerLinkActive="active">
-               <a href="#0">Hosting <i class="fas fa-chevron-down"></i></a>
+               <a href="#0">{{ text('hosting') }} <i class="fas fa-chevron-down"></i></a>
                <ul class="sub-menu">
-                  <li class="subtwohober"><a [routerLink]="'/dedicated'"><span class="icon"><i class="fa-brands fa-audible"></i></span><span>Dedicated Hosting</span></a></li>
-                  <li class="subtwohober"><a [routerLink]="'/vps'"><span class="icon"><i class="fa-solid fa-cloud"></i></span><span>VPS Hosting</span></a></li>
+                  <li class="subtwohober"><a [routerLink]="'/dedicated'"><span class="icon"><i class="fa-brands fa-audible"></i></span><span>{{ text('dedicated') }}</span></a></li>
+                  <li class="subtwohober"><a [routerLink]="'/vps'"><span class="icon"><i class="fa-solid fa-cloud"></i></span><span>{{ text('vps') }}</span></a></li>
                </ul>
             </li>
-            <li routerLinkActive="active"><a [routerLink]="'/promos'">Promos</a></li>
+            <li routerLinkActive="active"><a [routerLink]="'/promos'">{{ text('promos') }}</a></li>
             <li routerLinkActive="active">
-               <a href="#">Account <i class="fas fa-chevron-down"></i></a>
+               <a href="#">{{ text('headerAccount') }} <i class="fas fa-chevron-down"></i></a>
                <ul class="sub-menu">
-                  <li routerLinkActive="active"><a [routerLink]="'/signin'"><span>Sign In</span></a></li>
-                  <li routerLinkActive="active"><a [routerLink]="'/signup'"><span>Sign Up</span></a></li>
+                  <li routerLinkActive="active"><a [routerLink]="'/signin'"><span>{{ text('signIn') }}</span></a></li>
+                  <li routerLinkActive="active"><a [routerLink]="'/signup'"><span>{{ text('signUp') }}</span></a></li>
                </ul>
             </li>
          </ul>
-         <a [routerLink]="'/contact'" class="cmn--btn"><span>Contact us</span></a>
+         <a [routerLink]="'/contact'" class="cmn--btn"><span>{{ text('contact') }}</span></a>
+         <button class="lang-toggle btn" (click)="toggleLang()">{{ currentLang === 'en' ? 'AR' : 'EN' }}</button>
       </div>
    </div>
 </header>
+

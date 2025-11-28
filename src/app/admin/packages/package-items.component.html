@@ -1,0 +1,62 @@
+<div class="admin-shell">
+  <app-admin-sidebar></app-admin-sidebar>
+  <div class="admin-area">
+    <app-admin-topbar></app-admin-topbar>
+    <main class="admin-main">
+    <h1>Package Items</h1>
+      <div *ngIf="loading">Loading...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
+
+      <section class="add-item">
+        <h3>Add Item</h3>
+        <form [formGroup]="form" (ngSubmit)="onAdd()">
+          <label>Package
+            <select formControlName="packageId">
+              <option value="">--select--</option>
+              <option *ngFor="let p of packages" [value]="p.id || p.Id || p.packageId">{{p.name || p.Name || p.Title}}</option>
+            </select>
+          </label>
+
+          <label>Type
+            <select formControlName="productType" (change)="onProductTypeChange()">
+              <option value="vps">VPS</option>
+              <option value="dedicated">Dedicated</option>
+            </select>
+          </label>
+
+          <label>Product
+            <select formControlName="productId">
+              <option value="">--select product--</option>
+              <ng-container *ngIf="form.value.productType === 'vps'">
+                <option *ngFor="let v of vps" [value]="v.id || v.Id">{{v.title || v.Name || v.Title}}</option>
+              </ng-container>
+              <ng-container *ngIf="form.value.productType === 'dedicated'">
+                <option *ngFor="let d of dedicated" [value]="d.id || d.Id">{{d.title || d.Name || d.Title}}</option>
+              </ng-container>
+            </select>
+          </label>
+
+          <label>Qty <input type="number" formControlName="quantity" min="1" /></label>
+          <label>Note <input formControlName="note" /></label>
+          <div><button type="submit">Add Item</button></div>
+        </form>
+      </section>
+    <table *ngIf="!loading && items.length" class="items-table">
+      <thead><tr><th>Id</th><th>Package</th><th>Type</th><th>VPS</th><th>Dedicated</th><th>Qty</th><th>Note</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let it of items">
+          <td>{{ it.id }}</td>
+          <td>{{ it.packageId || it.PackageId }}</td>
+          <td>{{ it.productType || it.ProductType }}</td>
+          <td>{{ it.vpsId || it.VpsId }}</td>
+          <td>{{ it.dedicatedId || it.DedicatedId }}</td>
+          <td>{{ it.quantity || it.Quantity }}</td>
+          <td>{{ it.note || it.Note }}</td>
+          <td>
+            <button class="btn" (click)="deleteItem(it.id)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+</div>

@@ -1,0 +1,7 @@
+.admin-shell{display:flex}
+.admin-main{flex:1;padding:16px;background:transparent;color:var(--admin-text)}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.actions button{margin-left:8px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border:1px solid #ddd;text-align:left}
+.error{color:#a00}
