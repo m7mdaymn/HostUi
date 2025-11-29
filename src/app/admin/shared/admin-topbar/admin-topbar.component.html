@@ -1,0 +1,39 @@
+<div class="admin-topbar">
+  <div class="topbar-left">
+    <button class="menu-toggle" (click)="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="page-title">
+      <h2>{{ currentPageTitle }}</h2>
+      <p class="breadcrumb"></p>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+
+    <div class="user-menu">
+      <button class="user-avatar" (click)="toggleDropdown()">
+        <div class="avatar">
+          {{ userInitial }}
+        </div>
+        <span class="user-name">{{ userName || 'Admin' }}</span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+
+      <div class="dropdown" [class.show]="dropdownOpen">
+        <div class="dropdown-header">
+          <div class="avatar large">{{ userInitial }}</div>
+          <div>
+            <p class="name">{{ userName || 'Admin User' }}</p>
+            <p class="email">{{ userEmail || 'admin@topservers.com' }}</p>
+          </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PackagesService } from '../../core/services/packages.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
 
 @Component({
   selector: 'app-admin-packages-list',

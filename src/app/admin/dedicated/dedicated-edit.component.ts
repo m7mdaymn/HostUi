@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { DedicatedService } from '../../core/services/dedicated.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
 
 @Component({
   selector: 'app-admin-dedicated-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, AdminSidebarComponent, AdminTopbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, AdminTopbarComponent,AdminSidebarComponent],
   templateUrl: './dedicated-edit.component.html',
   styleUrls: ['./dedicated-edit.component.css']
 })

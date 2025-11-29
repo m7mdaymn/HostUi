@@ -4,8 +4,8 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PromosService } from '../../core/services/promos.service';
 import { ToastService } from '../../core/services/toast.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
 
 @Component({
   selector: 'app-admin-promo-edit',

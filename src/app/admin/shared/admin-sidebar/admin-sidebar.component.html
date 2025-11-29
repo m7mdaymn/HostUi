@@ -1,0 +1,58 @@
+<nav class="admin-sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <div class="brand">
+      <div class="logo">
+        <i class="fas fa-server"></i>
+      </div>
+      <span class="brand-text">TopServers</span>
+    </div>
+  </div>
+
+  <ul class="nav-list">
+    <li>
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/users" routerLinkActive="active">
+        <i class="fas fa-users"></i>
+        <span>Users</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/vps" routerLinkActive="active">
+        <i class="fas fa-server"></i>
+        <span>VPS Plans</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/dedicated" routerLinkActive="active">
+        <i class="fas fa-microchip"></i>
+        <span>Dedicated</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/packages" routerLinkActive="active">
+        <i class="fas fa-box"></i>
+        <span>Packages</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/promos" routerLinkActive="active">
+        <i class="fas fa-tag"></i>
+        <span>Promos</span>
+      </a>
+    </li>
+
+    <li class="nav-divider"></li>
+
+    <li>
+      <a routerLink="/home" class="back-to-site">
+        <i class="fas fa-external-link-alt"></i>
+        <span>Back to Site</span>
+      </a>
+    </li>
+  </ul>
+</nav>

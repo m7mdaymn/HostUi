@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { VpsService } from '../../core/services/vps.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
 
 @Component({
   selector: 'app-admin-vps-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, AdminSidebarComponent, AdminTopbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule,AdminSidebarComponent , AdminTopbarComponent],
   templateUrl: './vps-edit.component.html',
   styleUrls: ['./vps-edit.component.css']
 })

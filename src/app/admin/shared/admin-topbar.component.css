@@ -1,6 +1,0 @@
-.admin-topbar{display:flex;align-items:center;padding:10px 16px;background:transparent;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--admin-text)}
-.brand{font-weight:600}
-.spacer{flex:1}
-.user{margin-right:12px;color:var(--admin-muted)}
-.admin-topbar button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--admin-text);padding:6px 10px;border-radius:6px}
-.admin-topbar button:hover{border-color:var(--admin-accent);color:var(--admin-accent-strong);box-shadow:var(--admin-elev)}

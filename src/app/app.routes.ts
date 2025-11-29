@@ -37,18 +37,6 @@ export const routes: Routes = [
     title: 'Admin - Users'
   },
   {
-    path: 'admin/users/new',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/users/user-edit.component').then(m => m.UserEditComponent),
-    title: 'Admin - Add User'
-  },
-  {
-    path: 'admin/users/:id/edit',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/users/user-edit.component').then(m => m.UserEditComponent),
-    title: 'Admin - Edit User'
-  },
-  {
     path: 'admin/vps',
     canActivate: [AdminGuard],
     loadComponent: () => import('./admin/vps/vps-list.component').then(m => m.VpsListComponent),

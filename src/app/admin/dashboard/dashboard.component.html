@@ -1,58 +1,113 @@
 <div class="admin-shell">
-  <app-admin-sidebar></app-admin-sidebar>
-  <div class="admin-area">
+<app-admin-sidebar></app-admin-sidebar>
+  <div class="admin-content">
     <app-admin-topbar></app-admin-topbar>
-
-    <main class="admin-main">
-    <header class="admin-header">
-      <div>
-        <h1>Dashboard</h1>
-        <p class="muted">Overview of system metrics and quick actions</p>
-      </div>
-      <div class="actions">
-        <button class="btn" (click)="onRefresh()">Refresh</button>
-        <button class="btn primary" (click)="onNew()">New</button>
-      </div>
-    </header>
-
-    <section class="stats">
-      <div class="stat-card" role="button" (click)="goTo('users')" title="View users">
-        <div class="label">Total Users</div>
-        <div class="value">{{ stats?.totalUsers || stats?.totalUsersCount || stats?.users || 0 }}</div>
-      </div>
-      <div class="stat-card" role="button" (click)="goTo('vps')" title="View VPS plans">
-        <div class="label">VPS Plans</div>
-        <div class="value">{{ stats?.totalVps || stats?.vps || 0 }}</div>
-      </div>
-      <div class="stat-card" role="button" (click)="goTo('dedicated')" title="View dedicated servers">
-        <div class="label">Dedicated Servers</div>
-        <div class="value">{{ stats?.totalDedicated || stats?.dedicated || 0 }}</div>
-      </div>
-      <div class="stat-card" role="button" (click)="goTo('packages')" title="View packages">
-        <div class="label">Packages</div>
-        <div class="value">{{ stats?.totalPackages || stats?.packages || 0 }}</div>
-      </div>
-      <div class="stat-card" role="button" (click)="goTo('promos')" title="View promos">
-        <div class="label">Promos</div>
-        <div class="value">{{ stats?.totalPromos || stats?.promos || 0 }}</div>
-      </div>
-    </section>
-
-    <section class="panels">
-      <div class="panel">
-        <h3>Activity</h3>
-        <div class="chart-placeholder">Chart (placeholder)</div>
-      </div>
-      <div class="panel">
-        <h3>Recent Users</h3>
-        <div *ngIf="recentUsers.length; else noRecent">
-          <ul class="recent-list">
-            <li *ngFor="let u of recentUsers">{{ u.name || u.Name || u.Email || u.email }}</li>
-          </ul>
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <div>
+          <h1 class="title">Dashboard Overview</h1>
+          <p class="subtitle">Monitor your system performance and quick stats at a glance</p>
         </div>
-        <ng-template #noRecent><div class="muted">No recent users</div></ng-template>
-      </div>
-    </section>
-  </main>
-</div>
+        <div class="header-actions">
+          <button class="btn-outline" (click)="onRefresh()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+          <button class="btn-primary" (click)="onNew()">
+            <i class="fas fa-plus"></i> Add New
+          </button>
+        </div>
+      </header>
 
+      <!-- Stats Grid -->
+      <section class="stats-grid">
+        <div class="stat-card users" (click)="goTo('users')">
+          <div class="icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="info">
+            <p class="label">Total Users</p>
+            <p class="value">{{ stats?.totalUsers || stats?.totalUsersCount || stats?.users || 0 }}</p>
+          </div>
+          <div class="trend up">
+            <i class="fas fa-arrow-up"></i>
+          </div>
+        </div>
+
+        <div class="stat-card vps" (click)="goTo('vps')">
+          <div class="icon">
+            <i class="fas fa-server"></i>
+          </div>
+          <div class="info">
+            <p class="label">VPS Plans</p>
+            <p class="value">{{ stats?.totalVps || stats?.vps || 0 }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card dedicated" (click)="goTo('dedicated')">
+          <div class="icon">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <div class="info">
+            <p class="label">Dedicated Servers</p>
+            <p class="value">{{ stats?.totalDedicated || stats?.dedicated || 0 }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card packages" (click)="goTo('packages')">
+          <div class="icon">
+            <i class="fas fa-box"></i>
+          </div>
+          <div class="info">
+            <p class="label">Packages</p>
+            <p class="value">{{ stats?.totalPackages || stats?.packages || 0 }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card promos" (click)="goTo('promos')">
+          <div class="icon">
+            <i class="fas fa-tag"></i>
+          </div>
+          <div class="info">
+            <p class="label">Active Promos</p>
+            <p class="value">{{ stats?.totalPromos || stats?.promos || 0 }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Panels -->
+      <section class="panels-grid">
+        <div class="panel activity-panel">
+          <div class="panel-header">
+            <h3>System Activity</h3>
+            <span class="badge">Live</span>
+          </div>
+          <div class="chart-placeholder">
+            <p>Real-time analytics chart coming soon</p>
+          </div>
+        </div>
+
+        <div class="panel recent-users-panel">
+          <div class="panel-header">
+            <h3>Recent Users</h3>
+            <a routerLink="/admin/users" class="view-all">View all</a>
+          </div>
+          <div class="recent-list" *ngIf="recentUsers.length; else noUsers">
+            <div *ngFor="let user of recentUsers" class="user-item">
+              <div class="avatar">{{ (user.name || user.Name || user.email || '?')[0].toUpperCase() }}</div>
+              <div class="user-info">
+                <p class="name">{{ user.name || user.Name || user.email || 'Unknown' }}</p>
+                <p class="email">{{ user.email || user.Email || '-' }}</p>
+              </div>
+            </div>
+          </div>
+          <ng-template #noUsers>
+            <div class="empty-state">
+              <i class="fas fa-inbox"></i>
+              <p>No recent activity</p>
+            </div>
+          </ng-template>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

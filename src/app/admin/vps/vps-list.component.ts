@@ -1,9 +1,9 @@
+import { AdminTopbarComponent } from './../shared/admin-topbar/admin-topbar.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { VpsService } from '../../core/services/vps.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
 
 @Component({
   selector: 'app-admin-vps-list',

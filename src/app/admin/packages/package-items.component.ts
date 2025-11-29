@@ -5,9 +5,9 @@ import { PackageItemsService } from '../../core/services/packageitems.service';
 import { PackagesService } from '../../core/services/packages.service';
 import { VpsService } from '../../core/services/vps.service';
 import { DedicatedService } from '../../core/services/dedicated.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
 import { ToastService } from '../../core/services/toast.service';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
 
 @Component({
   selector: 'app-admin-package-items',
@@ -23,9 +23,11 @@ export class PackageItemsComponent implements OnInit {
   dedicated: any[] = [];
   loading = false;
   error: string | null = null;
-  form = this.fb.group({ packageId: [''], productType: ['vps'], productId: [''], quantity: [1], note: [''] });
+  form: any;
 
-  constructor(private fb: FormBuilder, private pis: PackageItemsService, private ps: PackagesService, private vs: VpsService, private ds: DedicatedService, private toast: ToastService) {}
+  constructor(private fb: FormBuilder, private pis: PackageItemsService, private ps: PackagesService, private vs: VpsService, private ds: DedicatedService, private toast: ToastService) {
+    this.form = this.fb.group({ packageId: [''], productType: ['vps'], productId: [''], quantity: [1], note: [''] });
+  }
 
   ngOnInit(): void { this.loadAll(); }
 

@@ -1,3 +1,4 @@
+import { AdminTopbarComponent } from './../shared/admin-topbar/admin-topbar.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -8,8 +9,7 @@ import { DedicatedService } from '../../core/services/dedicated.service';
 import { PackagesService } from '../../core/services/packages.service';
 import { PromosService } from '../../core/services/promos.service';
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from "../shared/admin-sidebar/admin-sidebar.component";
 
 @Component({
   selector: 'app-admin-dashboard',

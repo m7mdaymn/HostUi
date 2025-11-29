@@ -2,15 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DedicatedService } from '../../core/services/dedicated.service';
-import { AdminSidebarComponent } from '../shared/admin-sidebar.component';
-import { AdminTopbarComponent } from '../shared/admin-topbar.component';
+import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
+import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
 
 @Component({
   selector: 'app-admin-dedicated-list',
   standalone: true,
   imports: [CommonModule, AdminSidebarComponent, AdminTopbarComponent],
-  templateUrl: './dedicated-list.component.html',
-  styleUrls: ['./dedicated-list.component.css']
+  templateUrl: './dedicated-list.component.html'
 })
 export class DedicatedListComponent implements OnInit {
   loading = false;

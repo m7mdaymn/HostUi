@@ -1,51 +1,238 @@
 <div class="admin-shell">
   <app-admin-sidebar></app-admin-sidebar>
-  <div class="admin-area">
+
+  <div class="admin-content">
     <app-admin-topbar></app-admin-topbar>
 
-    <main class="admin-main">
-    <div class="top">
-      <h1>Users Management</h1>
-      <button class="btn primary" (click)="addNew()">Add New User</button>
-    </div>
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <div>
+          <h1 class="title">Users Management</h1>
+          <p class="subtitle">View and manage all registered users</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-primary" (click)="openUserModal()">
+            <i class="fas fa-plus"></i> Add New User
+          </button>
+        </div>
+      </header>
 
-    <div *ngIf="loading">Loading users...</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
+      <div class="card">
+        <div class="card-body p-0">
 
-    <table *ngIf="!loading && users.length" class="users-table">
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Role</th>
-          <th>Created At</th>
-          <th>Blocked</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let u of users">
-          <td>{{ u.id }}</td>
-          <td>{{ u.name || u.Name }}</td>
-          <td>{{ u.email || u.Email }}</td>
-          <td>{{ u.phoneNumber || u.PhoneNumber || u.phone || u.Phone }}</td>
-          <td>{{ u.role || u.Role }}</td>
-          <td>{{ u.createdAt || u.CreatedAt }}</td>
-          <td>{{ u.isBlocked || u.IsBlocked ? 'Yes' : 'No' }}</td>
-          <td>
-            <button class="btn" (click)="edit(u)">Edit</button>
-            <button class="btn" (click)="openQuickEdit(u)">Quick Edit</button>
-            <button class="btn" (click)="toggleBlock(u)">{{ u.isBlocked || u.IsBlocked ? 'Unblock' : 'Block' }}</button>
-            <button class="btn danger" (click)="deleteUser(u)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          <!-- Loading State -->
+          <div *ngIf="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading users...</p>
+          </div>
 
-    <div *ngIf="!loading && !users.length">No users found.</div>
-    <app-user-quick-edit *ngIf="quickEditVisible" [user]="editingUser" (saved)="onQuickSaved($event)" (cancel)="quickEditVisible=false"></app-user-quick-edit>
-    <app-confirm-dialog *ngIf="confirmVisible" [title]="'Delete user'" [message]="'Delete user ' + (confirmTarget?.name || confirmTarget?.email || '') + '?'" (confirm)="onConfirmDelete()" (cancel)="onCancelDelete()"></app-confirm-dialog>
-  </main>
+          <!-- Error State -->
+          <div *ngIf="error" class="alert-danger m-4">
+            {{ error }}
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading && !users.length && !error" class="empty-state">
+            <h3>No users found</h3>
+            <p>Click "Add New User" to get started.</p>
+          </div>
+
+          <!-- Users Table -->
+          <div class="table-responsive" *ngIf="users.length">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let u of users; trackBy: trackByUserId">
+                  <td><code class="id-badge">#{{ u.id }}</code></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar">{{ getInitial(u) }}</div>
+                      <div class="user-info">
+                        <div class="name">{{ u.name || '—' }}</div>
+                        <div class="email-muted">{{ u.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.phoneNumber || '—' }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.badge-admin]="u.role === 'admin'"
+                          [class.badge-moderator]="u.role === 'moderator'"
+                          [class.badge-customer]="u.role === 'customer'">
+                      {{ u.role | titlecase }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status" [class.blocked]="u.isBlocked">
+                      {{ u.isBlocked ? 'Blocked' : 'Active' }}
+                    </span>
+                  </td>
+                  <td class="date">{{ formatDate(u.createdAt) }}</td>
+                  <td>
+                    <div class="actions-group">
+                      <button class="btn-icon" (click)="openUserModal(u)" title="Edit">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn-icon" (click)="openQuickEdit(u)" title="Quick Edit">
+                        <i class="fas fa-bolt"></i>
+                      </button>
+                      <button class="btn-icon" [class.danger]="!u.isBlocked"
+                              (click)="toggleBlock(u)"
+                              [title]="u.isBlocked ? 'Unblock' : 'Block'">
+                        <i class="fas" [ngClass]="u.isBlocked ? 'fa-lock' : 'fa-unlock'"></i>
+                      </button>
+                      <button class="btn-icon danger" (click)="confirmDelete(u)" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
+
+<!-- ==================== MODALS ==================== -->
+<ng-container>
+  <!-- Backdrop -->
+  <div class="modal-backdrop"
+       *ngIf="modalOpen || quickModalOpen || deleteConfirmOpen"
+       (click)="closeAllModals()">
+  </div>
+
+  <!-- Full Edit / Create Modal -->
+  <div class="modal" *ngIf="modalOpen" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ selectedUser ? 'Edit User' : 'Create New User' }}</h2>
+        <button class="btn-icon" (click)="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Name <span class="required">*</span></label>
+            <input type="text" formControlName="name" placeholder="John Doe" />
+            <small class="text-danger" *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched">
+              Name is required
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input type="email" formControlName="email" placeholder="user@example.com" />
+            <small class="text-danger" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+              Valid email is required
+            </small>
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" formControlName="phone" placeholder="+201000000000" />
+          </div>
+          <div class="form-group">
+            <label>Role <span class="required">*</span></label>
+            <select formControlName="role">
+              <option value="customer">Customer</option>
+              <option value="moderator">Moderator</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <div class="toggle-switch">
+              <input type="checkbox" id="block" formControlName="isBlocked">
+              <label for="block"></label>
+              <span class="toggle-label">{{ userForm.value.isBlocked ? 'Blocked' : 'Active' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" (click)="closeModal()" [disabled]="saving">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="saving || userForm.invalid">
+            <span *ngIf="saving" class="spinner-small"></span>
+            {{ selectedUser ? 'Save Changes' : 'Create User' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Quick Edit Modal - FIXED -->
+  <div class="modal modal-sm" *ngIf="quickModalOpen" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Quick Edit</h3>
+        <button class="btn-icon" (click)="quickModalOpen = false">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Role</label>
+          <select [value]="quickUser.role"
+                  (change)="quickUser.role = $any($event.target).value">
+            <option value="customer">Customer</option>
+            <option value="moderator">Moderator</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+
+        <div class="form-group mt-4">
+          <label>Status</label>
+          <div class="toggle-switch">
+            <input type="checkbox" id="qblock"
+                   [checked]="quickUser.isBlocked"
+                   (change)="quickUser.isBlocked = $any($event.target).checked">
+            <label for="qblock"></label>
+            <span class="toggle-label">{{ quickUser.isBlocked ? 'Blocked' : 'Active' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-outline" (click)="quickModalOpen = false" [disabled]="saving">
+          Cancel
+        </button>
+        <button class="btn-primary" (click)="saveQuick()" [disabled]="saving">
+          <span *ngIf="saving" class="spinner-small"></span>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal modal-sm" *ngIf="deleteConfirmOpen" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Delete User?</h3>
+        <button class="btn-icon" (click)="deleteConfirmOpen = false">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body text-center py-5">
+        <i class="fas fa-exclamation-triangle text-danger" style="font-size: 56px;"></i>
+        <p class="mt-4">Permanently delete this user?</p>
+        <strong>{{ deleteTarget?.name || deleteTarget?.email || 'This user' }}</strong>
+        <p class="text-muted mt-2">This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-outline" (click)="deleteConfirmOpen = false">Cancel</button>
+        <button class="btn-primary bg-danger" (click)="deleteConfirmed()">Delete Forever</button>
+      </div>
+    </div>
+  </div>
+</ng-container>
