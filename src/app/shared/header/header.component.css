@@ -335,7 +335,10 @@
     right: -100%;
     display: flex;
   }
-
+.menu-list > li > a,
+.menu-list > li > .menu-button {
+  color: white;
+}
   .centered-nav.active {
     right: 0;
   }
