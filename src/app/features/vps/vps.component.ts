@@ -39,7 +39,6 @@ export class VpsComponent implements OnInit, OnDestroy {
     maxPrice: null
   };
 
-  // 🔥 FIXED OPTIONS - Match your API data
   cpuOptions = ['1', '2', '4', '6', '8', '12', '16'];
   ramOptions = ['1', '2', '4', '8', '16', '32', '64'];
   storageOptions = ['ssd', 'nvme', 'hdd'];
@@ -85,7 +84,6 @@ export class VpsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // 🔥 UPDATE FILTER OPTIONS BASED ON REAL DATA
   updateFilterOptions(): void {
     const availableCores = [...new Set(this.products.map(p =>
       String(p.cores || p.Cores || '0')
@@ -99,7 +97,7 @@ export class VpsComponent implements OnInit, OnDestroy {
     this.ramOptions = availableRam.length > 0 ? availableRam : this.ramOptions;
   }
 
-  // 🔥 ✅ MISSING METHODS ADDED HERE
+  // Filter Logic (unchanged)
   isCoreSelected(core: string): boolean {
     return this.filters.cores.includes(core);
   }
@@ -146,28 +144,22 @@ export class VpsComponent implements OnInit, OnDestroy {
     this.onFilterChange();
   }
 
-  // 🔥 FIXED INSTANT FILTERING - ROBUST MATCHING
   onFilterChange(): void {
     this.applyInstantFilter();
   }
 
   applyInstantFilter(): void {
-    console.log('🔥 Applying filters:', this.filters);
-
     this.filtered = this.products.filter(p => {
-      // 🔥 CPU Cores
       if (this.filters.cores.length > 0) {
         const cores = String(p.cores || p.Cores || p.cpu || p.CPU || '0');
         if (!this.filters.cores.includes(cores)) return false;
       }
 
-      // 🔥 RAM
       if (this.filters.ram.length > 0) {
         const ram = String(p.ramGB || p.RamGB || p.RAM || p.ram || '0');
         if (!this.filters.ram.includes(ram)) return false;
       }
 
-      // 🔥 Storage Type
       if (this.filters.storage.length > 0) {
         const storageType = (p.storageType || p.StorageType || p.storage || p.Storage || '').toLowerCase();
         const hasMatch = this.filters.storage.some(type =>
@@ -176,16 +168,14 @@ export class VpsComponent implements OnInit, OnDestroy {
         if (!hasMatch) return false;
       }
 
-      // 🔥 Price filter
       if (this.filters.maxPrice != null && this.filters.maxPrice > 0) {
-        const price = parseFloat(p.price || p.Price || p.cost || '0');
+        const price = this.getPrice(p);
         if (isNaN(price) || price > this.filters.maxPrice) return false;
       }
 
       return true;
     });
 
-    console.log(`✅ Filtered results: ${this.filtered.length}/${this.products.length}`);
     this.cdr.detectChanges();
   }
 
@@ -267,11 +257,7 @@ export class VpsComponent implements OnInit, OnDestroy {
 
   toggleFilterSidebar(): void {
     this.filterSidebarOpen = !this.filterSidebarOpen;
-    if (this.filterSidebarOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = this.filterSidebarOpen ? 'hidden' : '';
   }
 
   closeFilterSidebar(): void {
@@ -279,25 +265,66 @@ export class VpsComponent implements OnInit, OnDestroy {
     document.body.style.overflow = '';
   }
 
-  getBestThree(): any[] {
-    if (this.filtered.length < 3) return this.filtered;
+  // ──────────────────────────────
+  // NEW: Best Servers by Category
+  // ──────────────────────────────
 
-    const scored = this.filtered.map(p => {
-      const cores = parseInt(p.cores || p.Cores || '0');
-      const ram = parseInt(p.ramGB || p.RamGB || '0');
-      const storage = parseInt(p.storageGB || p.StorageGB || '0');
-      const price = parseFloat(p.price || p.Price || '0');
-      const storageType = (p.storageType || p.StorageType || '').toLowerCase();
-      const storageBonus = storageType.includes('nvme') ? 2 : storageType.includes('ssd') ? 1 : 0;
+  private getPrice(p: any): number {
+    return parseFloat(p.price || p.Price || p.cost || '99999') || 99999;
+  }
 
-      const specScore = (cores * 10) + (ram * 5) + (storage * 0.1) + (storageBonus * 20);
-      const valueScore = price > 0 ? specScore / price : specScore;
+  private getStorageGB(p: any): number {
+    return parseInt(p.storageGB || p.StorageGB || '0') || 0;
+  }
 
-      return { product: p, score: valueScore };
-    });
+  private getCores(p: any): number {
+    return parseInt(p.cores || p.Cores || '1') || 1;
+  }
 
-    scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, 3).map(s => s.product);
+  // 1. Cheapest with Lowest Storage
+  getCheapestLowSpace(): any {
+    if (!this.products.length) return null;
+    const sorted = [...this.products]
+      .filter(p => this.getPrice(p) < 99999)
+      .sort((a, b) => {
+        const sa = this.getStorageGB(a);
+        const sb = this.getStorageGB(b);
+        if (sa !== sb) return sa - sb;
+        return this.getPrice(a) - this.getPrice(b);
+      });
+    return sorted[0] || null;
+  }
+
+  // 2. Cheapest with Highest Storage
+  getCheapestHighSpace(): any {
+    if (!this.products.length) return null;
+    const sorted = [...this.products]
+      .filter(p => this.getPrice(p) < 99999)
+      .sort((a, b) => {
+        const sa = this.getStorageGB(a);
+        const sb = this.getStorageGB(b);
+        if (sa !== sb) return sb - sa;
+        return this.getPrice(a) - this.getPrice(b);
+      });
+    return sorted[0] || null;
+  }
+
+  // 3. Best Price per Core
+  getCheapestByCore(): any {
+    if (!this.products.length) return null;
+    const valid = this.products
+      .filter(p => {
+        const price = this.getPrice(p);
+        const cores = this.getCores(p);
+        return price < 99999 && cores > 0;
+      })
+      .map(p => ({
+        product: p,
+        pricePerCore: this.getPrice(p) / this.getCores(p)
+      }))
+      .sort((a, b) => a.pricePerCore - b.pricePerCore);
+
+    return valid[0]?.product || null;
   }
 
   trackByFn(index: number, item: any): any {

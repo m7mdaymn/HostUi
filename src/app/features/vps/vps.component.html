@@ -1,4 +1,3 @@
-<!--Banner Start-->
 <section class="breadcumnd__banner">
    <div class="container">
       <div class="row align-items-center">
@@ -33,18 +32,12 @@
       </div>
    </div>
 </section>
-<!--Banner End-->
 
-<!-- 🔥 FILTER OVERLAY -->
 <div class="filter-overlay" [class.active]="filterSidebarOpen" (click)="closeFilterSidebar()"></div>
 
-<!-- 🔥 FILTER OVERLAY -->
-<div class="filter-overlay" [class.active]="filterSidebarOpen" (click)="closeFilterSidebar()"></div>
-
-<!-- 🔥 FILTER SIDEBAR - NO SCROLL, HORIZONTAL CHECKBOXES -->
 <aside class="filter-sidebar" [class.active]="filterSidebarOpen">
    <div class="filter-sidebar-header">
-      <h5>
+      <h5 class="filter-sidebar-title" style="color:#00cdfb ;">
          <i class="fa-solid fa-sliders"></i>
          {{ text('filterServers') || 'Filter Servers' }}
       </h5>
@@ -54,7 +47,6 @@
    </div>
 
    <div class="filter-sidebar-content">
-      <!-- 🔥 CPU CORES - HORIZONTAL -->
       <div class="filter-group">
          <label class="form-label">
             <i class="fa-solid fa-microchip"></i>
@@ -72,7 +64,6 @@
          </div>
       </div>
 
-      <!-- 🔥 RAM - HORIZONTAL -->
       <div class="filter-group">
          <label class="form-label">
             <i class="fa-solid fa-memory"></i>
@@ -90,7 +81,6 @@
          </div>
       </div>
 
-      <!-- 🔥 STORAGE TYPE - HORIZONTAL -->
       <div class="filter-group">
          <label class="form-label">
             <i class="fa-solid fa-hard-drive"></i>
@@ -108,7 +98,6 @@
          </div>
       </div>
 
-      <!-- 🔥 PRICE SLIDER -->
       <div class="filter-group">
          <label class="form-label">
             <i class="fa-solid fa-dollar-sign"></i>
@@ -131,205 +120,126 @@
       </div>
    </div>
 
-<div class="filter-actions-instant">
-   <button class="btn-clear-all"
-           (click)="resetFilters()"
-           *ngIf="getActiveFilterCount() > 0">
-      <i class="fa-solid fa-rotate-right"></i>
-      <span>Clear All</span>
-   </button>
+   <div class="filter-actions-instant">
+      <button class="btn-clear-all"
+              (click)="resetFilters()"
+              *ngIf="getActiveFilterCount() > 0">
+         <i class="fa-solid fa-rotate-right"></i>
+         <span>Clear All</span>
+      </button>
 
-   <button class="btn-close" (click)="closeFilterSidebar()">
-      <i class="fa-solid fa-times"></i>
-      <span>Close</span>
-   </button>
-</div>
+      <button class="btn-close" (click)="closeFilterSidebar()">
+         <i class="fa-solid fa-times"></i>
+         <span>Close</span>
+      </button>
+   </div>
 </aside>
 
-<!-- 🔥 BEST 3 SERVERS - HOSTINGER STYLE -->
-<section class="featured-servers pt-60 pb-40" *ngIf="!loading && filtered.length >= 3">
-   <div class="container">
-      <div class="section__header text-center">
-         <span class="subtitle">Black Friday Deals</span>
-         <h3 class="section-title">Don't miss the Best VPS Servers</h3>
-         <p class="section-desc">
-            <i class="fa-solid fa-shield-check"></i> 30-day money-back guarantee &nbsp;&nbsp;
-            <i class="fa-solid fa-rotate"></i> Cancel anytime &nbsp;&nbsp;
-            <i class="fa-solid fa-headset"></i> 24/7 support
-         </p>
+<section class="featured-servers pt-60 pb-40" *ngIf="!loading && products.length >= 3">
+  <div class="container">
+    <div class="section__header text-center">
+      <span class="subtitle">Our Deals</span>
+      <h3 class="section-title">Don't miss the Best VPS Servers</h3>
+      <p class="section-desc">
+        30-day money-back guarantee | Cancel anytime | 24/7 support
+      </p>
+    </div>
+
+    <div class="featured-grid">
+
+      <!-- LowSpace: Cheapest + Smallest Storage -->
+      <div class="featured-card" *ngIf="getCheapestLowSpace() as plan">
+        <div class="badge-discount">Best Entry</div>
+        <div class="featured-card-header">
+          <h4 class="plan-name">{{ plan.category || 'Low Space Starter' }}</h4>
+          <p class="plan-subtitle">Perfect for testing & small projects</p>
+        </div>
+        <div class="price-section">
+          <div class="price-tag">
+            <span class="currency">US$</span>
+            <span class="amount">{{ plan.price || plan.Price }}</span>
+            <span class="period">/mo</span>
+          </div>
+        </div>
+        <ul class="featured-specs">
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores || plan.Cores }} Core{{ (plan.cores || plan.Cores) > 1 ? 's' : '' }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB || plan.RamGB }} GB RAM</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB || plan.StorageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
+        </ul>
+        <div class="featured-card-footer">
+          <button class="btn-order" (click)="orderNow(plan.id || plan.Id)">
+            <span>Order Now</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="limited-time-deal"><span>Limited time deal</span></div>
+        </div>
       </div>
 
-      <div class="featured-grid">
-         <!-- Card 1 - Premium -->
-         <div class="featured-card">
-            <div class="badge-discount">85% OFF</div>
-
-            <div class="featured-card-header">
-               <h4 class="plan-name">{{ getBestThree()[0]?.category || 'Premium' }}</h4>
-               <p class="plan-subtitle">Everything you need to get started</p>
-            </div>
-
-            <div class="price-section">
-               <span class="price-old">US$ {{ (getBestThree()[0]?.price * 6.67) | number:'1.2-2' }}</span>
-               <div class="price-tag">
-                  <span class="currency">US$</span>
-                  <span class="amount">{{ getBestThree()[0]?.price }}</span>
-                  <span class="period">/mo</span>
-               </div>
-               <span class="price-bonus">+2 months free</span>
-            </div>
-
-            <ul class="featured-specs">
-               <li>
-                  <i class="fa-solid fa-microchip"></i>
-                  <span>{{ getBestThree()[0]?.cores }} CPU Cores</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-memory"></i>
-                  <span>{{ getBestThree()[0]?.ramGB }} GB RAM</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-hard-drive"></i>
-                  <span>{{ getBestThree()[0]?.storageGB }} GB {{ getBestThree()[0]?.storageType }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-gauge-high"></i>
-                  <span>{{ getBestThree()[0]?.connectionSpeed || 'High-Speed Network' }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-shield-check"></i>
-                  <span>Free SSL Certificate</span>
-               </li>
-            </ul>
-
-            <div class="featured-card-footer">
-               <button class="btn-order" (click)="orderNow(getBestThree()[0]?.id)">
-                  <span>Order Now</span>
-                  <i class="fa-solid fa-arrow-right"></i>
-               </button>
-               <div class="limited-time-deal">
-                  <span>Limited time deal</span>
-               </div>
-            </div>
-         </div>
-
-         <!-- Card 2 - Business (MOST POPULAR) -->
-         <div class="featured-card popular">
-            <div class="badge-popular">MOST POPULAR</div>
-            <div class="badge-discount">85% OFF</div>
-
-            <div class="featured-card-header">
-               <h4 class="plan-name">{{ getBestThree()[1]?.category || 'Business' }}</h4>
-               <p class="plan-subtitle">More tools and power for growth</p>
-            </div>
-
-            <div class="price-section">
-               <span class="price-old">US$ {{ (getBestThree()[1]?.price * 6.88) | number:'1.2-2' }}</span>
-               <div class="price-tag">
-                  <span class="currency">US$</span>
-                  <span class="amount">{{ getBestThree()[1]?.price }}</span>
-                  <span class="period">/mo</span>
-               </div>
-               <span class="price-bonus">+2 months free</span>
-            </div>
-
-            <ul class="featured-specs">
-               <li>
-                  <i class="fa-solid fa-microchip"></i>
-                  <span>{{ getBestThree()[1]?.cores }} CPU Cores</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-memory"></i>
-                  <span>{{ getBestThree()[1]?.ramGB }} GB RAM</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-hard-drive"></i>
-                  <span>{{ getBestThree()[1]?.storageGB }} GB {{ getBestThree()[1]?.storageType }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-gauge-high"></i>
-                  <span>{{ getBestThree()[1]?.connectionSpeed || 'Premium Network' }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-shield-check"></i>
-                  <span>Priority Support</span>
-               </li>
-            </ul>
-
-            <div class="featured-card-footer">
-               <button class="btn-order" (click)="orderNow(getBestThree()[1]?.id)">
-                  <span>Order Now</span>
-                  <i class="fa-solid fa-arrow-right"></i>
-               </button>
-               <div class="limited-time-deal">
-                  <span>Limited time deal</span>
-               </div>
-            </div>
-         </div>
-
-         <!-- Card 3 - Cloud Startup -->
-         <div class="featured-card">
-            <div class="badge-discount">73% OFF</div>
-
-            <div class="featured-card-header">
-               <h4 class="plan-name">{{ getBestThree()[2]?.category || 'Cloud Startup' }}</h4>
-               <p class="plan-subtitle">20X more power for your websites with Cloud hosting</p>
-            </div>
-
-            <div class="price-section">
-               <span class="price-old">US$ {{ (getBestThree()[2]?.price * 3.70) | number:'1.2-2' }}</span>
-               <div class="price-tag">
-                  <span class="currency">US$</span>
-                  <span class="amount">{{ getBestThree()[2]?.price }}</span>
-                  <span class="period">/mo</span>
-               </div>
-               <span class="price-bonus">+2 months free</span>
-            </div>
-
-            <ul class="featured-specs">
-               <li>
-                  <i class="fa-solid fa-microchip"></i>
-                  <span>{{ getBestThree()[2]?.cores }} CPU Cores</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-memory"></i>
-                  <span>{{ getBestThree()[2]?.ramGB }} GB RAM</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-hard-drive"></i>
-                  <span>{{ getBestThree()[2]?.storageGB }} GB {{ getBestThree()[2]?.storageType }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-cloud"></i>
-                  <span>Cloud-Powered Infrastructure</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-rocket"></i>
-                  <span>Ultra-Fast Performance</span>
-               </li>
-            </ul>
-
-            <div class="featured-card-footer">
-               <button class="btn-order" (click)="orderNow(getBestThree()[2]?.id)">
-                  <span>Order Now</span>
-                  <i class="fa-solid fa-arrow-right"></i>
-               </button>
-               <div class="limited-time-deal">
-                  <span>Limited time deal</span>
-               </div>
-            </div>
-         </div>
+      <!-- HighSpace: Cheapest + Largest Storage -->
+      <div class="featured-card popular" *ngIf="getCheapestHighSpace() as plan">
+        <div class="badge-popular">MOST STORAGE</div>
+        <div class="featured-card-header">
+          <h4 class="plan-name">{{ plan.category || 'Storage King' }}</h4>
+          <p class="plan-subtitle">Massive storage at lowest price</p>
+        </div>
+        <div class="price-section">
+          <div class="price-tag">
+            <span class="currency">US$</span>
+            <span class="amount">{{ plan.price || plan.Price }}</span>
+            <span class="period">/mo</span>
+          </div>
+        </div>
+        <ul class="featured-specs">
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores || plan.Cores }} Core{{ (plan.cores || plan.Cores) > 1 ? 's' : '' }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB || plan.RamGB }} GB RAM</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB || plan.StorageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
+        </ul>
+        <div class="featured-card-footer">
+          <button class="btn-order" (click)="orderNow(plan.id || plan.Id)">
+            <span>Order Now</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="limited-time-deal"><span>Limited time deal</span></div>
+        </div>
       </div>
-   </div>
+
+      <!-- ByCore: Best Price per Core -->
+      <div class="featured-card" *ngIf="getCheapestByCore() as plan">
+        <div class="badge-discount">Best $/Core</div>
+        <div class="featured-card-header">
+          <h4 class="plan-name">{{ plan.category || 'CPU Champion' }}</h4>
+          <p class="plan-subtitle">Maximum CPU power per dollar</p>
+        </div>
+        <div class="price-section">
+          <div class="price-tag">
+            <span class="currency">US$</span>
+            <span class="amount">{{ plan.price || plan.Price }}</span>
+            <span class="period">/mo</span>
+          </div>
+        </div>
+        <ul class="featured-specs">
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores || plan.Cores }} Core{{ (plan.cores || plan.Cores) > 1 ? 's' : '' }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB || plan.RamGB }} GB RAM</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB || plan.StorageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
+        </ul>
+        <div class="featured-card-footer">
+          <button class="btn-order" (click)="orderNow(plan.id || plan.Id)">
+            <span>Order Now</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="limited-time-deal"><span>Limited time deal</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </section>
 
-<!-- 🔥 ALL SERVERS -->
 <section class="pricing__domain pt-60 pb-120">
    <div class="container-fluid px-4">
       <div class="section__header text-center">
          <span class="subtitle">Complete Range</span>
          <h3 class="section-title d-flex justify-content-center align-items-center gap-3 flex-wrap">
-            <!-- 🔥 FILTER BUTTON -->
             <div class="filter-title-group">
                <span class="filter-title-text">Filter</span>
                <button class="filter-toggle-btn-inline"
@@ -344,7 +254,6 @@
             </div>
             <span class="all-plans-text">All VPS Hosting Plans</span>
          </h3>
-
          <p class="section-desc">
             {{ filtered.length }} server{{ filtered.length !== 1 ? 's' : '' }} found
             <span class="filter-text" *ngIf="getActiveFilterCount() > 0">
@@ -353,13 +262,11 @@
          </p>
       </div>
 
-      <!-- 🔥 LOADING -->
       <div class="loading-state" *ngIf="loading">
          <div class="spinner"></div>
          <p>Loading servers...</p>
       </div>
 
-      <!-- 🔥 ERROR -->
       <div class="error-state" *ngIf="error && !loading">
          <i class="fa-solid fa-exclamation-triangle"></i>
          <h4>Oops! Something went wrong</h4>
@@ -370,7 +277,6 @@
          </button>
       </div>
 
-      <!-- 🔥 NO RESULTS -->
       <div class="no-results-enhanced" *ngIf="!loading && !error && filtered.length === 0">
          <div class="no-results-icon">
             <i class="fa-solid fa-server"></i>
@@ -400,71 +306,54 @@
          </div>
       </div>
 
-      <!-- 🔥 SERVER GRID -->
-      <div class="server-grid" *ngIf="!loading && !error && filtered.length > 0">
-         <div class="server-card-wrapper" *ngFor="let p of filtered; trackBy: trackByFn">
-            <div class="server-card">
-               <div class="server-card-badge">
-                  <span>{{ p.storageType || p.StorageType || 'SSD' }}</span>
+      <div class="featured-grid all-plans-grid" *ngIf="!loading && !error && filtered.length > 0">
+         <div class="featured-card" *ngFor="let p of filtered; trackBy: trackByFn">
+            <div class="badge-discount" *ngIf="p.discount"> {{ p.discount }} OFF</div>
+
+            <div class="featured-card-header">
+               <h4 class="plan-name">{{ p.category || p.Category || 'VPS Plan' }}</h4>
+               <p class="plan-subtitle">High performance &amp; full root access</p>
+            </div>
+
+            <div class="price-section">
+               <div class="price-tag">
+                  <span class="currency">US$</span>
+                  <span class="amount">{{ p.price || p.Price }}</span>
+                  <span class="period">/mo</span>
                </div>
+               <span class="price-bonus" *ngIf="p.bonus">+{{ p.bonus }} months free</span>
+            </div>
 
-               <div class="server-card-header">
-                  <h5 class="server-title">{{ p.category || p.Category || 'VPS Plan' }}</h5>
-               </div>
+            <ul class="featured-specs">
+               <li>
+                  <i class="fa-solid fa-microchip"></i>
+                  <span>{{ p.cores || p.Cores }} CPU Core{{ (p.cores || p.Cores) > 1 ? 's' : '' }}</span>
+               </li>
+               <li>
+                  <i class="fa-solid fa-memory"></i>
+                  <span>{{ p.ramGB || p.RamGB }} GB RAM</span>
+               </li>
+               <li>
+                  <i class="fa-solid fa-hard-drive"></i>
+                  <span>{{ p.storageGB || p.StorageGB }} GB {{ (p.storageType || p.StorageType || 'SSD') | uppercase }}</span>
+               </li>
+               <li *ngIf="p.connectionSpeed || p.ConnectionSpeed">
+                  <i class="fa-solid fa-gauge-high"></i>
+                  <span>{{ p.connectionSpeed || p.ConnectionSpeed }}</span>
+               </li>
+               <li>
+                  <i class="fa-solid fa-shield-check"></i>
+                  <span>Full Root Access</span>
+               </li>
+            </ul>
 
-               <div class="server-card-price">
-                  <span class="price-amount">${{ p.price || p.Price }}</span>
-                  <span class="price-period">/mo</span>
-               </div>
-
-               <ul class="server-specs">
-                  <li>
-                     <span>
-                        <i class="fa-solid fa-microchip"></i>
-                        CPU
-                     </span>
-                     <div class="spec-info">
-                        <span class="spec-label">Cores</span>
-                        <span class="spec-value">{{ p.cores || p.Cores || '—' }}</span>
-                     </div>
-                  </li>
-                  <li>
-                     <span>
-                        <i class="fa-solid fa-memory"></i>
-                        RAM
-                     </span>
-                     <div class="spec-info">
-                        <span class="spec-label">Memory</span>
-                        <span class="spec-value">{{ p.ramGB || p.RamGB || '—' }} GB</span>
-                     </div>
-                  </li>
-                  <li>
-                     <span>
-                        <i class="fa-solid fa-hard-drive"></i>
-                        Storage
-                     </span>
-                     <div class="spec-info">
-                        <span class="spec-label">Disk Space</span>
-                        <span class="spec-value">{{ p.storageGB || p.StorageGB || '—' }} GB</span>
-                     </div>
-                  </li>
-                  <li *ngIf="p.connectionSpeed || p.ConnectionSpeed">
-                     <span>
-                        <i class="fa-solid fa-gauge-high"></i>
-                        Speed
-                     </span>
-                     <div class="spec-info">
-                        <span class="spec-label">Network</span>
-                        <span class="spec-value">{{ p.connectionSpeed || p.ConnectionSpeed }}</span>
-                     </div>
-                  </li>
-               </ul>
-
-               <div class="server-card-footer">
-                  <button class="btn-order-small" (click)="orderNow(p.id || p.Id)">
-                     <span>{{ text('orderNow') }}</span>
-                     <i class="fa-solid fa-arrow-right"></i>
-                  </button>
+            <div class="featured-card-footer">
+               <button class="btn-order" (click)="orderNow(p.id || p.Id)">
+                  <span>Order Now</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+               </button>
+               <div class="limited-time-deal" *ngIf="p.limited">
+                  <span>Limited time deal</span>
                </div>
             </div>
          </div>
