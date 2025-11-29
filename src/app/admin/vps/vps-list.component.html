@@ -1,37 +1,228 @@
 <div class="admin-shell">
   <app-admin-sidebar></app-admin-sidebar>
-  <div class="admin-area">
+
+  <div class="admin-content">
     <app-admin-topbar></app-admin-topbar>
-    <main class="admin-main">
-    <div class="top">
-      <h1>VPS Plans</h1>
-      <button class="btn primary" (click)="addNew()">Add VPS</button>
-    </div>
 
-    <div *ngIf="loading">Loading...</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <div>
+          <h1 class="title">VPS Plans Management</h1>
+          <p class="subtitle">Create and manage available VPS hosting plans</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-primary" (click)="openVpsModal()">
+            <i class="fas fa-plus"></i> Add New Plan
+          </button>
+        </div>
+      </header>
 
-    <table *ngIf="!loading && vps.length" class="items-table">
-      <thead>
-        <tr><th>Id</th><th>Region</th><th>Cores</th><th>RAM</th><th>Storage</th><th>Price</th><th>Category</th><th>Actions</th></tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let p of vps">
-          <td>{{ p.id }}</td>
-          <td>{{ p.region || p.Region }}</td>
-          <td>{{ p.cores || p.Cores }}</td>
-          <td>{{ p.ramGB || p.RamGB }}</td>
-          <td>{{ p.storageGB || p.StorageGB }} {{ p.storageType || p.StorageType }}</td>
-          <td>{{ p.price || p.Price }}</td>
-          <td>{{ p.category || p.Category }}</td>
-          <td>
-            <button class="btn" (click)="edit(p)">Edit</button>
-            <button class="btn danger" (click)="delete(p)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="card">
+        <div class="card-body p-0">
 
-    <div *ngIf="!loading && !vps.length">No VPS plans found.</div>
-  </main>
+          <!-- Loading / Error / Empty States -->
+          <div *ngIf="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading VPS plans...</p>
+          </div>
+
+          <div *ngIf="error" class="alert-danger m-4">
+            {{ error }}
+          </div>
+
+          <div *ngIf="!loading && !vps.length && !error" class="empty-state">
+            <h3>No VPS plans found</h3>
+            <p>Click "Add New Plan" to create your first plan.</p>
+          </div>
+
+          <!-- VPS Table -->
+          <div *ngIf="vps.length">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Plan Name</th>
+                  <th>Region</th>
+                  <th>Specifications</th>
+                  <th>Price</th>
+                  <th>Category</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let plan of vps; trackBy: trackByPlanId">
+                  <td><code class="id-badge">#{{ plan.id }}</code></td>
+                  <td>
+                    <div class="user-info">
+                      <div class="name">{{ plan.name || 'Unnamed Plan' }}</div>
+                      <div class="email-muted">{{ plan.description || '—' }}</div>
+                    </div>
+                  </td>
+                  <td>{{ plan.region || '—' }}</td>
+                  <td>
+                    <strong>{{ plan.cores }} vCPU</strong> •
+                    {{ plan.ramGB }} GB RAM •
+                    {{ plan.storageGB }} GB {{ plan.storageType }}
+                  </td>
+                  <td><strong>${{ plan.price | number:'1.2-2' }}/mo</strong></td>
+                  <td>
+                    <span class="badge"
+                          [class.badge-admin]="plan.category === 'HighSpace'"
+                          [class.badge-moderator]="plan.category === 'ByCore'"
+                          [class.badge-customer]="plan.category === 'LowSpace'">
+                      {{ plan.category }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions-group">
+                      <button class="btn-icon" (click)="openVpsModal(plan)" title="Edit">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn-icon danger" (click)="confirmDelete(plan)" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
+
+<!-- ==================== MODALS ==================== -->
+<ng-container>
+  <!-- Backdrop -->
+  <div class="modal-backdrop"
+       *ngIf="modalOpen || deleteConfirmOpen"
+       (click)="closeAllModals()">
+  </div>
+
+  <!-- Create / Edit Modal -->
+  <div class="modal"
+       *ngIf="modalOpen"
+       (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ selectedPlan ? 'Edit VPS Plan' : 'Create New VPS Plan' }}</h2>
+        <button class="btn-icon" (click)="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form [formGroup]="vpsForm" (ngSubmit)="savePlan()" class="modal-body">
+        <div class="form-grid">
+
+          <!-- Plan Name -->
+          <div class="form-group">
+            <label>Plan Name <span class="required">*</span></label>
+            <input type="text" formControlName="name" placeholder="e.g. Starter VPS, Pro Cloud" />
+          </div>
+
+          <!-- Region Select -->
+          <div class="form-group">
+            <label>Region <span class="required">*</span></label>
+            <select formControlName="region" (change)="onRegionChange()">
+              <option value="france">France</option>
+              <option value="germany">Germany</option>
+              <option value="europe">Europe</option>
+              <option value="custom">Custom (Enter below)</option>
+            </select>
+          </div>
+
+          <!-- Custom Region (shown only when Custom selected) -->
+          <div class="form-group" *ngIf="vpsForm.get('region')?.value === 'custom'">
+            <label>Custom Region Name <span class="required">*</span></label>
+            <input type="text" formControlName="customRegion" placeholder="e.g. Singapore, USA-West, Japan, Australia" />
+          </div>
+
+          <!-- vCPU Cores -->
+          <div class="form-group">
+            <label>vCPU Cores <span class="required">*</span></label>
+            <input type="number" formControlName="cores" placeholder="2" min="1" />
+          </div>
+
+          <!-- RAM -->
+          <div class="form-group">
+            <label>RAM (GB) <span class="required">*</span></label>
+            <input type="number" formControlName="ramGB" placeholder="4" min="1" />
+          </div>
+
+          <!-- Storage -->
+          <div class="form-group">
+            <label>Storage (GB) <span class="required">*</span></label>
+            <input type="number" formControlName="storageGB" placeholder="50" min="1" />
+          </div>
+
+          <!-- Storage Type -->
+          <div class="form-group">
+            <label>Storage Type</label>
+            <select formControlName="storageType">
+              <option value="SSD">SSD</option>
+              <option value="HDD">HDD</option>
+            </select>
+          </div>
+
+          <!-- Price -->
+          <div class="form-group">
+            <label>Price ($/mo) <span class="required">*</span></label>
+            <input type="number" step="0.01" formControlName="price" placeholder="9.99" />
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label>Category <span class="required">*</span></label>
+            <select formControlName="category">
+              <option value="LowSpace">LowSpace</option>
+              <option value="HighSpace">HighSpace</option>
+              <option value="ByCore">ByCore</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Description -->
+        <div class="form-group mt-4">
+          <label>Description (optional)</label>
+          <textarea formControlName="description" rows="3" placeholder="High-performance VPS for developers, businesses, etc..."></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" (click)="closeModal()" [disabled]="saving">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="saving || vpsForm.invalid">
+            <span *ngIf="saving" class="spinner-small"></span>
+            {{ selectedPlan ? 'Save Changes' : 'Create Plan' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal modal-sm"
+       *ngIf="deleteConfirmOpen"
+       (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Delete VPS Plan?</h3>
+        <button class="btn-icon" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body text-center py-5">
+        <i class="fas fa-exclamation-triangle text-danger" style="font-size: 56px;"></i>
+        <p class="mt-4">Permanently delete this VPS plan?</p>
+        <strong>{{ deleteTarget?.name || 'This plan' }}</strong>
+        <p class="text-muted mt-2">This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-outline" (click)="closeAllModals()">Cancel</button>
+        <button class="btn-primary bg-danger" (click)="deleteConfirmed()">Delete Forever</button>
+      </div>
+    </div>
+  </div>
+</ng-container>

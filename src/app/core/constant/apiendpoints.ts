@@ -11,12 +11,12 @@ export const API_ENDPOINTS = {
   },
 
   USERS: {
-    LIST: `${environment.apiUrl}/Users`,
-    SINGLE: (id: string) => `${environment.apiUrl}/Users/${id}`,
-    CREATE: `${environment.apiUrl}/Users`,
-    UPDATE: (id: string) => `${environment.apiUrl}/Users/${id}`,
-    DELETE: (id: string) => `${environment.apiUrl}/Users/${id}`,
-  },
+      LIST: `${environment.apiUrl}/Users`,
+      SINGLE: (id: string | number) => `${environment.apiUrl}/Users/${id}`,
+      CREATE: `${environment.apiUrl}/Users`,
+      UPDATE: (id: string | number) => `${environment.apiUrl}/Users/${id}`,
+      DELETE: (id: string | number) => `${environment.apiUrl}/Users/${id}`,
+    },
 
   VPS: {
     LIST: `${environment.apiUrl}/VPS`,

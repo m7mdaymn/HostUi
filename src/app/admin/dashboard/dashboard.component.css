@@ -1,7 +1,3 @@
-/* ===================================================== */
-/*        COMPLETE ADMIN DASHBOARD + SIDEBAR CSS         */
-/*        Modern 2025 Design - Fully Responsive          */
-/* ===================================================== */
 
 .admin-shell {
   display: flex;
@@ -11,7 +7,6 @@
   position: relative;
 }
 
-/* ================== SIDEBAR (COLLAPSIBLE) ================== */
 .admin-sidebar {
   width: 260px;
   height: 100vh;
@@ -195,7 +190,6 @@
   opacity: 1;
 }
 
-/* ================== MAIN CONTENT (RESPECTS SIDEBAR) ================== */
 .admin-content {
   flex: 1;
   min-width: 0;
@@ -218,7 +212,6 @@
   transition: all 0.4s ease;
 }
 
-/* ================== HEADER ================== */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -284,7 +277,6 @@
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
-/* ================== STATS GRID ================== */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -425,7 +417,6 @@
   border: 2px dashed #bae6fd;
 }
 
-/* ================== RECENT USERS ================== */
 .user-item {
   display: flex;
   align-items: center;
@@ -504,4 +495,96 @@
   .dashboard-header { flex-direction: column; align-items: stretch; }
   .header-actions { justify-content: stretch; }
   .btn-outline, .btn-primary { justify-content: center; }
+}
+html[dir="rtl"] app-admin-layout,
+html[dir="rtl"] [class*="admin"],
+html[dir="rtl"] .admin-* {
+  direction: ltr !important;
+}
+
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  position: relative;
+  direction: ltr !important;
+}
+
+.admin-sidebar {
+  width: 260px;
+  height: 100vh;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  direction: ltr !important;        /* FORCE LTR */
+}
+
+.admin-sidebar.collapsed {
+  width: 78px;
+}
+
+/* ... all your beautiful existing styles stay exactly the same ... */
+
+/* ================== MAIN CONTENT ================== */
+.admin-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  direction: ltr !important;        /* FORCE LTR */
+}
+
+.admin-sidebar.collapsed ~ .admin-content {
+  margin-left: 78px;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 32px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  transition: all 0.4s ease;
+  direction: ltr !important;
+}
+
+
+
+.admin-shell,
+.admin-shell *,
+.admin-sidebar,
+.admin-sidebar *,
+.admin-content,
+.admin-content *,
+.dashboard-main,
+.dashboard-main * {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+html[dir="rtl"] .admin-shell,
+html[dir="rtl"] .admin-shell *,
+html[dir="rtl"] .admin-shell,
+[dir="rtl"] .admin-shell * {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+app-admin-layout,
+app-admin-layout * {
+  direction: ltr !important;
+}
+
+body .admin-shell {
+  direction: ltr !important;
 }

@@ -1,3 +1,4 @@
+// src/app/core/services/translate.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -49,8 +50,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     tabListItem2: 'Update Web Hosting Collaboration',
     tabListItem3: 'Creative Web Domain Collaboration',
     premiumHosting: 'Premium <span class="text-base">Hosting</span>',
-    premiumDesc: 'Choose the hosting plan that suits your business requirements and scale as you grow.'
-    ,
+    premiumDesc: 'Choose the hosting plan that suits your business requirements and scale as you grow.',
     headerAccount: 'Account',
     signIn: 'Sign In',
     signUp: 'Sign Up',
@@ -59,7 +59,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     footerDedicated: 'Dedicated Servers',
     footerPrivacy: 'Privacy',
     footerTerms: 'Terms & Conditions',
-    copyrightBy: 'Copyright © 2025 | Designed by <a href="https://wa.me/+201029907297">Nova Node</a>'
+    copyrightBy: 'Copyright © 2025 | Designed by <a href="https://wa.me/+201029907297" class="underline">Nova Node</a>'
   },
   ar: {
     home: 'الرئيسية',
@@ -109,36 +109,47 @@ const DICT: Record<Lang, Record<string, string>> = {
     premiumDesc: 'اختر خطة الاستضافة التي تناسب متطلبات عملك وقم بالتوسع عند النمو.',
     headerAccount: 'الحساب',
     signIn: 'تسجيل الدخول',
-    signUp: 'انشاء حساب',
+    signUp: 'إنشاء حساب',
     footerServices: 'الخدمات',
     footerVpsPlans: 'خطط VPS',
     footerDedicated: 'الخوادم المخصصة',
     footerPrivacy: 'الخصوصية',
     footerTerms: 'الشروط والأحكام',
-    copyrightBy: 'حقوق النشر © 2025 | مصمم بواسطة <a href="https://wa.me/+201029907297">نوفا نود</a>'
+    copyrightBy: 'حقوق النشر © 2025 | مصمم بواسطة <a href="https://wa.me/+201029907297" class="underline">نوفا نود</a>'
   }
 };
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class TranslateService {
-  private lang$ = new BehaviorSubject<Lang>((localStorage.getItem('lang') as Lang) || 'en');
+  private lang$ = new BehaviorSubject<Lang>('en');
   lang = this.lang$.asObservable();
 
-  get current() { return this.lang$.value; }
-
-  setLang(l: Lang) {
-    this.lang$.next(l);
-    localStorage.setItem('lang', l);
-    this.applyDirection(l);
+  constructor() {
+    // Read saved language or default to 'en'
+    const savedLang = (localStorage.getItem('lang') as Lang) || 'en';
+    this.lang$.next(savedLang);
+    this.applyDirection(savedLang); // Critical: Apply direction on app start!
   }
 
-  t(key: string) {
-    return DICT[this.current]?.[key] || DICT['en'][key] || key;
+  get current(): Lang {
+    return this.lang$.value;
   }
 
-  private applyDirection(l: Lang) {
-    const dir = l === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = l;
+  setLang(lang: Lang) {
+    this.lang$.next(lang);
+    localStorage.setItem('lang', lang);
+    this.applyDirection(lang);
+  }
+
+  t(key: string): string {
+    return DICT[this.current]?.[key] ?? DICT['en'][key] ?? key;
+  }
+
+  private applyDirection(lang: Lang) {
+    const dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
     document.documentElement.dir = dir;
   }
 }

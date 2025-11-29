@@ -43,35 +43,12 @@ export const routes: Routes = [
     title: 'Admin - VPS'
   },
   {
-    path: 'admin/vps/new',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/vps/vps-edit.component').then(m => m.VpsEditComponent),
-    title: 'Admin - Add VPS'
-  },
-  {
-    path: 'admin/vps/:id/edit',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/vps/vps-edit.component').then(m => m.VpsEditComponent),
-    title: 'Admin - Edit VPS'
-  },
-  {
     path: 'admin/dedicated',
     canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/dedicated/dedicated-list.component').then(m => m.DedicatedListComponent),
+    loadComponent: () => import('./admin/dedicated/dedicated.component').then(m => m.DedicatedComponent),
     title: 'Admin - Dedicated'
   },
-  {
-    path: 'admin/dedicated/new',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/dedicated/dedicated-edit.component').then(m => m.DedicatedEditComponent),
-    title: 'Admin - Add Dedicated'
-  },
-  {
-    path: 'admin/dedicated/:id/edit',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/dedicated/dedicated-edit.component').then(m => m.DedicatedEditComponent),
-    title: 'Admin - Edit Dedicated'
-  },
+
   {
     path: 'admin/promos',
     canActivate: [AdminGuard],
@@ -79,34 +56,10 @@ export const routes: Routes = [
     title: 'Admin - Promos'
   },
   {
-    path: 'admin/promos/new',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/promos/promo-edit.component').then(m => m.PromoEditComponent),
-    title: 'Admin - New Promo'
-  },
-  {
-    path: 'admin/promos/:id/edit',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/promos/promo-edit.component').then(m => m.PromoEditComponent),
-    title: 'Admin - Edit Promo'
-  },
-  {
     path: 'admin/packages',
     canActivate: [AdminGuard],
     loadComponent: () => import('./admin/packages/packages-list.component').then(m => m.PackagesListComponent),
     title: 'Admin - Packages'
-  },
-  {
-    path: 'admin/packages/new',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/packages/package-edit.component').then(m => m.PackageEditComponent),
-    title: 'Admin - New Package'
-  },
-  {
-    path: 'admin/packages/:id/edit',
-    canActivate: [AdminGuard],
-    loadComponent: () => import('./admin/packages/package-edit.component').then(m => m.PackageEditComponent),
-    title: 'Admin - Edit Package'
   },
   {
     path: 'vps',

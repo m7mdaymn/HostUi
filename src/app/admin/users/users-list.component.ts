@@ -3,7 +3,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { UsersService } from '../../core/services/users.service';
+import { UsersService, User } from '../../core/services/users.service';
 import { ToastService } from '../../core/services/toast.service';
 import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
 import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
@@ -22,17 +22,15 @@ import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.compon
 })
 export class UsersListComponent implements OnInit {
   loading = true;
-  users: any[] = [];
+  users: User[] = [];
   error: string | null = null;
 
   modalOpen = false;
-  quickModalOpen = false;
   deleteConfirmOpen = false;
-  selectedUser: any = null;
-  deleteTarget: any = null;
+  selectedUser: User | null = null;
+  deleteTarget: User | null = null;
   saving = false;
 
-  quickUser: any = {};
   userForm!: FormGroup;
 
   constructor(
@@ -45,7 +43,7 @@ export class UsersListComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
-      role: ['customer', Validators.required],
+      isAdmin: [false],
       isBlocked: [false]
     });
   }
@@ -57,74 +55,48 @@ export class UsersListComponent implements OnInit {
   loadUsers(): void {
     this.loading = true;
     this.error = null;
-    this.users = [];
 
     this.usersService.list().subscribe({
-      next: (response: any) => {
-        let list: any[] = [];
-
-        const extractArray = (data: any): any[] => {
-          if (Array.isArray(data)) return data;
-          if (data && typeof data === 'object') {
-            if (data.data && Array.isArray(data.data)) return data.data;
-            if (data.users && Array.isArray(data.users)) return data.users;
-            if (data.result && Array.isArray(data.result)) return data.result;
-            const found = Object.values(data).find(Array.isArray);
-            return found || [];
-          }
-          return [];
-        };
-
-        if (Array.isArray(response)) {
-          list = response;
-        } else if (response && typeof response === 'object') {
-          list = 'data' in response ? extractArray(response.data) : extractArray(response);
-        }
-
-        this.users = list.map((u: any) => ({
-          id: u.id ?? u.Id ?? u._id ?? '',
-          name: u.name ?? u.Name ?? u.fullName ?? u.username ?? 'Unknown',
-          email: u.email ?? u.Email ?? '',
-          phoneNumber: u.phone ?? u.phoneNumber ?? u.PhoneNumber ?? u.mobile ?? '',
-          role: String(u.role ?? u.Role ?? 'customer').toLowerCase(),
-          isBlocked: !!u.isBlocked || !!u.IsBlocked || u.status === 'blocked',
-          createdAt: u.createdAt ?? u.CreatedAt ?? u.date ?? new Date().toISOString(),
+      next: (users: User[]) => {
+        this.users = users.map(u => ({
+          ...u,
+          role: this.normalizeRole(u.role).toString()
         }));
 
-        if (this.users.length === 0) {
-          this.error = 'No users found.';
-        }
-
         this.loading = false;
+        if (this.users.length === 0) this.error = 'No users found.';
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Load users failed:', err);
-        this.error = err?.error?.message || 'Failed to load users';
+        this.error = err.message || 'Failed to load users';
         this.loading = false;
         this.cdr.detectChanges();
       }
     });
   }
 
-  openUserModal(user?: any) {
-    this.selectedUser = user || null;
+  private normalizeRole(role: any): number {
+    return role === 1 || role === '1' || role === 'admin' || role === 'Admin' ? 1 : 0;
+  }
+
+  isAdmin(user: User): boolean {
+    return this.normalizeRole(user.role) === 1;
+  }
+
+  openUserModal(user?: User) {
+    this.selectedUser = user ? { ...user } : null;
 
     if (user) {
       this.userForm.patchValue({
-        name: user.name,
-        email: user.email,
+        name: user.name || '',
+        email: user.email || '',
         phone: user.phoneNumber || '',
-        role: user.role,
-        isBlocked: user.isBlocked
+        isAdmin: this.isAdmin(user),
+        isBlocked: !!user.isBlocked
       });
     } else {
       this.userForm.reset({
-        name: '',
-        email: '',
-        phone: '',
-        role: 'customer',
-        isBlocked: false
+        name: '', email: '', phone: '', isAdmin: false, isBlocked: false
       });
     }
     this.modalOpen = true;
@@ -137,121 +109,58 @@ export class UsersListComponent implements OnInit {
 
   saveUser() {
     if (this.userForm.invalid || this.saving) return;
-
     this.saving = true;
+
     const v = this.userForm.value;
-
-    // PascalCase payload for backend
     const payload: any = {
-      Name: v.name?.trim(),
-      Email: v.email?.trim(),
-      Role: v.role,
-      IsBlocked: v.isBlocked === true
+      Name: v.name.trim(),
+      Email: v.email.trim(),
+      Role: v.isAdmin ? 1 : 0,
+      IsBlocked: v.isBlocked,
+      PhoneNumber: v.phone?.trim() || null
     };
-
-    if (v.phone?.trim()) {
-      payload.PhoneNumber = v.phone.trim();
-    }
 
     if (!this.selectedUser) {
       payload.Password = 'Welcome123!';
     }
 
-    console.log('Sending payload →', payload);
-
     const request = this.selectedUser
-      ? this.usersService.update(this.selectedUser.id, payload)
+      ? this.usersService.update(this.selectedUser.id!, payload)
       : this.usersService.create(payload);
 
     request.subscribe({
       next: () => {
-        this.toast.show(
-          this.selectedUser ? 'User updated successfully' : 'User created successfully',
-          'success'
-        );
+        this.toast.show(this.selectedUser ? 'User updated!' : 'User created!', 'success');
         this.closeModal();
         this.loadUsers();
         this.saving = false;
       },
       error: (err) => {
-        console.error('Save failed:', err);
-        const msg =
-          err?.error?.errors
-            ? Object.values(err.error.errors).flat().join(', ')
-            : err?.error?.message || err?.error?.title || 'Failed to save user';
-        this.toast.show(msg, 'error');
+        this.toast.show(err.message || 'Save failed', 'error');
         this.saving = false;
       }
     });
   }
 
-  openQuickEdit(user: any) {
-    this.quickUser = { ...user };
-    this.quickModalOpen = true;
-  }
-
-  saveQuick() {
-    if (this.saving) return;
-    this.saving = true;
-
-    // FIXED: Include all required fields
-    const payload = {
-      Name: this.quickUser.name,
-      Email: this.quickUser.email,
-      Role: this.quickUser.role,
-      IsBlocked: this.quickUser.isBlocked,
-      PhoneNumber: this.quickUser.phoneNumber || null
-    };
-
-    console.log('Quick Edit Payload:', payload);
-
-    this.usersService.update(this.quickUser.id, payload).subscribe({
-      next: () => {
-        this.toast.show('User updated successfully', 'success');
-        this.quickModalOpen = false;
-        this.loadUsers();
-        this.saving = false;
-      },
-      error: (err) => {
-        console.error('Quick edit failed:', err);
-        const msg = err?.error?.errors
-          ? Object.values(err.error.errors).flat().join(', ')
-          : err?.error?.message || 'Update failed';
-        this.toast.show(msg, 'error');
-        this.saving = false;
-      }
-    });
-  }
-
-  toggleBlock(user: any) {
-    // FIXED: Include all required fields
-    const payload = {
+  toggleBlock(user: User) {
+    const payload: any = {
       Name: user.name,
       Email: user.email,
-      Role: user.role,
-      IsBlocked: !user.isBlocked,
-      PhoneNumber: user.phoneNumber || null
+      PhoneNumber: user.phoneNumber || null,
+      Role: this.isAdmin(user) ? 1 : 0,
+      IsBlocked: !user.isBlocked
     };
 
-    console.log('Toggle Block Payload:', payload);
-
-    this.usersService.update(user.id, payload).subscribe({
+    this.usersService.update(user.id!, payload).subscribe({
       next: () => {
-        this.toast.show(
-          user.isBlocked ? 'User unblocked successfully' : 'User blocked successfully',
-          'success'
-        );
+        this.toast.show(user.isBlocked ? 'User unblocked' : 'User blocked', 'success');
         this.loadUsers();
       },
-      error: (err) => {
-        console.error('Toggle block failed:', err);
-        const msg = err?.error?.message || 'Action failed';
-        this.toast.show(msg, 'error');
-      }
+      error: (err) => this.toast.show(err.message || 'Failed', 'error')
     });
   }
 
-  confirmDelete(user: any) {
+  confirmDelete(user: User) {
     this.deleteTarget = user;
     this.deleteConfirmOpen = true;
   }
@@ -259,33 +168,27 @@ export class UsersListComponent implements OnInit {
   deleteConfirmed() {
     if (!this.deleteTarget) return;
 
-    this.usersService.delete(this.deleteTarget.id).subscribe({
+    this.usersService.delete(this.deleteTarget.id!).subscribe({
       next: () => {
-        this.toast.show('User deleted successfully', 'success');
+        this.toast.show('User deleted', 'success');
         this.deleteConfirmOpen = false;
         this.deleteTarget = null;
         this.loadUsers();
       },
-      error: (err) => {
-        console.error('Delete failed:', err);
-        this.toast.show(err?.error?.message || 'Delete failed', 'error');
-      }
+      error: (err) => this.toast.show(err.message || 'Delete failed', 'error')
     });
   }
 
   closeAllModals() {
-    this.modalOpen = false;
-    this.quickModalOpen = false;
-    this.deleteConfirmOpen = false;
-    this.selectedUser = null;
-    this.deleteTarget = null;
+    this.modalOpen = this.deleteConfirmOpen = false;
+    this.selectedUser = this.deleteTarget = null;
   }
 
-  getInitial(u: any): string {
+  getInitial(u: User): string {
     return (u.name || u.email || '?').charAt(0).toUpperCase();
   }
 
-  formatDate(date: any): string {
+  formatDate(date: string | null | undefined): string {
     if (!date) return '—';
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -296,7 +199,7 @@ export class UsersListComponent implements OnInit {
     });
   }
 
-  trackByUserId(index: number, user: any): any {
+  trackByUserId(_: number, user: User): any {
     return user.id;
   }
 }
