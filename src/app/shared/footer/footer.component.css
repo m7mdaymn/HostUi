@@ -13,7 +13,7 @@
 }
 
 .payment-title {
-    color: #fff;
+    color: black;
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 25px;
@@ -144,5 +144,111 @@
     footer .partners img {
         max-height: 40px;
         margin: 0.5rem;
+    }
+}
+.payment-methods-container {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.payment-title {
+    color: black;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.payment-logos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.payment-item {
+    background:transparent;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+}
+
+.payment-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.payment-logo {
+    max-height: 35px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.payment-item:hover .payment-logo {
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1199px) {
+    .payment-logos-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .payment-methods-container {
+        margin-top: 25px;
+        padding-top: 20px;
+    }
+
+    .payment-logos-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .payment-item {
+        min-height: 45px;
+        padding: 8px;
+    }
+
+    .payment-logo {
+        max-height: 30px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .payment-methods-container {
+        margin-top: 20px;
+        padding-top: 15px;
+    }
+
+    .payment-title {
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+
+    .payment-logos-grid {
+        gap: 6px;
+    }
+
+    .payment-item {
+        min-height: 40px;
+        padding: 6px;
+        border-radius: 4px;
+    }
+
+    .payment-logo {
+        max-height: 25px;
     }
 }

@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://hostapi.runasp.net/api'
+  apiUrl: 'https://hostapi.runasp.net/api'
 };
