@@ -145,6 +145,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     message: 'Message',
     writeYourMessage: 'Write your message here...',
     sendMessage: 'Send Message',
+    contactUsNow: 'Contact Us Now',
 
   },
   ar: {
@@ -315,6 +316,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     message: 'الرسالة',
     writeYourMessage: 'اكتب رسالتك هنا...',
     sendMessage: 'إرسال الرسالة',
+    contactUsNow: 'تواصل معنا الآن',
 
 
   }
