@@ -1,0 +1,384 @@
+:host {
+  --primary: #3a51c1;
+  --cyan: #60d4e3;
+  --success: #10b981;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --dark: #111827;
+  --light: #fff;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* { box-sizing: border-box; }
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.vps-carousel-section {
+  padding: 50px 0;
+  background: #fff;
+  overflow: hidden;
+  border-top: #60d4e3 1px solid;
+  border-bottom: #60d4e3 1px solid;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.section-header h2 {
+  font-size: 42px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 16px;
+}
+
+.section-header p {
+  font-size: 18px;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-5 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--gray-200);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.vps-carousel-wrapper {
+  position: relative;
+  margin: 0 -20px;
+  padding: 0 60px;
+}
+
+.vps-carousel-container {
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.vps-carousel-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 30px;
+}
+
+.vps-card-hostinger {
+  flex: 0 0 360px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.vps-card-hostinger:hover {
+  transform: translateY(-15px);
+  box-shadow: 0 30px 70px rgba(58, 81, 193, 0.25);
+  border-color: var(--primary);
+  background-color: #64edff1e;
+  z-index: 1000;
+}
+
+.popular-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--success);
+  color: white;
+  padding: 8px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 0 0 16px 16px;
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.vps-card-body {
+  padding: 40px 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.vps-plan-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 12px;
+}
+
+.vps-plan-desc {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.vps-price-block {
+  margin-bottom: 32px;
+}
+
+.price-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.price-main .currency {
+  font-size: 28px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.price-main .amount {
+  font-size: 58px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.price-main .period {
+  font-size: 18px;
+  color: #888;
+  font-weight: 600;
+}
+
+.price-note {
+  font-size: 14px;
+  color: #888;
+}
+
+.price-note del {
+  color: #aaa;
+}
+
+.save {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.vps-specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.vps-specs-list li {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vps-specs-list i {
+  color: var(--primary);
+  font-size: 18px;
+  width: 24px;
+}
+
+.vps-specs-list strong {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.vps-order-btn-hostinger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  background: #f1f5f9;
+  color: #1a1a1a;
+}
+
+.vps-order-btn-hostinger.featured {
+  background: var(--primary);
+  color: white;
+}
+
+.vps-order-btn-hostinger:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(58, 81, 193, 0.3);
+}
+
+.vps-order-btn-hostinger.featured:hover {
+  background: #2a41a1;
+}
+
+.bonus-text {
+  font-size: 14px;
+  color: var(--success);
+  font-weight: 600;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  color: var(--primary);
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  transition: var(--transition);
+}
+
+.prev-btn {
+  left: 10px;
+}
+
+.next-btn {
+  right: 10px;
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 15px 40px rgba(58, 81, 193, 0.3);
+}
+
+.carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.vps-all-btn-wrapper {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.vps-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 40px;
+  background: var(--primary);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(58, 81, 193, 0.25);
+}
+
+.vps-all-btn:hover {
+  background: #2a41a1;
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(58, 81, 193, 0.35);
+}
+
+.vps-all-btn i {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.vps-all-btn:hover i {
+  transform: translateX(6px);
+}
+
+@media (max-width: 1200px) {
+  .vps-card-hostinger {
+    flex: 0 0 340px;
+  }
+}
+
+@media (max-width: 992px) {
+  .vps-card-hostinger {
+    flex: 0 0 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vps-carousel-section {
+    padding: 60px 0;
+  }
+
+  .section-header h2 {
+    font-size: 32px;
+  }
+
+  .vps-carousel-wrapper {
+    padding: 0 50px;
+  }
+
+  .vps-card-hostinger {
+    flex: 0 0 100%;
+  }
+
+  .carousel-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+  .vps-all-btn {
+
+  padding: 16px 0px;
+
+}
+}
+
+@media (max-width: 480px) {
+  .vps-card-body {
+    padding: 32px 20px;
+  }
+
+  .price-main .amount {
+    font-size: 48px;
+  }
+}

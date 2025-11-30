@@ -2,11 +2,13 @@ import { Component, AfterViewInit, inject } from '@angular/core';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { VpsCarouselComponent } from "../../shared/vps-carousel/vps-carousel.component";
+import { DedicatedCarouselComponent } from "../../shared/dedicated-carousel/dedicated-carousel.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, VpsCarouselComponent, DedicatedCarouselComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

@@ -1,10 +1,9 @@
-import { Component, OnInit, inject, HostListener } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '../../core/services/translate.service';
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
-import { VpsService } from '../../core/services/vps.service';
+import { VpsCarouselComponent } from '../../shared/vps-carousel/vps-carousel.component';
 
 interface Promo {
   id?: any;
@@ -13,132 +12,98 @@ interface Promo {
   price?: string | number;
   oldPrice?: string | number;
   features?: string[];
-  image?: string;
   link?: string;
-}
-
-interface VPS {
-  id?: any;
-  name?: string;
-  description?: string;
-  cpu?: string;
-  ram?: string;
-  storage?: string;
-  bandwidth?: string;
-  price?: string | number;
-  oldPrice?: string | number;
-  link?: string;
-  featured?: boolean;
 }
 
 @Component({
   selector: 'app-promos',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, VpsCarouselComponent],
   templateUrl: './promos.component.html',
   styleUrls: ['./promos.component.css']
 })
 export class PromosComponent implements OnInit {
-  loading = false;
-  error = '';
   promos: Promo[] = [];
-  selectedPlan: any = null;
-
-  vpsLoading = false;
-  vpsError = '';
-  vpsServers: VPS[] = [];
-
-  currentSlideIndex = 0;
-  visibleItems = 3;
+  loading = false;
+  error: string | null = null;
+  whatsappLink = '';
 
   private translate = inject(TranslateService);
-
-  constructor(private http: HttpClient, private vpsService: VpsService) {}
+  private http = inject(HttpClient);
 
   text(key: string): string {
     return this.translate.t(key);
   }
 
   ngOnInit(): void {
-    this.updateVisibleItems();
+    this.updateWhatsAppLink();
     this.loadPromos();
-    this.loadVPS();
+
+    this.translate.lang.subscribe(() => {
+      this.updateWhatsAppLink();
+    });
   }
 
-  @HostListener('window:resize')
-  updateVisibleItems(): void {
-    const w = window.innerWidth;
-    this.visibleItems = w <= 768 ? 1 : w <= 1024 ? 2 : 3;
-    this.currentSlideIndex = Math.min(this.currentSlideIndex, Math.max(0, this.vpsServers.length - this.visibleItems));
+  private updateWhatsAppLink(): void {
+    const msg = this.translate.current === 'ar'
+      ? 'مرحباً، أنا مهتم بالعروض والخطط الشهرية'
+      : "Hello, I'm interested in your monthly hosting plans and promos!";
+    this.whatsappLink = `https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`;
   }
 
   loadPromos(): void {
     this.loading = true;
-    this.error = '';
-    this.http.get<any>(API_ENDPOINTS.PROMOS.LIST).subscribe({
-      next: (res) => {
-        this.promos = Array.isArray(res) ? res : (res.data || []);
+    this.error = null;
+
+    this.http.get(API_ENDPOINTS.PROMOS.LIST).subscribe({
+      next: (res: any) => {
+        this.promos = Array.isArray(res) ? res : (res?.data || []);
         this.loading = false;
       },
       error: () => {
-        this.error = 'Unable to load plans. Please try again later.';
+        this.error = this.text('unableToLoadPromos') || 'Unable to load plans. Please try again later.';
         this.loading = false;
       }
     });
   }
 
-  loadVPS(): void {
-    this.vpsLoading = true;
-    this.vpsError = '';
-    this.currentSlideIndex = 0;
-
-    this.vpsService.productsList().subscribe({
-      next: (res) => {
-        this.vpsServers = Array.isArray(res) ? res : (res.data || []);
-        this.vpsLoading = false;
-        this.updateVisibleItems();
-      },
-      error: () => {
-        this.vpsError = 'Unable to load VPS servers.';
-        this.vpsLoading = false;
-      }
-    });
-  }
-
-  slideLeft(): void {
-    if (this.currentSlideIndex > 0) this.currentSlideIndex--;
-  }
-
-  slideRight(): void {
-    if (this.currentSlideIndex < this.vpsServers.length - this.visibleItems) this.currentSlideIndex++;
+  retryLoadPromos(): void {
+    this.loadPromos();
   }
 
   calculateSavePercent(current: any, old: any): number {
-    const c = Number(current);
-    const o = Number(old);
+    const c = parseFloat(String(current || 0));
+    const o = parseFloat(String(old || 0));
     if (!c || !o || o <= c) return 0;
     return Math.round(((o - c) / o) * 100);
   }
 
   isHighlighted(index: number): boolean {
-    return this.promos.length === 3 && index === 1;
+    return this.promos.length >= 3 && index === Math.floor(this.promos.length / 2);
   }
 
   getFeatures(promo: Promo): string[] {
-    return Array.isArray(promo.features) ? promo.features : promo.description ? [promo.description] : [];
+    if (Array.isArray(promo.features)) return promo.features;
+    if (promo.description) return [promo.description];
+    return [];
   }
 
   getOrderLink(promo: Promo): string {
     if (promo?.link) return promo.link;
-    const text = encodeURIComponent(`Hi, I'm interested in ${promo?.title || 'your hosting'}`);
-    return `https://wa.me/+201063194547?text=${text}`;
+
+    const title = promo?.title || 'your hosting plan';
+    const msg = this.translate.current === 'ar'
+      ? `مرحباً، أريد الاشتراك في الباقة: ${title}`
+      : `Hi, I'm interested in the plan: ${title}`;
+
+    return `https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`;
   }
 
-  getVPSOrderLink(vps: VPS): string {
-    if (vps?.link) return vps.link;
-    const text = encodeURIComponent(`Hi, I'm interested in ${vps?.name || 'VPS'}`);
-    return `https://wa.me/+201063194547?text=${text}`;
-  }
+  getHelpWhatsAppLink(): string {
+  const message = this.translate.current === 'ar'
+    ? 'مرحباً، أحتاج مساعدة في اختيار باقة الاستضافة المناسبة لي'
+    : "Hello, I need help choosing the right hosting plan for me";
 
-  retryLoadPromos(): void { this.loadPromos(); }
+  return `https://wa.me/+201063194547?text=${encodeURIComponent(message)}`;
+}
 }

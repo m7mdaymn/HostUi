@@ -1,362 +1,269 @@
 <section class="breadcumnd__banner">
-   <div class="container">
-      <div class="row align-items-center">
-         <div class="col-lg-6">
-            <div class="banner__content">
-               <h6>{{ text('tabVps') }}</h6>
-               <h4>{{ text('getHosting') }}</h4>
-               <ul class="ssd__list">
-                  <li>
-                     <span><i class="fa-solid fa-arrow-right"></i></span>
-                     <span>Managed Performance, Security, & Updates</span>
-                  </li>
-                  <li>
-                     <span><i class="fa-solid fa-arrow-right"></i></span>
-                     <span>Faster Unlimited Services</span>
-                  </li>
-                  <li>
-                     <span><i class="fa-solid fa-arrow-right"></i></span>
-                     <span>Performance & Unlimited hosting</span>
-                  </li>
-               </ul>
-               <a href="https://wa.me/+201063194547?text=Hello,%20I%27m%20interested%20in%20your%20hosting%20services!" class="cmn--btn">
-                  <span>{{ text('getHosting') }}</span>
-               </a>
-            </div>
-         </div>
-         <div class="col-lg-6">
-            <div class="banner__Thumb">
-               <img src="assets/img/about/vps.png" alt="VPS Hosting" class="img-fluid">
-            </div>
-         </div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="banner__content">
+          <h6>{{ text('tabVps') }}</h6>
+          <h4>{{ text('getHosting') }}</h4>
+          <ul class="ssd__list">
+            <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('managedPerformance') }}</li>
+            <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('fasterUnlimited') }}</li>
+            <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('performanceUnlimited') }}</li>
+          </ul>
+          <a [href]="whatsappLink" class="cmn--btn">
+            <span>{{ text('getStartedNow') }}</span>
+          </a>
+        </div>
       </div>
-   </div>
+      <div class="col-lg-6">
+        <div class="banner__Thumb">
+          <img src="assets/img/about/vps.png" alt="VPS Hosting" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <div class="filter-overlay" [class.active]="filterSidebarOpen" (click)="closeFilterSidebar()"></div>
 
 <aside class="filter-sidebar" [class.active]="filterSidebarOpen">
-   <div class="filter-sidebar-header">
-      <h5 class="filter-sidebar-title" style="color:#00cdfb ;">
-         <i class="fa-solid fa-sliders"></i>
-         {{ text('filterServers') || 'Filter Servers' }}
-      </h5>
-      <button class="close-btn" (click)="closeFilterSidebar()" aria-label="Close filters">
-         <i class="fa-solid fa-times"></i>
-      </button>
-   </div>
+  <div class="filter-sidebar-header">
+    <h5 class="filter-sidebar-title" style="color:#00cdfb">
+      <i class="fa-solid fa-sliders"></i> {{ text('filterServers') }}
+    </h5>
+    <button class="close-btn" (click)="closeFilterSidebar()">
+      <i class="fa-solid fa-times"></i>
+    </button>
+  </div>
 
-   <div class="filter-sidebar-content">
-      <div class="filter-group">
-         <label class="form-label">
-            <i class="fa-solid fa-microchip"></i>
-            {{ text('cpuCores') || 'CPU Cores' }}
-         </label>
-         <div class="checkbox-group horizontal">
-            <label class="checkbox-item" *ngFor="let core of cpuOptions; let i = index">
-               <input type="checkbox"
-                      [id]="'core-' + i"
-                      [checked]="isCoreSelected(core)"
-                      (change)="toggleCore(core)">
-               <span class="checkmark"></span>
-               <span class="checkbox-label">{{core}} Core{{core > '1' ? 's' : ''}}</span>
-            </label>
-         </div>
+  <div class="filter-sidebar-content">
+    <div class="filter-group">
+      <label class="form-label"><i class="fa-solid fa-microchip"></i> {{ text('cpuCores') }}</label>
+      <div class="checkbox-group horizontal">
+        <label class="checkbox-item" *ngFor="let core of cpuOptions">
+          <input type="checkbox" [checked]="isCoreSelected(core)" (change)="toggleCore(core)">
+          <span class="checkmark"></span>
+          {{ core }} {{ text('core') }}{{ core !== '1' ? 's' : '' }}
+        </label>
       </div>
+    </div>
 
-      <div class="filter-group">
-         <label class="form-label">
-            <i class="fa-solid fa-memory"></i>
-            {{ text('ram') || 'RAM' }}
-         </label>
-         <div class="checkbox-group horizontal">
-            <label class="checkbox-item" *ngFor="let ram of ramOptions; let i = index">
-               <input type="checkbox"
-                      [id]="'ram-' + i"
-                      [checked]="isRamSelected(ram)"
-                      (change)="toggleRam(ram)">
-               <span class="checkmark"></span>
-               <span class="checkbox-label">{{ram}} GB</span>
-            </label>
-         </div>
+    <div class="filter-group">
+      <label class="form-label"><i class="fa-solid fa-memory"></i> {{ text('ram') }}</label>
+      <div class="checkbox-group horizontal">
+        <label class="checkbox-item" *ngFor="let ram of ramOptions">
+          <input type="checkbox" [checked]="isRamSelected(ram)" (change)="toggleRam(ram)">
+          <span class="checkmark"></span>
+          {{ ram }} GB
+        </label>
       </div>
+    </div>
 
-      <div class="filter-group">
-         <label class="form-label">
-            <i class="fa-solid fa-hard-drive"></i>
-            Storage Type
-         </label>
-         <div class="checkbox-group horizontal">
-            <label class="checkbox-item" *ngFor="let type of storageOptions; let i = index">
-               <input type="checkbox"
-                      [id]="'storage-' + i"
-                      [checked]="isStorageSelected(type)"
-                      (change)="toggleStorage(type)">
-               <span class="checkmark"></span>
-               <span class="checkbox-label">{{ type === 'nvme' ? 'NVMe' : type === 'ssd' ? 'SSD' : 'HDD' }}</span>
-            </label>
-         </div>
+    <div class="filter-group">
+      <label class="form-label"><i class="fa-solid fa-hard-drive"></i> {{ text('storageType') }}</label>
+      <div class="checkbox-group horizontal">
+        <label class="checkbox-item" *ngFor="let type of storageOptions">
+          <input type="checkbox" [checked]="isStorageSelected(type)" (change)="toggleStorage(type)">
+          <span class="checkmark"></span>
+          {{ type === 'nvme' ? 'NVMe' : type === 'ssd' ? 'SSD' : 'HDD' }}
+        </label>
       </div>
+    </div>
 
-      <div class="filter-group">
-         <label class="form-label">
-            <i class="fa-solid fa-dollar-sign"></i>
-            {{ text('maxPrice') || 'Max Price' }} (USD)
-         </label>
-         <div class="price-slider-container">
-            <input type="range"
-                   class="price-slider"
-                   id="priceSlider"
-                   [(ngModel)]="filters.maxPrice"
-                   min="0"
-                   max="200"
-                   step="5"
-                   (input)="onPriceChange()">
-            <div class="price-slider-values">
-               <span>${{ filters.maxPrice || 0 }}</span>
-               <span>Max Price</span>
-            </div>
-         </div>
+    <div class="filter-group">
+      <label class="form-label"><i class="fa-solid fa-dollar-sign"></i> {{ text('maxPrice') }} (USD)</label>
+      <div class="price-slider-container">
+        <input type="range" class="price-slider" [(ngModel)]="filters.maxPrice" min="0" max="200" step="5" (input)="applyInstantFilter()">
+        <div class="price-slider-values">
+          <span>${{ filters.maxPrice || 0 }}</span>
+        </div>
       </div>
-   </div>
+    </div>
+  </div>
 
-   <div class="filter-actions-instant">
-      <button class="btn-clear-all"
-              (click)="resetFilters()"
-              *ngIf="getActiveFilterCount() > 0">
-         <i class="fa-solid fa-rotate-right"></i>
-         <span>Clear All</span>
-      </button>
-
-      <button class="btn-close" (click)="closeFilterSidebar()">
-         <i class="fa-solid fa-times"></i>
-         <span>Close</span>
-      </button>
-   </div>
+  <div class="filter-actions-instant">
+    <button class="btn-clear-all" (click)="resetFilters()" *ngIf="getActiveFilterCount() > 0">
+      <i class="fa-solid fa-rotate-right"></i> {{ text('clearAll') }}
+    </button>
+    <button class="btn-close" (click)="closeFilterSidebar()">
+      <i class="fa-solid fa-times"></i> {{ text('close') }}
+    </button>
+  </div>
 </aside>
 
 <section class="featured-servers pt-60 pb-40" *ngIf="!loading && products.length >= 3">
   <div class="container">
     <div class="section__header text-center">
-      <span class="subtitle">Our Deals</span>
-      <h3 class="section-title">Don't miss the Best VPS Servers</h3>
-      <p class="section-desc">
-        30-day money-back guarantee | Cancel anytime | 24/7 support
-      </p>
+      <span class="subtitle">{{ text('ourDeals') }}</span>
+      <h3 class="section-title">{{ text('bestVpsServers') }}</h3>
+      <p class="section-desc">{{ text('moneyBackSupport') }}</p>
     </div>
 
     <div class="featured-grid">
-
-      <!-- LowSpace: Cheapest + Smallest Storage -->
       <div class="featured-card" *ngIf="getCheapestLowSpace() as plan">
-        <div class="badge-discount">Best Entry</div>
+        <div class="badge-discount">{{ text('bestEntry') }}</div>
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ plan.category || 'Low Space Starter' }}</h4>
-          <p class="plan-subtitle">Perfect for testing & small projects</p>
+          <h4 class="plan-name">{{ plan.category || text('lowSpaceStarter') }}</h4>
+          <p class="plan-subtitle">{{ text('perfectForTesting') }}</p>
         </div>
         <div class="price-section">
           <div class="price-tag">
             <span class="currency">US$</span>
-            <span class="amount">{{ plan.price || plan.Price }}</span>
+            <span class="amount">{{ plan.price }}</span>
             <span class="period">/mo</span>
           </div>
         </div>
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores || plan.Cores }} Core{{ (plan.cores || plan.Cores) > 1 ? 's' : '' }}</li>
-          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB || plan.RamGB }} GB RAM</li>
-          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB || plan.StorageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores > 1 ? '' : '' }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB }} GB {{ text('ramLabel') }}</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
         </ul>
         <div class="featured-card-footer">
-          <button class="btn-order" (click)="orderNow(plan.id || plan.Id)">
-            <span>Order Now</span>
+          <button class="btn-order" (click)="orderNow(plan.id)">
+            <span>{{ text('orderNow') }}</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="limited-time-deal"><span>Limited time deal</span></div>
+          <div class="limited-time-deal"><span>{{ text('limitedDeal') }}</span></div>
         </div>
       </div>
 
-      <!-- HighSpace: Cheapest + Largest Storage -->
       <div class="featured-card popular" *ngIf="getCheapestHighSpace() as plan">
-        <div class="badge-popular">MOST STORAGE</div>
+        <div class="badge-popular">{{ text('mostStorage') }}</div>
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ plan.category || 'Storage King' }}</h4>
-          <p class="plan-subtitle">Massive storage at lowest price</p>
+          <h4 class="plan-name">{{ plan.category || text('storageKing') }}</h4>
+          <p class="plan-subtitle">{{ text('massiveStorage') }}</p>
         </div>
         <div class="price-section">
           <div class="price-tag">
             <span class="currency">US$</span>
-            <span class="amount">{{ plan.price || plan.Price }}</span>
+            <span class="amount">{{ plan.price }}</span>
             <span class="period">/mo</span>
           </div>
         </div>
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores || plan.Cores }} Core{{ (plan.cores || plan.Cores) > 1 ? 's' : '' }}</li>
-          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB || plan.RamGB }} GB RAM</li>
-          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB || plan.StorageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores > 1 ? '' : '' }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB }} GB {{ text('ramLabel') }}</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
         </ul>
         <div class="featured-card-footer">
-          <button class="btn-order" (click)="orderNow(plan.id || plan.Id)">
-            <span>Order Now</span>
+          <button class="btn-order" (click)="orderNow(plan.id)">
+            <span>{{ text('orderNow') }}</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="limited-time-deal"><span>Limited time deal</span></div>
+          <div class="limited-time-deal"><span>{{ text('limitedDeal') }}</span></div>
         </div>
       </div>
 
-      <!-- ByCore: Best Price per Core -->
       <div class="featured-card" *ngIf="getCheapestByCore() as plan">
-        <div class="badge-discount">Best $/Core</div>
+        <div class="badge-discount">{{ text('bestPerCore') }}</div>
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ plan.category || 'CPU Champion' }}</h4>
-          <p class="plan-subtitle">Maximum CPU power per dollar</p>
+          <h4 class="plan-name">{{ plan.category || text('cpuChampion') }}</h4>
+          <p class="plan-subtitle">{{ text('maxPowerPerDollar') }}</p>
         </div>
         <div class="price-section">
           <div class="price-tag">
             <span class="currency">US$</span>
-            <span class="amount">{{ plan.price || plan.Price }}</span>
+            <span class="amount">{{ plan.price }}</span>
             <span class="period">/mo</span>
           </div>
         </div>
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores || plan.Cores }} Core{{ (plan.cores || plan.Cores) > 1 ? 's' : '' }}</li>
-          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB || plan.RamGB }} GB RAM</li>
-          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB || plan.StorageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores > 1 ? '' : '' }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB }} GB {{ text('ramLabel') }}</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
         </ul>
         <div class="featured-card-footer">
-          <button class="btn-order" (click)="orderNow(plan.id || plan.Id)">
-            <span>Order Now</span>
+          <button class="btn-order" (click)="orderNow(plan.id)">
+            <span>{{ text('orderNow') }}</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <div class="limited-time-deal"><span>Limited time deal</span></div>
+          <div class="limited-time-deal"><span>{{ text('limitedDeal') }}</span></div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
 
 <section class="pricing__domain pt-60 pb-120">
-   <div class="container-fluid px-4">
-      <div class="section__header text-center">
-         <span class="subtitle">Complete Range</span>
-         <h3 class="section-title d-flex justify-content-center align-items-center gap-3 flex-wrap">
-            <div class="filter-title-group">
-               <span class="filter-title-text">Filter</span>
-               <button class="filter-toggle-btn-inline"
-                       [class.active]="filterSidebarOpen || getActiveFilterCount() > 0"
-                       (click)="toggleFilterSidebar()"
-                       aria-label="Filter Results">
-                  <i class="fa-solid fa-sliders" [class.fa-times]="filterSidebarOpen"></i>
-                  <span class="filter-count-badge" *ngIf="getActiveFilterCount() > 0">
-                     {{ getActiveFilterCount() }}
-                  </span>
-               </button>
-            </div>
-            <span class="all-plans-text">All VPS Hosting Plans</span>
-         </h3>
-         <p class="section-desc">
-            {{ filtered.length }} server{{ filtered.length !== 1 ? 's' : '' }} found
-            <span class="filter-text" *ngIf="getActiveFilterCount() > 0">
-               • {{ getActiveFilterCount() }} filter{{ getActiveFilterCount() > 1 ? 's' : '' }} applied
-            </span>
-         </p>
+  <div class="container-fluid px-4">
+    <div class="section__header text-center">
+      <span class="subtitle">{{ text('completeRange') }}</span>
+      <h3 class="section-title d-flex justify-content-center align-items-center gap-3 flex-wrap">
+        <div class="filter-title-group">
+          <span class="filter-title-text">{{ text('filter') }}</span>
+          <button class="filter-toggle-btn-inline" [class.active]="filterSidebarOpen || getActiveFilterCount() > 0" (click)="toggleFilterSidebar()">
+            <i class="fa-solid fa-sliders" [class.fa-times]="filterSidebarOpen"></i>
+            <span class="filter-count-badge" *ngIf="getActiveFilterCount() > 0">{{ getActiveFilterCount() }}</span>
+          </button>
+        </div>
+        <span class="all-plans-text">{{ text('allVpsPlans') }}</span>
+      </h3>
+      <p class="section-desc">
+        {{ filtered.length }} {{ text('server') }}{{ filtered.length !== 1 ? 's' : '' }} {{ text('found') }}
+        <span class="filter-text" *ngIf="getActiveFilterCount() > 0">
+          • {{ getActiveFilterCount() }} {{ text('filter') }}{{ getActiveFilterCount() > 1 ? 's' : '' }} {{ text('applied') }}
+        </span>
+      </p>
+    </div>
+
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>{{ text('loadingVps') }}</p>
+    </div>
+
+    <div class="error-state" *ngIf="error && !loading">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h4>{{ text('errorOccurred') }}</h4>
+      <p>{{ error }}</p>
+      <button class="btn-retry" (click)="loadProducts()">
+        <i class="fa-solid fa-rotate-right"></i> {{ text('tryAgain') }}
+      </button>
+    </div>
+
+    <div class="no-results-enhanced" *ngIf="!loading && filtered.length === 0">
+      <div class="no-results-icon"><i class="fa-solid fa-server"></i></div>
+      <h4 class="no-results-title">{{ text('noServersFound') }}</h4>
+      <p class="no-results-subtitle">{{ text('noVpsMatching') }}</p>
+      <button class="btn btn-primary" (click)="resetFilters()">
+        <i class="fa-solid fa-rotate-right"></i> {{ text('clearAllFilters') }}
+      </button>
+    </div>
+
+    <div class="featured-grid all-plans-grid" *ngIf="!loading && filtered.length > 0">
+      <div class="featured-card" *ngFor="let p of filtered; trackBy: trackByFn">
+        <div class="badge-discount" *ngIf="p.discount">{{ p.discount }} OFF</div>
+
+        <div class="featured-card-header">
+          <h4 class="plan-name">{{ p.category || text('vpsPlan') }}</h4>
+          <p class="plan-subtitle">{{ text('highPerformanceRoot') }}</p>
+        </div>
+
+        <div class="price-section">
+          <div class="price-tag">
+            <span class="currency">US$</span>
+            <span class="amount">{{ p.price }}</span>
+            <span class="period">/mo</span>
+          </div>
+        </div>
+
+        <ul class="featured-specs">
+          <li><i class="fa-solid fa-microchip"></i> {{ p.cores }} {{ text('cpuCores') }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ p.ramGB }} GB {{ text('ramLabel') }}</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ p.storageGB }} GB {{ (p.storageType || 'SSD') | uppercase }}</li>
+          <li *ngIf="p.connectionSpeed"><i class="fa-solid fa-gauge-high"></i> {{ p.connectionSpeed }}</li>
+          <li><i class="fa-solid fa-shield-check"></i> {{ text('fullRootAccess') }}</li>
+        </ul>
+
+        <div class="featured-card-footer">
+          <button class="btn-order" (click)="orderNow(p.id)">
+            <span>{{ text('orderNow') }}</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <div class="limited-time-deal" *ngIf="p.limited">
+            <span>{{ text('limitedDeal') }}</span>
+          </div>
+        </div>
       </div>
-
-      <div class="loading-state" *ngIf="loading">
-         <div class="spinner"></div>
-         <p>Loading servers...</p>
-      </div>
-
-      <div class="error-state" *ngIf="error && !loading">
-         <i class="fa-solid fa-exclamation-triangle"></i>
-         <h4>Oops! Something went wrong</h4>
-         <p>{{ error }}</p>
-         <button class="btn-retry" (click)="loadProducts()">
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>Try Again</span>
-         </button>
-      </div>
-
-      <div class="no-results-enhanced" *ngIf="!loading && !error && filtered.length === 0">
-         <div class="no-results-icon">
-            <i class="fa-solid fa-server"></i>
-         </div>
-         <h4 class="no-results-title">No Servers Found</h4>
-         <p class="no-results-subtitle">
-            We couldn't find any VPS plans matching your criteria
-         </p>
-         <div class="no-results-actions">
-            <button class="btn btn-primary" (click)="resetFilters()">
-               <i class="fa-solid fa-rotate-right"></i>
-               <span>Clear All Filters</span>
-            </button>
-            <button class="btn btn-outline" (click)="toggleFilterSidebar()">
-               <i class="fa-solid fa-sliders"></i>
-               <span>Adjust Filters</span>
-            </button>
-         </div>
-         <div class="no-results-suggestion">
-            <p><strong>Try these popular options:</strong></p>
-            <ul>
-               <li>4+ CPU Cores</li>
-               <li>8+ GB RAM</li>
-               <li>NVMe or SSD Storage</li>
-               <li>Under $50/month</li>
-            </ul>
-         </div>
-      </div>
-
-      <div class="featured-grid all-plans-grid" *ngIf="!loading && !error && filtered.length > 0">
-         <div class="featured-card" *ngFor="let p of filtered; trackBy: trackByFn">
-            <div class="badge-discount" *ngIf="p.discount"> {{ p.discount }} OFF</div>
-
-            <div class="featured-card-header">
-               <h4 class="plan-name">{{ p.category || p.Category || 'VPS Plan' }}</h4>
-               <p class="plan-subtitle">High performance &amp; full root access</p>
-            </div>
-
-            <div class="price-section">
-               <div class="price-tag">
-                  <span class="currency">US$</span>
-                  <span class="amount">{{ p.price || p.Price }}</span>
-                  <span class="period">/mo</span>
-               </div>
-               <span class="price-bonus" *ngIf="p.bonus">+{{ p.bonus }} months free</span>
-            </div>
-
-            <ul class="featured-specs">
-               <li>
-                  <i class="fa-solid fa-microchip"></i>
-                  <span>{{ p.cores || p.Cores }} CPU Core{{ (p.cores || p.Cores) > 1 ? 's' : '' }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-memory"></i>
-                  <span>{{ p.ramGB || p.RamGB }} GB RAM</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-hard-drive"></i>
-                  <span>{{ p.storageGB || p.StorageGB }} GB {{ (p.storageType || p.StorageType || 'SSD') | uppercase }}</span>
-               </li>
-               <li *ngIf="p.connectionSpeed || p.ConnectionSpeed">
-                  <i class="fa-solid fa-gauge-high"></i>
-                  <span>{{ p.connectionSpeed || p.ConnectionSpeed }}</span>
-               </li>
-               <li>
-                  <i class="fa-solid fa-shield-check"></i>
-                  <span>Full Root Access</span>
-               </li>
-            </ul>
-
-            <div class="featured-card-footer">
-               <button class="btn-order" (click)="orderNow(p.id || p.Id)">
-                  <span>Order Now</span>
-                  <i class="fa-solid fa-arrow-right"></i>
-               </button>
-               <div class="limited-time-deal" *ngIf="p.limited">
-                  <span>Limited time deal</span>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
+    </div>
+  </div>
 </section>

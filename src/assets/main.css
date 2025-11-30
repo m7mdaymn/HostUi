@@ -1758,18 +1758,6 @@ p {
   background-color: var(--white-color);
   position: relative;
 }
-.atos__hosting::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  content: "";
-  background-color: var(--theme-color);
-  width: 5%;
-  height: 100%;
-  -webkit-clip-path: polygon(100% 0, 0% 100%, 100% 100%);
-  clip-path: polygon(100% 0, 0% 100%, 100% 100%);
-  border-radius: 10px;
-}
 
 .atos__left__wrap .nav {
   display: grid;

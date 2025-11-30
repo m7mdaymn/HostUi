@@ -107,3 +107,52 @@
         max-height: 25px;
     }
 }
+.binance-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.binance-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    flex-direction: row;
+}
+
+.instant-label {
+    background-color: #dc3545;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    animation: pulse 2s infinite;
+}
+
+/* نبض خفيف لجذب الانتباه */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* للشاشات الصغيرة جدًا - نضع النص فوق الصورة */
+@media screen and (max-width: 480px) {
+    .binance-content {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .instant-label {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .payment-logo {
+        max-height: 28px;
+    }
+}

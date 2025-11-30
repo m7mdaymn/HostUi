@@ -1,157 +1,124 @@
+<!-- Banner -->
 <section class="breadcumnd__banner">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6">
         <div class="banner__content">
-          <h6>Dedicated Servers</h6>
-          <h4>High-Performance Dedicated Hosting</h4>
+          <h6>{{ text('dedicated') }}</h6>
+          <h4>{{ text('highPerformanceDedicated') }}</h4>
           <ul class="ssd__list">
-            <li><span><i class="fa-solid fa-arrow-right"></i></span> Full Root Access & Isolation</li>
-            <li><span><i class="fa-solid fa-arrow-right"></i></span> 100% Dedicated Resources</li>
-            <li><span><i class="fa-solid fa-arrow-right"></i></span> 24/7 Expert Support & Monitoring</li>
+            <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('fullRootAccess') }}</li>
+            <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('dedicatedResources') }}</li>
+            <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('support247Monitoring') }}</li>
           </ul>
-          <a href="https://wa.me/+201063194547?text=Hello,%20I%27m%20interested%20in%20Dedicated%20Servers!" class="cmn--btn">
-            <span>Get Started Now</span>
+          <a [href]="whatsappLink" class="cmn--btn">
+            <span>{{ text('getStartedNow') }}</span>
           </a>
         </div>
       </div>
       <div class="col-lg-6">
         <div class="banner__Thumb">
-               <img src="assets/img/hosting/clidhost.png" alt="about-img">
+          <img src="assets/img/hosting/clidhost.png" alt="Dedicated Server">
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Filter Overlay & Sidebar (same as VPS) -->
+<!-- Filter Sidebar -->
 <div class="filter-overlay" [class.active]="filterSidebarOpen" (click)="closeFilterSidebar()"></div>
 
 <aside class="filter-sidebar" [class.active]="filterSidebarOpen">
   <div class="filter-sidebar-header">
     <h5 class="filter-sidebar-title" style="color:#00cdfb;">
       <i class="fa-solid fa-sliders"></i>
-      {{ text('filterServers') || 'Filter Servers' }}
+      {{ text('filterServers') }}
     </h5>
-    <button class="close-btn" (click)="closeFilterSidebar()" aria-label="Close filters">
+    <button class="close-btn" (click)="closeFilterSidebar()" aria-label="Close">
       <i class="fa-solid fa-times"></i>
     </button>
   </div>
 
   <div class="filter-sidebar-content">
+    <!-- CPU Cores -->
     <div class="filter-group">
-      <label class="form-label">
-        <i class="fa-solid fa-microchip"></i>
-        {{ text('cpuCores') || 'CPU Cores' }}
-      </label>
+      <label class="form-label"><i class="fa-solid fa-microchip"></i> {{ text('cpuCores') }}</label>
       <div class="checkbox-group horizontal">
-        <label class="checkbox-item" *ngFor="let core of cpuOptions; let i = index">
-          <input type="checkbox"
-                 [id]="'core-' + i"
-                 [checked]="isCoreSelected(core)"
-                 (change)="toggleCore(core)">
+        <label class="checkbox-item" *ngFor="let core of cpuOptions">
+          <input type="checkbox" [checked]="filters.cores.includes(core)" (change)="toggleCore(core)">
           <span class="checkmark"></span>
-          {{core}} Core{{ core !== '1' ? 's' : '' }}        </label>
-      </div>
-    </div>
-
-    <div class="filter-group">
-      <label class="form-label">
-        <i class="fa-solid fa-memory"></i>
-        {{ text('ram') || 'RAM' }}
-      </label>
-      <div class="checkbox-group horizontal">
-        <label class="checkbox-item" *ngFor="let ram of ramOptions; let i = index">
-          <input type="checkbox"
-                 [id]="'ram-' + i"
-                 [checked]="isRamSelected(ram)"
-                 (change)="toggleRam(ram)">
-          <span class="checkmark"></span>
-          <span class="checkbox-label">{{ram}} GB</span>
+          {{ core }} {{ text('core') }}{{ core !== '1' ? 's' : '' }}
         </label>
       </div>
     </div>
 
+    <!-- RAM -->
     <div class="filter-group">
-      <label class="form-label">
-        <i class="fa-solid fa-server"></i>
-        Brand / CPU Model
-      </label>
+      <label class="form-label"><i class="fa-solid fa-memory"></i> {{ text('ram') }}</label>
       <div class="checkbox-group horizontal">
-        <label class="checkbox-item" *ngFor="let brand of brandOptions; let i = index">
-          <input type="checkbox"
-                 [id]="'brand-' + i"
-                 [checked]="isBrandSelected(brand)"
-                 (change)="toggleBrand(brand)">
+        <label class="checkbox-item" *ngFor="let ram of ramOptions">
+          <input type="checkbox" [checked]="filters.ram.includes(ram)" (change)="toggleRam(ram)">
           <span class="checkmark"></span>
-          <span class="checkbox-label">{{brand}}</span>
+          {{ ram }} GB
         </label>
       </div>
     </div>
 
+    <!-- Brand -->
     <div class="filter-group">
-      <label class="form-label">
-        <i class="fa-solid fa-dollar-sign"></i>
-        {{ text('maxPrice') || 'Max Price' }} (USD)
-      </label>
+      <label class="form-label"><i class="fa-solid fa-server"></i> {{ text('brand') }}</label>
+      <div class="checkbox-group horizontal">
+        <label class="checkbox-item" *ngFor="let brand of brandOptions">
+          <input type="checkbox" [checked]="filters.brands.includes(brand)" (change)="toggleBrand(brand)">
+          <span class="checkmark"></span>
+          {{ brand }}
+        </label>
+      </div>
+    </div>
+
+    <!-- Max Price -->
+    <div class="filter-group">
+      <label class="form-label"><i class="fa-solid fa-dollar-sign"></i> {{ text('maxPrice') }} (USD)</label>
       <div class="price-slider-container">
-        <input type="range"
-               class="price-slider"
-               [(ngModel)]="filters.maxPrice"
-               min="0"
-               max="1000"
-               step="10"
-               (input)="onPriceChange()">
+        <input type="range" class="price-slider" [(ngModel)]="filters.maxPrice" min="0" max="1000" step="10"
+               (input)="applyInstantFilter()">
         <div class="price-slider-values">
           <span>${{ filters.maxPrice || 0 }}</span>
-          <span>Max Price</span>
         </div>
       </div>
     </div>
   </div>
 
   <div class="filter-actions-instant">
-    <button class="btn-clear-all"
-            (click)="resetFilters()"
-            *ngIf="getActiveFilterCount() > 0">
-      <i class="fa-solid fa-rotate-right"></i>
-      <span>Clear All</span>
+    <button class="btn-clear-all" (click)="resetFilters()" *ngIf="getActiveFilterCount() > 0">
+      <i class="fa-solid fa-rotate-right"></i> {{ text('clearAll') }}
     </button>
     <button class="btn-close" (click)="closeFilterSidebar()">
-      <i class="fa-solid fa-times"></i>
-      <span>Close</span>
+      <i class="fa-solid fa-times"></i> {{ text('close') }}
     </button>
   </div>
 </aside>
 
+<!-- Top 3 Featured -->
 <section class="featured-servers pt-60 pb-40" *ngIf="!loading && getTopThreeDedicated().length === 3">
   <div class="container">
     <div class="section__header text-center">
-      <span class="subtitle">Best Deals This Month</span>
-      <h3 class="section-title">Top Dedicated Servers This Month</h3>
-      <p class="section-desc">
-        30-day money-back · 99.9% Uptime · 24/7 Expert Support
-      </p>
+      <span class="subtitle">{{ text('bestDeals') }}</span>
+      <h3 class="section-title">{{ text('topDedicatedThisMonth') }}</h3>
+      <p class="section-desc">{{ text('moneyBackUptimeSupport') }}</p>
     </div>
 
     <div class="featured-grid">
       <ng-container *ngFor="let item of getTopThreeDedicated(); let i = index">
         <div class="featured-card" [class.popular]="i === 1">
-          <div class="badge-discount" *ngIf="item.type === 'intel'">Best INTEL</div>
-          <div class="badge-discount" *ngIf="item.type === 'amd'">Best AMD</div>
-          <div class="badge-popular" *ngIf="item.type === 'value'">BEST VALUE</div>
-          <div class="badge-discount" *ngIf="item.type === 'fallback'">GREAT DEAL</div>
+          <div class="badge-discount" *ngIf="item.type === 'intel'">{{ text('bestIntel') }}</div>
+          <div class="badge-discount" *ngIf="item.type === 'amd'">{{ text('bestAmd') }}</div>
+          <div class="badge-popular" *ngIf="item.type === 'value'">{{ text('bestValue') }}</div>
+          <div class="badge-discount" *ngIf="item.type === 'fallback'">{{ text('greatDeal') }}</div>
 
           <div class="featured-card-header">
-            <h4 class="plan-name">{{ item.server.brand || item.server.cpuModel || 'Dedicated Server' }}</h4>
-            <p class="plan-subtitle">
-              <span [ngSwitch]="item.type">
-                <span *ngSwitchCase="'intel'">Best price Intel server</span>
-                <span *ngSwitchCase="'amd'">Best price AMD server</span>
-                <span *ngSwitchCase="'value'">Lowest price per core</span>
-                <span *ngSwitchDefault>High performance deal</span>
-              </span>
-            </p>
+            <h4 class="plan-name">{{ item.server.brand || item.server.cpuModel }}</h4>
+            <p class="plan-subtitle">{{ getSubtitleForType(item.type) }}</p>
           </div>
 
           <div class="price-section">
@@ -163,32 +130,33 @@
           </div>
 
           <ul class="featured-specs">
-            <li><i class="fa-solid fa-microchip"></i> {{ item.server.cores }} Cores</li>
-            <li><i class="fa-solid fa-memory"></i> {{ item.server.ramGB }} GB RAM</li>
+            <li><i class="fa-solid fa-microchip"></i> {{ item.server.cores }} {{ text('cores') }}</li>
+            <li><i class="fa-solid fa-memory"></i> {{ item.server.ramGB }} GB {{ text('ramLabel') }}</li>
             <li><i class="fa-solid fa-hard-drive"></i> {{ item.server.storage || item.server.storageGB }}</li>
             <li><i class="fa-solid fa-gauge-high"></i> {{ item.server.connectionSpeed || '10 Gbps' }}</li>
           </ul>
 
           <div class="featured-card-footer">
             <button class="btn-order" (click)="orderNow(item.server.id)">
-              <span>Order Now</span>
+              <span>{{ text('orderNow') }}</span>
               <i class="fa-solid fa-arrow-right"></i>
             </button>
-            <div class="limited-time-deal"><span>Limited time deal</span></div>
+            <div class="limited-time-deal"><span>{{ text('limitedDeal') }}</span></div>
           </div>
         </div>
       </ng-container>
     </div>
   </div>
 </section>
-<!-- All Plans Section (Same as VPS) -->
+
+<!-- All Plans -->
 <section class="pricing__domain pt-60 pb-120">
   <div class="container-fluid px-4">
     <div class="section__header text-center">
-      <span class="subtitle">Full Power</span>
+      <span class="subtitle">{{ text('fullPower') }}</span>
       <h3 class="section-title d-flex justify-content-center align-items-center gap-3 flex-wrap">
         <div class="filter-title-group">
-          <span class="filter-title-text">Filter</span>
+          <span class="filter-title-text">{{ text('filter') }}</span>
           <button class="filter-toggle-btn-inline"
                   [class.active]="filterSidebarOpen || getActiveFilterCount() > 0"
                   (click)="toggleFilterSidebar()">
@@ -196,48 +164,44 @@
             <span class="filter-count-badge" *ngIf="getActiveFilterCount() > 0">{{ getActiveFilterCount() }}</span>
           </button>
         </div>
-        <span class="all-plans-text">All Dedicated Servers</span>
+        <span class="all-plans-text">{{ text('allDedicatedServers') }}</span>
       </h3>
       <p class="section-desc">
-        {{ filtered.length }} server{{ filtered.length !== 1 ? 's' : '' }} available
+        {{ filtered.length }} {{ text('server') }}{{ filtered.length !== 1 ? 's' : '' }} {{ text('available') }}
         <span class="filter-text" *ngIf="getActiveFilterCount() > 0">
-          • {{ getActiveFilterCount() }} filter{{ getActiveFilterCount() > 1 ? 's' : '' }} applied
+          • {{ getActiveFilterCount() }} {{ text('filter') }}{{ getActiveFilterCount() > 1 ? 's' : '' }} {{ text('applied') }}
         </span>
       </p>
     </div>
 
-    <!-- Loading / Error / Empty States -->
+    <!-- States -->
     <div class="loading-state" *ngIf="loading">
       <div class="spinner"></div>
-      <p>Loading dedicated servers...</p>
+      <p>{{ text('loadingDedicated') }}</p>
     </div>
 
     <div class="error-state" *ngIf="error && !loading">
       <i class="fa-solid fa-exclamation-triangle"></i>
-      <h4>Oops! Something went wrong</h4>
+      <h4>{{ text('errorOccurred') }}</h4>
       <p>{{ error }}</p>
-      <button class="btn-retry" (click)="loadProducts()"><i class="fa-solid fa-rotate-right"></i> Try Again</button>
+      <button class="btn-retry" (click)="loadProducts()"><i class="fa-solid fa-rotate-right"></i> {{ text('tryAgain') }}</button>
     </div>
 
     <div class="no-results-enhanced" *ngIf="!loading && filtered.length === 0">
-      <div class="no-results-icon">
-        <i class="fa-solid fa-server"></i>
-      </div>
-      <h4 class="no-results-title">No Dedicated Servers Found</h4>
-      <p class="no-results-subtitle">Try adjusting your filters or clearing them</p>
-      <div class="no-results-actions">
-        <button class="btn btn-primary" (click)="resetFilters()"><i class="fa-solid fa-rotate-right"></i> Clear Filters</button>
-      </div>
+      <div class="no-results-icon"><i class="fa-solid fa-server"></i></div>
+      <h4 class="no-results-title">{{ text('noDedicatedFound') }}</h4>
+      <p class="no-results-subtitle">{{ text('tryAdjustFilters') }}</p>
+      <button class="btn btn-primary" (click)="resetFilters()"><i class="fa-solid fa-rotate-right"></i> {{ text('clearFilters') }}</button>
     </div>
 
-    <!-- Grid of All Plans -->
+    <!-- Grid -->
     <div class="featured-grid all-plans-grid" *ngIf="!loading && filtered.length > 0">
       <div class="featured-card" *ngFor="let p of filtered; trackBy: trackByFn">
         <div class="badge-discount" *ngIf="p.discount">{{ p.discount }} OFF</div>
 
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ p.brand || p.cpuModel || 'Dedicated Server' }}</h4>
-          <p class="plan-subtitle">Full root access · 100% dedicated</p>
+          <h4 class="plan-name">{{ p.brand || p.cpuModel || text('dedicatedServer') }}</h4>
+          <p class="plan-subtitle">{{ text('fullRoot100Dedicated') }}</p>
         </div>
 
         <div class="price-section">
@@ -249,20 +213,20 @@
         </div>
 
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> <span>{{ p.cores }} CPU Cores</span></li>
-          <li><i class="fa-solid fa-memory"></i> <span>{{ p.ramGB }} GB RAM</span></li>
-          <li><i class="fa-solid fa-hard-drive"></i> <span>{{ p.storage || p.storageGB }} Storage</span></li>
-          <li *ngIf="p.connectionSpeed"><i class="fa-solid fa-gauge-high"></i> <span>{{ p.connectionSpeed }}</span></li>
-          <li><i class="fa-solid fa-shield-check"></i> <span>DDoS Protection</span></li>
+          <li><i class="fa-solid fa-microchip"></i> {{ p.cores }} {{ text('cpuCores') }}</li>
+          <li><i class="fa-solid fa-memory"></i> {{ p.ramGB }} GB {{ text('ramLabel') }}</li>
+          <li><i class="fa-solid fa-hard-drive"></i> {{ p.storage || p.storageGB }}</li>
+          <li *ngIf="p.connectionSpeed"><i class="fa-solid fa-gauge-high"></i> {{ p.connectionSpeed }}</li>
+          <li><i class="fa-solid fa-shield-check"></i> {{ text('ddosProtection') }}</li>
         </ul>
 
         <div class="featured-card-footer">
           <button class="btn-order" (click)="orderNow(p.id)">
-            <span>Order Now</span>
+            <span>{{ text('orderNow') }}</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
           <div class="limited-time-deal" *ngIf="p.limited">
-            <span>Limited time deal</span>
+            <span>{{ text('limitedDeal') }}</span>
           </div>
         </div>
       </div>
