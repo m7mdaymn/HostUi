@@ -1,29 +1,49 @@
-import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { HeaderComponent } from './shared/header/header.component';
-import { FooterComponent } from './shared/footer/footer.component';
-import { FloatingWidgetComponent } from './shared/floating-widget/floating-widget.component';
-import { ToastComponent } from './shared/toast/toast.component';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { FloatingWidgetComponent } from './shared/floating-widget/floating-widget.component';
+import { FooterComponent } from './shared/footer/footer.component';
+import { HeaderComponent } from './shared/header/header.component';
+import { ToastComponent } from './shared/toast/toast.component';
 
 @Component({
   standalone: true,
   selector: 'app-root',
-  imports: [RouterOutlet , RouterModule, CommonModule, HttpClientModule, HeaderComponent, FooterComponent , FloatingWidgetComponent, ToastComponent ],
+  imports: [
+    RouterOutlet, RouterModule, CommonModule, HttpClientModule,
+    HeaderComponent, FooterComponent, FloatingWidgetComponent, ToastComponent
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'HostUi';
+export class AppComponent implements OnInit {
+  isFirstLoad = true;
   showGlobalLayout = true;
 
-  constructor(private router: Router) {
-    // hide global header/footer for admin routes
-    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((ev: any) => {
-      const url: string = ev.urlAfterRedirects || ev.url || '';
-      this.showGlobalLayout = !url.startsWith('/admin');
-    });
+  constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    // Show preloader only on first visit or hard refresh
+    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    const isReload = navEntry?.type === 'reload';
+    const hasVisited = sessionStorage.getItem('hasVisited');
+
+    if (!hasVisited || isReload) {
+      sessionStorage.setItem('hasVisited', 'true');
+
+      setTimeout(() => {
+        this.isFirstLoad = false;
+      }, 2100);
+    } else {
+      this.isFirstLoad = false; // instant skip
+    }
+
+    // Your admin layout logic
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe((e: NavigationEnd) => {
+        this.showGlobalLayout = !e.urlAfterRedirects.startsWith('/admin');
+      });
   }
 }

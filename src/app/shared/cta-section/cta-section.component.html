@@ -1,0 +1,83 @@
+<section class="cta-payment-section" [class.rtl-mode]="isRTL">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <!-- Left Side: Image & CTA -->
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="cta-left">
+          <div class="cta-image-frame">
+            <div class="payment-circle-bg"></div>
+            <img
+              src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80"
+              alt="Payment Methods"
+              class="payment-image"
+            />
+            <div class="floating-icon icon-1">
+              <img [src]="paymentMethods[0].icon" alt="InstaPay" class="floating-img">
+            </div>
+            <div class="floating-icon icon-2">
+              <img [src]="paymentMethods[1].icon" alt="Vodafone" class="floating-img">
+            </div>
+            <div class="floating-icon icon-3">
+              <img [src]="paymentMethods[2].icon" alt="Binance" class="floating-img">
+            </div>
+          </div>
+
+          <div class="cta-actions">
+            <a routerLink="/contact" class="cmn--btn">
+              <span>{{ text('getStarted') }}</span>
+            </a>
+
+            <div class="social-links">
+              <a href="https://facebook.com" target="_blank" rel="noopener" class="social-icon facebook">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a [href]="getWhatsAppLink()" target="_blank" rel="noopener" class="social-icon whatsapp">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Payment Info -->
+      <div class="col-lg-6">
+        <div class="cta-right">
+          <div class="cta-header">
+            <h2>
+              {{ text('makeYour') }}
+              <span class="gradient-text">{{ text('payment') }}</span>
+              {{ text('easier') }}
+            </h2>
+          </div>
+
+          <div class="payment-methods-list">
+            <div *ngFor="let method of paymentMethods" class="payment-method-item">
+              <div class="method-logo">
+                <img [src]="method.icon" [alt]="method.name">
+              </div>
+              <div class="method-content">
+                <h5>{{ method.name }}</h5>
+                <p *ngIf="!method.instant">{{ method.description }}</p>
+                <p *ngIf="method.instant" class="instant-text" style="color: rgb(26, 167, 26);">
+                  <i class="fas fa-bolt"></i>
+                  {{ text('instantReceipt') }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="trust-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>{{ text('securePayment') }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Background Decorations -->
+  <div class="bg-decoration decoration-1"></div>
+  <div class="bg-decoration decoration-2"></div>
+</section>

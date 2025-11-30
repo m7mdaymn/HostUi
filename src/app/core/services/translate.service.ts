@@ -146,6 +146,18 @@ const DICT: Record<Lang, Record<string, string>> = {
     writeYourMessage: 'Write your message here...',
     sendMessage: 'Send Message',
     contactUsNow: 'Contact Us Now',
+    makeYour: 'Make Your',
+    payment: 'Payment',
+    easier: 'Easier & Faster',
+    instantReceipt: 'Instant Receipt',
+    securePayment: '100% Secure Payment',
+
+    instapay: 'InstaPay',
+    instapayDesc: 'Instant bank transfer via InstaPay network',
+    vodafoneCash: 'Vodafone Cash',
+    vodafoneCashDesc: 'Pay easily using your Vodafone Cash wallet',
+    binance: 'Binance',
+    binanceDesc: 'Cryptocurrency payments with instant receipt',
 
   },
   ar: {
@@ -317,6 +329,18 @@ const DICT: Record<Lang, Record<string, string>> = {
     writeYourMessage: 'اكتب رسالتك هنا...',
     sendMessage: 'إرسال الرسالة',
     contactUsNow: 'تواصل معنا الآن',
+    makeYour: 'اجعل',
+      payment: 'الدفع',
+      easier: 'أسهل وأسرع',
+      instantReceipt: 'استلام فوري',
+      securePayment: 'دفع آمن 100%',
+
+      instapay: 'إنستا باي',
+      instapayDesc: 'تحويل بنكي فوري عبر شبكة إنستا باي',
+      vodafoneCash: 'فودافون كاش',
+      vodafoneCashDesc: 'ادفع بسهولة من محفظة فودافون كاش',
+      binance: 'باينانس',
+      binanceDesc: 'مدفوعات العملات الرقمية مع استلام فوري',
 
 
   }

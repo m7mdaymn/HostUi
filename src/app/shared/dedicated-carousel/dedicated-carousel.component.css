@@ -21,17 +21,13 @@
   border-bottom: #60d4e3 1px solid;
 }
 
-/* RTL Mode */
+/* RTL Mode - Content direction only, arrows stay fixed */
 .dedicated-carousel-section.rtl-mode {
   direction: rtl;
 }
 
-.dedicated-carousel-section.rtl-mode .dedicated-carousel-track {
-  direction: ltr; /* Keep cards LTR but flow RTL */
-}
-
-.dedicated-carousel-section.rtl-mode .dedicated-card {
-  direction: ltr; /* Keep card content LTR */
+.dedicated-carousel-section.rtl-mode .dedicated-specs-list {
+  text-align: right;
 }
 
 .section-header {
@@ -102,7 +98,7 @@
 
 .dedicated-carousel-track {
   display: flex;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   gap: 30px;
   will-change: transform;
   align-items: stretch;
@@ -348,26 +344,17 @@
 .prev-btn-dedicated { left: 10px; }
 .next-btn-dedicated { right: 10px; }
 
-/* RTL: Swap button positions visually */
-.rtl-mode .prev-btn-dedicated {
-  left: auto;
-  right: 10px;
-}
-.rtl-mode .next-btn-dedicated {
-  right: auto;
-  left: 10px;
-}
+/* Arrows stay in same position for both LTR and RTL */
 
-.carousel-btn-dedicated:hover:not(:disabled) {
+.carousel-btn-dedicated:hover {
   background: var(--primary);
   color: white;
   transform: translateY(-50%) scale(1.1);
   box-shadow: 0 15px 40px rgba(58, 81, 193, 0.3);
 }
 
-.carousel-btn-dedicated:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+.carousel-btn-dedicated:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 .dedicated-all-btn-wrapper {
@@ -404,11 +391,7 @@
   transform: translateX(6px);
 }
 
-/* RTL: Arrow should move left on hover */
-.rtl-mode .dedicated-all-btn:hover i {
-  transform: translateX(-6px);
-}
-
+/* Tablet */
 @media (max-width: 1200px) {
   .dedicated-card {
     flex: 0 0 340px;
@@ -418,34 +401,104 @@
 }
 
 @media (max-width: 992px) {
-  .dedicated-card {
-    flex: 0 0 380px;
-    width: 380px;
-    min-width: 380px;
+  .dedicated-carousel-wrapper {
+    padding: 0 70px;
   }
-  .specs-grid { grid-template-columns: 1fr; }
+  .specs-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* Mobile Optimization */
 @media (max-width: 768px) {
-  .dedicated-carousel-section { padding: 60px 0; }
-  .section-header h2 { font-size: 32px; }
-  .dedicated-carousel-wrapper { padding: 0 50px; }
-  .dedicated-card {
-    flex: 0 0 calc(100vw - 120px);
-    width: calc(100vw - 120px);
-    min-width: calc(100vw - 120px);
+  .dedicated-carousel-section {
+    padding: 40px 0;
   }
+  .dedicated-carousel-container {
+  overflow: visible;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-header h2 {
+    font-size: 32px;
+  }
+
+  .section-header p {
+    font-size: 16px;
+    padding: 0 15px;
+  }
+
+  .dedicated-carousel-wrapper {
+    padding: 0 60px;
+    margin: 0 10px;
+  }
+
+  .dedicated-carousel-container {
+    border-radius: 16px;
+  }
+
+  .dedicated-card {
+    flex: 0 0 calc(100vw - 140px);
+    width: calc(100vw - 140px);
+    min-width: calc(100vw - 140px);
+    max-width: 400px;
+  }
+
   .carousel-btn-dedicated {
-    width: 35px;
-    height: 35px;
+    width: 50px;
+    height: 50px;
     font-size: 20px;
   }
+
+  .prev-btn-dedicated { left: 5px; }
+  .next-btn-dedicated { right: 5px; }
+
+  .dedicated-all-btn-wrapper {
+    margin-top: 30px;
+  }
+
   .dedicated-all-btn {
-    padding: 16px 30px;
+    padding: 14px 32px;
+    font-size: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .dedicated-card-header, .dedicated-card-body { padding: 32px 20px; }
-  .price-main-dedicated .amount { font-size: 48px; }
+  .dedicated-carousel-wrapper {
+    padding: 0 55px;
+    margin: 0 5px;
+  }
+
+  .dedicated-card {
+    flex: 0 0 calc(100vw - 130px);
+    width: calc(100vw - 130px);
+    min-width: calc(100vw - 130px);
+  }
+
+  .dedicated-card-header,
+  .dedicated-card-body {
+    padding: 32px 20px;
+  }
+
+  .dedicated-plan-name {
+    font-size: 24px;
+  }
+
+  .price-main-dedicated .amount {
+    font-size: 48px;
+  }
+
+  .carousel-btn-dedicated {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+
+  .dedicated-all-btn {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
 }

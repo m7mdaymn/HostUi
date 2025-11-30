@@ -1,12 +1,32 @@
-<ng-container *ngIf="showGlobalLayout">
-	<app-header></app-header>
+<!-- FAST 1-SECOND PRELOADER -->
+<div id="global-preloader" class="preloader" *ngIf="isFirstLoad">
+  <div class="loader-content">
+    <!-- CPU/Server Icon Animation -->
+    <svg class="cpu-icon" viewBox="0 0 100 100" width="80" height="80">
+      <rect x="20" y="20" width="60" height="60" rx="8" fill="none" stroke="#00d4ff" stroke-width="4"/>
+      <path d="M35 10 V30 M65 10 V30 M35 70 V90 M65 70 V90 M10 35 H30 M70 35 H90 M10 65 H30 M70 65 H90"
+            stroke="#00d4ff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="15" fill="none" stroke="#00ff9d" stroke-width="3">
+        <animate attributeName="r" values="10;18;10" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+
+    <!-- Text appears after 0.6s -->
+    <h2 class="loader-text" [@fadeIn]>AtosBdHost</h2>
+    <p class="loader-subtext" [@fadeIn]> Loading...</p>
+  </div>
+</div>
+
+<!-- Your main layout (only shows after preloader) -->
+<ng-container *ngIf="!isFirstLoad && showGlobalLayout">
+  <app-header></app-header>
 </ng-container>
 
 <router-outlet></router-outlet>
 
 <app-toast></app-toast>
 
-<ng-container *ngIf="showGlobalLayout">
-	<app-footer></app-footer>
-	<app-floating-widget></app-floating-widget>
+<ng-container *ngIf="!isFirstLoad && showGlobalLayout">
+  <app-footer></app-footer>
+  <app-floating-widget></app-floating-widget>
 </ng-container>

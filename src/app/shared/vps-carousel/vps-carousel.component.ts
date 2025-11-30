@@ -32,7 +32,8 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   vpsServers: VPS[] = [];
 
   currentSlideIndex = 0;
-  visibleItems = 3;
+  cardWidth = 390; // Card width + gap (360px + 30px gap)
+  isRTL = false;
 
   private translate = inject(TranslateService);
   private langSub!: Subscription;
@@ -43,7 +44,6 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
     return this.translate.t(key);
   }
 
-  // Clean dynamic "Save XX%" text
   getSaveText(vps: VPS): string {
     const percent = this.calculateSavePercent(vps.price, vps.oldPrice);
     if (percent <= 0) return '';
@@ -51,12 +51,13 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.updateVisibleItems();
+    this.updateCardWidth();
     this.loadVPS();
 
-    // Update view when language changes
-    this.langSub = this.translate.lang.subscribe(() => {
-      this.currentSlideIndex = this.currentSlideIndex; // trigger change detection
+    this.langSub = this.translate.lang.subscribe((lang) => {
+      this.isRTL = lang === 'ar';
+      // Reset to first card when language changes
+      this.currentSlideIndex = 0;
     });
   }
 
@@ -65,10 +66,16 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  updateVisibleItems(): void {
+  updateCardWidth(): void {
     const w = window.innerWidth;
-    this.visibleItems = w <= 768 ? 1 : w <= 1024 ? 2 : 3;
-    this.currentSlideIndex = Math.min(this.currentSlideIndex, Math.max(0, this.vpsServers.length - this.visibleItems));
+    if (w <= 768) {
+      // Mobile: full width card
+      this.cardWidth = w - 100; // Account for padding and arrows
+    } else if (w <= 1024) {
+      this.cardWidth = 390;
+    } else {
+      this.cardWidth = 390;
+    }
   }
 
   loadVPS(): void {
@@ -80,7 +87,6 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.vpsServers = Array.isArray(res) ? res : (res.data || []);
         this.vpsLoading = false;
-        this.updateVisibleItems();
       },
       error: () => {
         this.vpsError = this.text('unableToLoadVps') || 'Unable to load VPS servers.';
@@ -90,12 +96,36 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   }
 
   slideLeft(): void {
-    if (this.currentSlideIndex > 0) this.currentSlideIndex--;
+    if (this.vpsServers.length === 0) return;
+
+    // Infinite loop: if at first card, go to last card
+    if (this.currentSlideIndex === 0) {
+      this.currentSlideIndex = this.vpsServers.length - 1;
+    } else {
+      this.currentSlideIndex--;
+    }
   }
 
   slideRight(): void {
-    if (this.currentSlideIndex < this.vpsServers.length - this.visibleItems) {
+    if (this.vpsServers.length === 0) return;
+
+    // Infinite loop: if at last card, go to first card
+    if (this.currentSlideIndex >= this.vpsServers.length - 1) {
+      this.currentSlideIndex = 0;
+    } else {
       this.currentSlideIndex++;
+    }
+  }
+
+  getTransformStyle(): string {
+    const translateValue = this.currentSlideIndex * this.cardWidth;
+
+    if (this.isRTL) {
+      // For RTL, translate in positive direction
+      return `translateX(${translateValue}px)`;
+    } else {
+      // For LTR, translate in negative direction
+      return `translateX(-${translateValue}px)`;
     }
   }
 
@@ -115,7 +145,4 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
 
     return `https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`;
   }
-
-  // Optional: add this key if you want error in both languages
-  // unableToLoadVps: 'Unable to load VPS servers.' (en) / 'تعذر تحميل خوادم VPS.' (ar)
 }

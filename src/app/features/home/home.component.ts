@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { VpsCarouselComponent } from "../../shared/vps-carousel/vps-carousel.component";
 import { DedicatedCarouselComponent } from "../../shared/dedicated-carousel/dedicated-carousel.component";
+import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, VpsCarouselComponent, DedicatedCarouselComponent],
+  imports: [CommonModule, RouterModule, VpsCarouselComponent, DedicatedCarouselComponent, CtaSectionComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

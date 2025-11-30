@@ -1,0 +1,42 @@
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: #0a0e17;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease-out;
+}
+
+.preloader.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-content {
+  text-align: center;
+}
+
+.cpu-icon {
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 20px #00d4ff44);
+}
+
+.loader-text {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #00d4ff, #00ff9d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+}
+
+.loader-subtext {
+  color: #00ff9d;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  opacity: 0.9;
+  letter-spacing: 2px;
+}

@@ -27,6 +27,17 @@
   border-bottom: #60d4e3 1px solid;
 }
 
+/* RTL Support */
+.vps-carousel-section.rtl-mode {
+  direction: rtl;
+}
+
+.vps-carousel-section.rtl-mode .vps-specs-list {
+  text-align: right;
+}
+
+/* Arrows stay in same position for both LTR and RTL */
+
 .section-header {
   text-align: center;
   margin-bottom: 70px;
@@ -79,23 +90,27 @@
 
 .vps-carousel-wrapper {
   position: relative;
-  margin: 0 -20px;
-  padding: 0 60px;
+  margin: 0 auto;
+  padding: 0 80px;
+  max-width: 100%;
 }
 
 .vps-carousel-container {
   overflow: hidden;
   border-radius: 20px;
+  position: relative;
 }
 
 .vps-carousel-track {
   display: flex;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   gap: 30px;
+  align-items: stretch;
 }
 
 .vps-card-hostinger {
   flex: 0 0 360px;
+  min-width: 360px;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
@@ -217,6 +232,7 @@
   color: var(--primary);
   font-size: 18px;
   width: 24px;
+  flex-shrink: 0;
 }
 
 .vps-specs-list strong {
@@ -285,16 +301,15 @@
   right: 10px;
 }
 
-.carousel-btn:hover:not(:disabled) {
+.carousel-btn:hover {
   background: var(--primary);
   color: white;
   transform: translateY(-50%) scale(1.1);
   box-shadow: 0 15px 40px rgba(58, 81, 193, 0.3);
 }
 
-.carousel-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+.carousel-btn:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 .vps-all-btn-wrapper {
@@ -332,53 +347,118 @@
   transform: translateX(6px);
 }
 
+/* Tablet */
 @media (max-width: 1200px) {
   .vps-card-hostinger {
     flex: 0 0 340px;
+    min-width: 340px;
   }
 }
 
 @media (max-width: 992px) {
-  .vps-card-hostinger {
-    flex: 0 0 380px;
+  .vps-carousel-wrapper {
+    padding: 0 70px;
   }
 }
 
+/* Mobile Optimization */
 @media (max-width: 768px) {
   .vps-carousel-section {
-    padding: 60px 0;
+    padding: 40px 0;
+  }
+  .vps-carousel-container {
+  overflow: visible;
+
+}
+
+
+  .section-header {
+    margin-bottom: 40px;
   }
 
   .section-header h2 {
     font-size: 32px;
   }
 
+  .section-header p {
+    font-size: 16px;
+    padding: 0 15px;
+  }
+
   .vps-carousel-wrapper {
-    padding: 0 50px;
+    padding: 0 60px;
+    margin: 0 10px;
+  }
+
+  .vps-carousel-container {
+    border-radius: 16px;
   }
 
   .vps-card-hostinger {
-    flex: 0 0 100%;
+    flex: 0 0 calc(100vw - 140px);
+    min-width: calc(100vw - 140px);
+    max-width: 400px;
   }
 
   .carousel-btn {
-    width: 35px;
-    height: 35px;
+    width: 50px;
+    height: 50px;
     font-size: 20px;
   }
+
+  .prev-btn {
+    left: 5px;
+  }
+
+  .next-btn {
+    right: 5px;
+  }
+
+  .vps-all-btn-wrapper {
+    margin-top: 30px;
+  }
+
   .vps-all-btn {
-
-  padding: 16px 0px;
-
-}
+    padding: 14px 32px;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 480px) {
+  .vps-carousel-wrapper {
+    padding: 0 55px;
+    margin: 0 5px;
+  }
+
+  .vps-card-hostinger {
+    flex: 0 0 calc(100vw - 130px);
+    min-width: calc(100vw - 130px);
+  }
+
   .vps-card-body {
     padding: 32px 20px;
   }
 
+  .vps-plan-name {
+    font-size: 24px;
+  }
+
   .price-main .amount {
     font-size: 48px;
+  }
+
+  .carousel-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+
+  .vps-specs-list li {
+    font-size: 15px;
+  }
+
+  .vps-all-btn {
+    padding: 12px 24px;
+    font-size: 15px;
   }
 }

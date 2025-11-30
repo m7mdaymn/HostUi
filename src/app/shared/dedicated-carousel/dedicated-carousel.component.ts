@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DedicatedService } from '../../core/services/dedicated.service';
@@ -34,6 +34,7 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   dedicatedServers: DedicatedServer[] = [];
   currentSlideIndex = 0;
   isRTL = false;
+  cardWidth = 390; // 360px card + 30px gap
 
   translations: any = {};
 
@@ -45,6 +46,7 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.updateCardWidth();
     this.loadDedicatedServers();
     this.subscribeToLanguageChanges();
   }
@@ -53,13 +55,25 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
     this.langSub?.unsubscribe();
   }
 
+  @HostListener('window:resize')
+  updateCardWidth(): void {
+    const w = window.innerWidth;
+    if (w <= 768) {
+      this.cardWidth = w - 100; // Account for padding and arrows on mobile
+    } else if (w <= 1024) {
+      this.cardWidth = 390;
+    } else {
+      this.cardWidth = 390;
+    }
+  }
+
   private loadDedicatedServers(): void {
     this.dedicatedLoading = true;
     this.dedicatedService.productsList().subscribe({
       next: (res) => {
         this.dedicatedServers = Array.isArray(res) ? res : (res.data || []);
         this.dedicatedLoading = false;
-        this.currentSlideIndex = 0; // Reset on load
+        this.currentSlideIndex = 0;
       },
       error: () => {
         this.dedicatedError = 'Unable to load Dedicated servers.';
@@ -72,7 +86,7 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
     this.langSub = this.translateService.lang.subscribe((lang) => {
       this.isRTL = lang === 'ar';
       this.updateTranslations();
-      this.currentSlideIndex = 0; // Prevent visual glitch when switching lang
+      this.currentSlideIndex = 0; // Reset to first card when language changes
     });
     this.updateTranslations();
   }
@@ -104,31 +118,37 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   }
 
   slideLeft(): void {
-    if (this.currentSlideIndex > 0) {
+    if (this.dedicatedServers.length === 0) return;
+
+    // Infinite loop: if at first card, go to last card
+    if (this.currentSlideIndex === 0) {
+      this.currentSlideIndex = this.dedicatedServers.length - 1;
+    } else {
       this.currentSlideIndex--;
     }
   }
 
   slideRight(): void {
-    if (this.currentSlideIndex < this.dedicatedServers.length - 1) {
+    if (this.dedicatedServers.length === 0) return;
+
+    // Infinite loop: if at last card, go to first card
+    if (this.currentSlideIndex >= this.dedicatedServers.length - 1) {
+      this.currentSlideIndex = 0;
+    } else {
       this.currentSlideIndex++;
     }
   }
 
   getCarouselTransform(): string {
-    const cardWidth = 360;
-    const gap = 30;
-    const offset = this.currentSlideIndex * (cardWidth + gap);
-    const percent = this.currentSlideIndex * 100;
-    return `translateX(calc(-${percent}% - ${offset}px))`;
-  }
+    const translateValue = this.currentSlideIndex * this.cardWidth;
 
-  isPrevDisabled(): boolean {
-    return this.currentSlideIndex === 0;
-  }
-
-  isNextDisabled(): boolean {
-    return this.currentSlideIndex >= this.dedicatedServers.length - 1;
+    if (this.isRTL) {
+      // For RTL, translate in positive direction
+      return `translateX(${translateValue}px)`;
+    } else {
+      // For LTR, translate in negative direction
+      return `translateX(-${translateValue}px)`;
+    }
   }
 
   calculateSavePercent(current: any, old: any): number {
@@ -145,6 +165,12 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   }
 
   getDedicatedOrderLink(server: DedicatedServer): string {
-    return server?.link || `https://wa.me/+201063194547?text=${encodeURIComponent('Hi, I am interested in ' + (server?.name || 'Dedicated Server'))}`;
+    if (server?.link) return server.link;
+
+    const msg = this.isRTL
+      ? `مرحباً، أنا مهتم بـ ${server?.name || 'Dedicated Server'}`
+      : `Hi, I am interested in ${server?.name || 'Dedicated Server'}`;
+
+    return `https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`;
   }
 }

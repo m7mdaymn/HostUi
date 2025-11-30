@@ -1,4 +1,4 @@
-<section class="vps-carousel-section">
+<section class="vps-carousel-section" [class.rtl-mode]="isRTL">
   <div class="container">
     <div class="section-header">
       <h2>{{ text('powerfulVpsServers') }}</h2>
@@ -18,13 +18,13 @@
 
     <!-- Carousel -->
     <div *ngIf="!vpsLoading && !vpsError && vpsServers.length" class="vps-carousel-wrapper">
-      <button class="carousel-btn prev-btn" (click)="slideLeft()" [disabled]="currentSlideIndex === 0">
+      <!-- Previous Button (always enabled for infinite loop) -->
+      <button class="carousel-btn prev-btn" (click)="slideLeft()">
         <i class="fas fa-chevron-left"></i>
       </button>
 
       <div class="vps-carousel-container">
-        <div class="vps-carousel-track"
-          [style.transform]="'translateX(calc(-' + (currentSlideIndex * 100) + '% - ' + (currentSlideIndex * 30) + 'px))'">
+        <div class="vps-carousel-track" [style.transform]="getTransformStyle()">
 
           <div *ngFor="let vps of vpsServers; let i = index" class="vps-card-hostinger">
             <div class="popular-badge" *ngIf="vps.featured">
@@ -71,10 +71,12 @@
         </div>
       </div>
 
-      <button class="carousel-btn next-btn" (click)="slideRight()"
-              [disabled]="currentSlideIndex >= vpsServers.length - visibleItems">
+      <!-- Next Button (always enabled for infinite loop) -->
+      <button class="carousel-btn next-btn" (click)="slideRight()">
         <i class="fas fa-chevron-right"></i>
       </button>
+
+
 
       <div class="vps-all-btn-wrapper">
         <a routerLink="/vps" class="vps-all-btn">

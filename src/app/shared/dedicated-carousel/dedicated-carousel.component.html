@@ -19,17 +19,13 @@
     <!-- Carousel -->
     <div *ngIf="!dedicatedLoading && !dedicatedError && dedicatedServers.length" class="dedicated-carousel-wrapper">
 
-
-            <button class="carousel-btn-dedicated prev-btn-dedicated"
-              (click)="slideLeft()"
-              [disabled]="isPrevDisabled()">
-        <i class="fas fa-chevron-right"></i>
-            </button>
-
+      <!-- Previous Button (always enabled for infinite loop) -->
+      <button class="carousel-btn-dedicated prev-btn-dedicated" (click)="slideLeft()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
 
       <div class="dedicated-carousel-container">
-        <div class="dedicated-carousel-track"
-             [style.transform]="getCarouselTransform()">
+        <div class="dedicated-carousel-track" [style.transform]="getCarouselTransform()">
           <div *ngFor="let server of dedicatedServers" class="dedicated-card">
 
             <div class="premium-badge" *ngIf="server.featured">
@@ -122,10 +118,10 @@
           </div>
         </div>
       </div>
-            <button class="carousel-btn-dedicated next-btn-dedicated"
-              (click)="slideRight()"
-              [disabled]="isNextDisabled()">
-        <i class="fas fa-chevron-left"></i>
+
+      <!-- Next Button (always enabled for infinite loop) -->
+      <button class="carousel-btn-dedicated next-btn-dedicated" (click)="slideRight()">
+        <i class="fas fa-chevron-right"></i>
       </button>
 
       <div class="dedicated-all-btn-wrapper">
