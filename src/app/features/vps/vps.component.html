@@ -37,6 +37,24 @@
   </div>
 
   <div class="filter-sidebar-content">
+
+<div class="filter-group">
+  <label class="form-label"><i class="fa-solid fa-tag"></i> {{ text('planName') }}</label>
+  <div class="checkbox-group horizontal plan-name-group">
+    <label class="checkbox-item" *ngFor="let name of allPlanNames">
+      <input type="checkbox"
+             [checked]="isPlanNameSelected(name)"
+             (change)="togglePlanName(name)">
+      <span class="checkmark"></span>
+      {{ name }}
+    </label>
+  </div>
+  <small class="selected-count" *ngIf="filters.planNames.length > 0">
+    {{ filters.planNames.length }} {{ text('selected') }}
+    <span class="clear-all-plans" (click)="clearAllPlanNames()">({{ text('clear') }})</span>
+  </small>
+</div>
+
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-microchip"></i> {{ text('cpuCores') }}</label>
       <div class="checkbox-group horizontal">
@@ -79,6 +97,7 @@
         </div>
       </div>
     </div>
+
   </div>
 
   <div class="filter-actions-instant">

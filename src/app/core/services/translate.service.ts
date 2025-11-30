@@ -23,7 +23,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     brand: 'Brand',
     maxPrice: 'Max price (USD)',
     noDedicatedFound: 'No dedicated servers found.',
-    fullBannerTitle: 'Perfect <span class="text-base">Hosting</span> Service For You',
+    fullBannerTitle: 'Perfect <span class="text-base">Servers</span> Service For You',
     getHosting: 'Get Hosting',
     whyChooseUs: 'Why <span class="text-base">Choose Us</span>',
     chooseUsDesc: 'We go beyond servers to provide performance, security, and support that empowers your online success.',
@@ -87,7 +87,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     perMonth: 'mo',
     vCpu: 'vCPU',
     ddosAndBackups: 'DDoS Protection & Daily Backups',
-    moneyBack30: '30-day money-back guarantee',
+    moneyBack30: '24-Hours money-back guarantee',
     viewAllVps: 'View All VPS Servers',
     previousSlide: 'Previous slide',
     nextSlide: 'Next slide',
@@ -96,7 +96,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     performanceUnlimited: 'Performance & Unlimited hosting',
     ourDeals: 'Our Deals',
     bestVpsServers: "Don't miss the Best VPS Servers",
-    moneyBackSupport: '30-day money-back guarantee | Cancel anytime | 24/7 support',
+    moneyBackSupport: '24-Hours money-back guarantee | Cancel anytime | 24/7 support',
     bestEntry: 'Best Entry',
     lowSpaceStarter: 'Low Space Starter',
     perfectForTesting: 'Perfect for testing & small projects',
@@ -158,6 +158,9 @@ const DICT: Record<Lang, Record<string, string>> = {
     vodafoneCashDesc: 'Pay easily using your Vodafone Cash wallet',
     binance: 'Binance',
     binanceDesc: 'Cryptocurrency payments with instant receipt',
+    "planName": "Plan Name",
+    "selected": "selected",
+    "clear": "clear"
 
   },
   ar: {
@@ -242,7 +245,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     perMonth: 'شهرياً',
     vCpu: 'نواة افتراضية',
     ddosAndBackups: 'حماية DDoS والنسخ الاحتياطي اليومي',
-    moneyBack30: 'ضمان استرداد الأموال خلال 30 يومًا',
+    moneyBack30: 'ضمان استرداد الأموال خلال 24 ساعة',
     viewAllVps: 'عرض جميع خوادم VPS',
     previousSlide: 'الشريحة السابقة',
     nextSlide: 'الشريحة التالية',
@@ -281,7 +284,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     performanceUnlimited: 'أداء واستضافة غير محدودة',
     ourDeals: 'عروضنا',
     bestVpsServers: 'لا تفوت أفضل خوادم VPS',
-    moneyBackSupport: 'ضمان استرداد 30 يوم | إلغاء في أي وقت | دعم 24/7',
+    moneyBackSupport: 'ضمان استرداد 24 ساعة | إلغاء في أي وقت | دعم 24/7',
     bestEntry: 'أفضل للمبتدئين',
     lowSpaceStarter: 'بداية مساحة منخفضة',
     perfectForTesting: 'مثالي للتجربة والمشاريع الصغيرة',
@@ -341,7 +344,9 @@ const DICT: Record<Lang, Record<string, string>> = {
       vodafoneCashDesc: 'ادفع بسهولة من محفظة فودافون كاش',
       binance: 'باينانس',
       binanceDesc: 'مدفوعات العملات الرقمية مع استلام فوري',
-
+      "planName": "اسم الخطة",
+      "selected": "مُحدد",
+      "clear": "مسح"
 
   }
 };

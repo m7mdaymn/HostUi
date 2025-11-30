@@ -34,9 +34,12 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   currentSlideIndex = 0;
   cardWidth = 390; // Card width + gap (360px + 30px gap)
   isRTL = false;
+  isMobile = false;
+  showPeekAnimation = true;
 
   private translate = inject(TranslateService);
   private langSub!: Subscription;
+  private peekInterval: any;
 
   constructor(private vpsService: VpsService) {}
 
@@ -59,15 +62,48 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
       // Reset to first card when language changes
       this.currentSlideIndex = 0;
     });
+
+    // Start peek animation on mobile
+    if (this.isMobile) {
+      this.startPeekAnimation();
+    }
   }
 
   ngOnDestroy(): void {
     this.langSub?.unsubscribe();
+    this.stopPeekAnimation();
+  }
+
+  startPeekAnimation(): void {
+    // Stop animation after user interacts
+    this.peekInterval = setTimeout(() => {
+      this.showPeekAnimation = false;
+    }, 15000); // Stop after 15 seconds
+  }
+
+  stopPeekAnimation(): void {
+    if (this.peekInterval) {
+      clearTimeout(this.peekInterval);
+    }
+    this.showPeekAnimation = false;
+  }
+
+  onUserInteraction(): void {
+    // Stop peek animation when user scrolls
+    this.stopPeekAnimation();
   }
 
   @HostListener('window:resize')
   updateCardWidth(): void {
     const w = window.innerWidth;
+    const wasMobile = this.isMobile;
+    this.isMobile = w <= 768;
+
+    // Start peek animation when switching to mobile
+    if (!wasMobile && this.isMobile && this.vpsServers.length > 0) {
+      this.startPeekAnimation();
+    }
+
     if (w <= 768) {
       // Mobile: full width card
       this.cardWidth = w - 100; // Account for padding and arrows
@@ -118,6 +154,11 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   }
 
   getTransformStyle(): string {
+    // On mobile, don't apply transform - let native scrolling handle it
+    if (this.isMobile) {
+      return 'translateX(0)';
+    }
+
     const translateValue = this.currentSlideIndex * this.cardWidth;
 
     if (this.isRTL) {

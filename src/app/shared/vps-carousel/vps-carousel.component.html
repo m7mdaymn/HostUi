@@ -18,7 +18,7 @@
 
     <!-- Carousel -->
     <div *ngIf="!vpsLoading && !vpsError && vpsServers.length" class="vps-carousel-wrapper">
-      <!-- Previous Button (always enabled for infinite loop) -->
+      <!-- Previous Button (hidden on mobile via CSS) -->
       <button class="carousel-btn prev-btn" (click)="slideLeft()">
         <i class="fas fa-chevron-left"></i>
       </button>
@@ -71,12 +71,10 @@
         </div>
       </div>
 
-      <!-- Next Button (always enabled for infinite loop) -->
+      <!-- Next Button (hidden on mobile via CSS) -->
       <button class="carousel-btn next-btn" (click)="slideRight()">
         <i class="fas fa-chevron-right"></i>
       </button>
-
-
 
       <div class="vps-all-btn-wrapper">
         <a routerLink="/vps" class="vps-all-btn">

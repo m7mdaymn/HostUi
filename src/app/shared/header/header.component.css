@@ -372,7 +372,7 @@
     opacity: 1;
     visibility: visible;
     transform: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(215, 194, 194, 0.1);
     box-shadow: none;
     margin-top: 10px;
     padding: 10px 0;
@@ -389,6 +389,7 @@
   .submenu li a {
     font-size: 15px;
     padding: 10px 0 10px 20px;
+    color: white;
   }
 
   .submenu li a:hover {

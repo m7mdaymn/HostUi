@@ -347,6 +347,34 @@
   transform: translateX(6px);
 }
 
+/* Swipe Hint */
+.swipe-hint {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeInHint 0.5s ease-in;
+}
+
+.swipe-hint i {
+  display: inline-block;
+  margin-left: 8px;
+  animation: slideArrow 1.5s ease-in-out infinite;
+  color: var(--primary);
+}
+
+@keyframes fadeInHint {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideArrow {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+
 /* Tablet */
 @media (max-width: 1200px) {
   .vps-card-hostinger {
@@ -364,54 +392,105 @@
 /* Mobile Optimization */
 @media (max-width: 768px) {
   .vps-carousel-section {
-    padding: 40px 0;
+    padding: 30px 0;
   }
-  .vps-carousel-container {
-  overflow: visible;
-
-}
-
 
   .section-header {
-    margin-bottom: 40px;
+    margin-bottom: 30px;
   }
 
   .section-header h2 {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .section-header p {
-    font-size: 16px;
+    font-size: 15px;
     padding: 0 15px;
   }
 
   .vps-carousel-wrapper {
-    padding: 0 60px;
-    margin: 0 10px;
+    padding: 0;
+    margin: 0;
   }
 
   .vps-carousel-container {
     border-radius: 16px;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 10px 20px;
+  }
+
+  .vps-carousel-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vps-carousel-track {
+    transition: none;
+    gap: 20px;
   }
 
   .vps-card-hostinger {
-    flex: 0 0 calc(100vw - 140px);
-    min-width: calc(100vw - 140px);
+    flex: 0 0 calc(100vw - 60px);
+    min-width: calc(100vw - 60px);
     max-width: 400px;
+    scroll-snap-align: center;
+  }
+
+  .vps-card-body {
+    padding: 30px 20px;
+  }
+
+  .vps-plan-name {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .vps-plan-desc {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .vps-price-block {
+    margin-bottom: 24px;
+  }
+
+  .price-main .currency {
+    font-size: 22px;
+  }
+
+  .price-main .amount {
+    font-size: 44px;
+  }
+
+  .price-main .period {
+    font-size: 16px;
+  }
+
+  .vps-specs-list {
+    margin-bottom: 24px;
+  }
+
+  .vps-specs-list li {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .vps-order-btn-hostinger {
+    padding: 14px 28px;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .bonus-text {
+    font-size: 13px;
   }
 
   .carousel-btn {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-  }
-
-  .prev-btn {
-    left: 5px;
-  }
-
-  .next-btn {
-    right: 5px;
+    display: none;
   }
 
   .vps-all-btn-wrapper {
@@ -426,35 +505,52 @@
 
 @media (max-width: 480px) {
   .vps-carousel-wrapper {
-    padding: 0 55px;
-    margin: 0 5px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .vps-carousel-container {
+    padding: 10px 15px;
   }
 
   .vps-card-hostinger {
-    flex: 0 0 calc(100vw - 130px);
-    min-width: calc(100vw - 130px);
+    flex: 0 0 calc(100vw - 50px);
+    min-width: calc(100vw - 50px);
   }
 
   .vps-card-body {
-    padding: 32px 20px;
+    padding: 24px 18px;
   }
 
   .vps-plan-name {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .price-main .currency {
+    font-size: 20px;
   }
 
   .price-main .amount {
-    font-size: 48px;
+    font-size: 40px;
   }
 
-  .carousel-btn {
-    width: 45px;
-    height: 45px;
-    font-size: 18px;
+  .price-main .period {
+    font-size: 15px;
   }
 
   .vps-specs-list li {
-    font-size: 15px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .vps-specs-list i {
+    font-size: 16px;
+    width: 20px;
+  }
+
+  .vps-order-btn-hostinger {
+    padding: 12px 24px;
+    font-size: 14px;
   }
 
   .vps-all-btn {

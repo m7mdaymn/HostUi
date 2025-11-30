@@ -10,6 +10,7 @@ interface Filters {
   ram: string[];
   storage: string[];
   maxPrice: number | null;
+  planNames: string[];
 }
 
 @Component({
@@ -27,10 +28,11 @@ export class VpsComponent implements OnInit, OnDestroy {
   filterSidebarOpen = false;
   whatsappLink = '';
 
-  filters: Filters = { cores: [], ram: [], storage: [], maxPrice: null };
+  filters: Filters = { cores: [], ram: [], storage: [], maxPrice: null, planNames: [] };
   cpuOptions = ['1', '2', '4', '6', '8', '12', '16'];
   ramOptions = ['1', '2', '4', '8', '16', '32', '64'];
   storageOptions = ['ssd', 'nvme', 'hdd'];
+  allPlanNames: string[] = [];
 
   private translate = inject(TranslateService);
   private http = inject(HttpClient);
@@ -42,10 +44,7 @@ export class VpsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.updateWhatsAppLink();
     this.loadProducts();
-
-    this.translate.lang.subscribe(() => {
-      this.updateWhatsAppLink();
-    });
+    this.translate.lang.subscribe(() => this.updateWhatsAppLink());
   }
 
   ngOnDestroy(): void {
@@ -62,11 +61,11 @@ export class VpsComponent implements OnInit, OnDestroy {
   loadProducts(): void {
     this.loading = true;
     this.error = null;
-
     this.http.get(API_ENDPOINTS.VPS.PRODUCTS_LIST).subscribe({
       next: (res: any) => {
         this.products = Array.isArray(res) ? res : (res.data || []);
         this.filtered = [...this.products];
+        this.extractPlanNames();
         this.loading = false;
       },
       error: () => {
@@ -76,21 +75,56 @@ export class VpsComponent implements OnInit, OnDestroy {
     });
   }
 
-  isCoreSelected(core: string): boolean { return this.filters.cores.includes(core); }
+  private extractPlanNames(): void {
+    const names = this.products
+      .map(p => (p.category || p.Category || '').trim())
+      .filter(Boolean);
+    this.allPlanNames = Array.from(new Set(names)).sort();
+  }
+
+  isPlanNameSelected(name: string): boolean {
+    return this.filters.planNames.includes(name);
+  }
+
+  togglePlanName(name: string): void {
+    const i = this.filters.planNames.indexOf(name);
+    if (i === -1) {
+      this.filters.planNames.push(name);
+    } else {
+      this.filters.planNames.splice(i, 1);
+    }
+    this.applyInstantFilter();
+  }
+
+  clearAllPlanNames(): void {
+    this.filters.planNames = [];
+    this.applyInstantFilter();
+  }
+
+  isCoreSelected(core: string): boolean {
+    return this.filters.cores.includes(core);
+  }
+
   toggleCore(core: string): void {
     const i = this.filters.cores.indexOf(core);
     i === -1 ? this.filters.cores.push(core) : this.filters.cores.splice(i, 1);
     this.applyInstantFilter();
   }
 
-  isRamSelected(ram: string): boolean { return this.filters.ram.includes(ram); }
+  isRamSelected(ram: string): boolean {
+    return this.filters.ram.includes(ram);
+  }
+
   toggleRam(ram: string): void {
     const i = this.filters.ram.indexOf(ram);
     i === -1 ? this.filters.ram.push(ram) : this.filters.ram.splice(i, 1);
     this.applyInstantFilter();
   }
 
-  isStorageSelected(type: string): boolean { return this.filters.storage.includes(type); }
+  isStorageSelected(type: string): boolean {
+    return this.filters.storage.includes(type);
+  }
+
   toggleStorage(type: string): void {
     const i = this.filters.storage.indexOf(type);
     i === -1 ? this.filters.storage.push(type) : this.filters.storage.splice(i, 1);
@@ -116,16 +150,24 @@ export class VpsComponent implements OnInit, OnDestroy {
         const price = this.getPrice(p);
         if (price > this.filters.maxPrice) return false;
       }
+      if (this.filters.planNames.length > 0) {
+        const cat = (p.category || p.Category || '').trim();
+        if (!this.filters.planNames.includes(cat)) return false;
+      }
       return true;
     });
   }
 
   getActiveFilterCount(): number {
-    return this.filters.cores.length + this.filters.ram.length + this.filters.storage.length + (this.filters.maxPrice ? 1 : 0);
+    return this.filters.cores.length +
+           this.filters.ram.length +
+           this.filters.storage.length +
+           (this.filters.maxPrice ? 1 : 0) +
+           this.filters.planNames.length;
   }
 
   resetFilters(): void {
-    this.filters = { cores: [], ram: [], storage: [], maxPrice: null };
+    this.filters = { cores: [], ram: [], storage: [], maxPrice: null, planNames: [] };
     this.filtered = [...this.products];
   }
 

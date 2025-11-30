@@ -19,7 +19,7 @@
     <!-- Carousel -->
     <div *ngIf="!dedicatedLoading && !dedicatedError && dedicatedServers.length" class="dedicated-carousel-wrapper">
 
-      <!-- Previous Button (always enabled for infinite loop) -->
+      <!-- Previous Button (hidden on mobile via CSS) -->
       <button class="carousel-btn-dedicated prev-btn-dedicated" (click)="slideLeft()">
         <i class="fas fa-chevron-left"></i>
       </button>
@@ -119,7 +119,7 @@
         </div>
       </div>
 
-      <!-- Next Button (always enabled for infinite loop) -->
+      <!-- Next Button (hidden on mobile via CSS) -->
       <button class="carousel-btn-dedicated next-btn-dedicated" (click)="slideRight()">
         <i class="fas fa-chevron-right"></i>
       </button>

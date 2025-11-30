@@ -12,12 +12,10 @@
     </svg>
 
     <!-- Text appears after 0.6s -->
-    <h2 class="loader-text" [@fadeIn]>AtosBdHost</h2>
+    <h2 class="loader-text" [@fadeIn]>TopServers</h2>
     <p class="loader-subtext" [@fadeIn]> Loading...</p>
   </div>
 </div>
-
-<!-- Your main layout (only shows after preloader) -->
 <ng-container *ngIf="!isFirstLoad && showGlobalLayout">
   <app-header></app-header>
 </ng-container>

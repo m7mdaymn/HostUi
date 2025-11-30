@@ -34,6 +34,7 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   dedicatedServers: DedicatedServer[] = [];
   currentSlideIndex = 0;
   isRTL = false;
+  isMobile = false;
   cardWidth = 390; // 360px card + 30px gap
 
   translations: any = {};
@@ -58,6 +59,8 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   updateCardWidth(): void {
     const w = window.innerWidth;
+    this.isMobile = w <= 768;
+
     if (w <= 768) {
       this.cardWidth = w - 100; // Account for padding and arrows on mobile
     } else if (w <= 1024) {
@@ -113,7 +116,8 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
       ddosProtection: t('ddosProtection'),
       configureServer: t('configureServer'),
       uptimeGuarantee: t('uptimeGuarantee'),
-      exploreAllDedicated: t('exploreAllDedicated')
+      exploreAllDedicated: t('exploreAllDedicated'),
+      swipeToExplore: t('swipeToExplore')
     };
   }
 
@@ -140,6 +144,11 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   }
 
   getCarouselTransform(): string {
+    // On mobile, don't apply transform - let native scrolling handle it
+    if (this.isMobile) {
+      return 'translateX(0)';
+    }
+
     const translateValue = this.currentSlideIndex * this.cardWidth;
 
     if (this.isRTL) {
