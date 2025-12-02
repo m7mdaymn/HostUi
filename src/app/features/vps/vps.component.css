@@ -1253,3 +1253,105 @@ html {
     font-size: 18px;
   }
 }
+.space-tabs {
+  margin: 30px 0 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.low-space-tab.active {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+  color: white;
+  border-color: #ff6b6b;
+}
+
+.high-space-tab.active {
+  background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+  color: white;
+  border-color: #4CAF50;
+}
+
+
+
+
+
+
+
+.hero-cta-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 42px;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #00cdfb, #009fcb);
+  border-radius: 60px;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 205, 251, 0.4);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-top: 20px;
+  z-index: 1;
+}
+
+.hero-cta-btn:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 205, 251, 0.6);
+  background: linear-gradient(135deg, #00eaff, #00b0db);
+}
+
+.hero-cta-btn:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-icon {
+  font-size: 26px;
+  transition: transform 0.3s ease;
+}
+
+.hero-cta-btn:hover .btn-icon {
+  transform: scale(1.2) rotate(10deg);
+}
+
+.btn-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+  border-radius: 60px;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.hero-cta-btn:hover .btn-glow {
+  opacity: 1;
+  animation: pulseGlow 2s infinite;
+}
+
+
+
+.hero-cta-btn {
+  animation: floatBtn 6s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .hero-cta-btn {
+    padding: 16px 36px;
+    font-size: 18px;
+  }
+  .btn-icon { font-size: 24px; }
+}
+
+@media (max-width: 480px) {
+  .hero-cta-btn {
+    padding: 14px 30px;
+    font-size: 17px;
+    width: 100%;
+    text-align: center;
+  }
+}

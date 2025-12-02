@@ -73,12 +73,12 @@
     }
 
     .payment-item {
-        min-height: 45px;
+        min-height: 55px;
         padding: 8px;
     }
 
     .payment-logo {
-        max-height: 30px;
+        max-height: 56px;
     }
 }
 
@@ -98,13 +98,13 @@
     }
 
     .payment-item {
-        min-height: 40px;
+        min-height:78px;
         padding: 6px;
         border-radius: 4px;
     }
 
     .payment-logo {
-        max-height: 25px;
+        max-height: 56px;
     }
 }
 .binance-item {
@@ -153,6 +153,6 @@
     }
 
     .payment-logo {
-        max-height: 28px;
+        max-height:55px;
     }
 }

@@ -1,96 +1,113 @@
 <footer class="footer-section section-bg pt-120">
-   <div class="container">
-      <div class="footer-top pb-120">
-         <div class="row g-4">
+  <div class="container">
+    <div class="footer-top pb-120">
+      <div class="row g-4">
 
-            <!-- Logo & Social -->
-            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-               <div class="widget-items">
-                  <div class="footer-head">
-                     <a href="index.html" class="footer-logo">
-                        <img src="assets/img/logo/logo-black.png" alt="footer logo">
-                     </a>
-                  </div>
-                  <div class="content-area">
-                     <ul class="social">
-                        <li><a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a></li>
-                        <li><a href="https://wa.me/+201063194547" class="icon"><i class="fa-brands fa-whatsapp"></i></a></li>
-                     </ul>
-                  </div>
-
-                  <!-- Payment Methods -->
-                  <div class="payment-methods-container">
-                     <h6 class="payment-title">We Accept </h6>
-                     <div class="payment-logos-grid">
-                        <div class="payment-item">
-                           <img src="/assets/img/footer/vodcash.jpg" alt="Vodafone Cash" class="payment-logo">
-                        </div>
-                        <div class="payment-item">
-                           <img src="/assets/img/footer/insta.png" alt="InstaPay" class="payment-logo">
-                        </div>
-                        <div class="payment-item binance-item">
-                          <div class="binance-content">
-                              <span class="instant-label">Receipt is immediate</span>
-                              <img src="/assets/img/footer/biance.png" alt="Binance" class="payment-logo">
-                          </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
+        <!-- Logo & Social + Payment Methods -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+          <div class="widget-items">
+            <div class="footer-head">
+              <a routerLink="/" class="footer-logo">
+                <img src="assets/img/logo/logo-black.png" alt="TopServers Logo">
+              </a>
             </div>
 
-            <!-- Services -->
-            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
-               <div class="widget-items">
-                  <div class="footer-head"><h5 class="title">{{ text('footerServices') }}</h5></div>
-                  <div class="content-area">
-                     <ul class="quick-link">
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> {{ text('vps') }}</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> {{ text('dedicated') }}</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Custom Packages</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> {{ text('promos') }}</a></li>
-                     </ul>
-                  </div>
-               </div>
+            <div class="content-area">
+              <ul class="social">
+                <li><a href="https://facebook.com/yourpage" target="_blank" class="icon"><i class="fa-brands fa-facebook-f"></i></a></li>
+                <li><a href="https://wa.me/+201063194547" target="_blank" class="icon"><i class="fa-brands fa-whatsapp"></i></a></li>
+                <!-- Add more social links as needed -->
+              </ul>
             </div>
 
-            <!-- VPS Categories -->
-            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-               <div class="widget-items">
-                  <div class="footer-head"><h5 class="title">{{ text('footerVpsPlans') }}</h5></div>
-                  <div class="content-area">
-                     <ul class="quick-link">
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Low Space VPS (France)</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> High Space VPS (Germany)</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> By-Core VPS (EU)</a></li>
-                     </ul>
+            <!-- Payment Methods -->
+            <div class="payment-methods-container">
+              <h6 class="payment-title">We Accept</h6>
+              <div class="payment-logos-grid">
+                <div class="payment-item">
+                  <img src="/assets/img/footer/vodcash.jpg" alt="Vodafone Cash" class="payment-logo">
+                </div>
+                <div class="payment-item">
+                  <img src="/assets/img/footer/insta.png" alt="InstaPay" class="payment-logo">
+                </div>
+                <div class="payment-item binance-item">
+                  <div class="binance-content">
+                    <span class="instant-label">Receipt is immediate</span>
+                    <img src="/assets/img/footer/biance.png" alt="Binance" class="payment-logo">
                   </div>
-               </div>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Dedicated Servers -->
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-               <div class="widget-items">
-                  <div class="footer-head"><h5 class="title">{{ text('footerDedicated') }}</h5></div>
-                  <div class="content-area">
-                     <ul class="quick-link">
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> Intel Servers</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> AMD Servers</a></li>
-                        <li><a href="https://wa.me/+201063194547"><i class="fas fa-caret-right"></i> High Performance Builds</a></li>
-                     </ul>
-                  </div>
-               </div>
+        <!-- Services -->
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+          <div class="widget-items">
+            <div class="footer-head"><h5 class="title">{{ text('footerServices') }}</h5></div>
+            <div class="content-area">
+              <ul class="quick-link">
+                <li><a routerLink="/vps"><i class="fas fa-caret-right"></i> {{ text('vps') }}</a></li>
+                <li><a routerLink="/dedicated"><i class="fas fa-caret-right"></i> {{ text('dedicated') }}</a></li>
+                <li><a routerLink="/promos"><i class="fas fa-caret-right"></i> {{ text('promos') }}</a></li>
+                <li><a routerLink="/contact"><i class="fas fa-caret-right"></i> {{ text('contactUs') }}</a></li>
+              </ul>
             </div>
+          </div>
+        </div>
 
-         </div>
+<!-- VPS Plans -->
+<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+  <div class="widget-items">
+    <div class="footer-head"><h5 class="title">{{ text('footerVpsPlans') }}</h5></div>
+    <div class="content-area">
+      <ul class="quick-link">
+        <li><a routerLink="/vps" fragment="highspace">
+          <i class="fas fa-caret-right"></i> Low Space VPS (France)
+        </a></li>
+        <li><a routerLink="/vps" fragment="highspace">
+          <i class="fas fa-caret-right"></i> High Space VPS (Germany)
+        </a></li>
+        <li><a routerLink="/vps" fragment="Best_VPS_Servers">
+          <i class="fas fa-caret-right"></i>Best VPS Servers
+
+        </a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Dedicated Servers -->
+<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+  <div class="widget-items">
+    <div class="footer-head"><h5 class="title">{{ text('footerDedicated') }}</h5></div>
+    <div class="content-area">
+      <ul class="quick-link">
+        <li><a routerLink="/dedicated" fragment="Dedicated">
+          <i class="fas fa-caret-right"></i> Intel Servers
+        </a></li>
+        <li><a routerLink="/dedicated" fragment="Dedicated">
+          <i class="fas fa-caret-right"></i> AMD Servers
+        </a></li>
+        <li><a routerLink="/dedicated" fragment="Top_Dedicated_Servers">
+          <i class="fas fa-caret-right"></i> Top Dedicated Servers
+        </a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
       </div>
-      <div class="footer-bottom">
-         <p [innerHTML]="text('copyrightBy')"></p>
-         <ul class="footer-bottom-link">
-            <li><a href="https://wa.me/+201063194547">{{ text('footerPrivacy') }}</a></li>
-            <li><a href="https://wa.me/+201063194547">{{ text('footerTerms') }}</a></li>
-         </ul>
-      </div>
+    </div>
 
-   </div>
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p [innerHTML]="text('copyrightBy')"></p>
+      <ul class="footer-bottom-link">
+        <li><a routerLink="/privacy">{{ text('footerPrivacy') }}</a></li>
+        <li><a routerLink="/terms">{{ text('footerTerms') }}</a></li>
+        <li><a routerLink="/contact">{{ text('contactUs') }}</a></li>
+      </ul>
+    </div>
+  </div>
 </footer>

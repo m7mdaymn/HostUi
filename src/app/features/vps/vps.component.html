@@ -1,3 +1,4 @@
+<!-- Banner -->
 <section class="breadcumnd__banner">
   <div class="container">
     <div class="row align-items-center">
@@ -10,9 +11,11 @@
             <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('fasterUnlimited') }}</li>
             <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('performanceUnlimited') }}</li>
           </ul>
-          <a [href]="whatsappLink" class="cmn--btn">
-            <span>{{ text('getStartedNow') }}</span>
-          </a>
+            <a [href]="whatsappLink" class="hero-cta-btn">
+              <span class="btn-text">{{ text('getStartedNow') }}</span>
+              <i class="fa-brands fa-whatsapp btn-icon"></i>
+              <span class="btn-glow"></span>
+            </a>
         </div>
       </div>
       <div class="col-lg-6">
@@ -24,6 +27,7 @@
   </div>
 </section>
 
+<!-- Filter Overlay & Sidebar -->
 <div class="filter-overlay" [class.active]="filterSidebarOpen" (click)="closeFilterSidebar()"></div>
 
 <aside class="filter-sidebar" [class.active]="filterSidebarOpen">
@@ -37,24 +41,25 @@
   </div>
 
   <div class="filter-sidebar-content">
+    <!-- Plan Name Filter -->
+    <div class="filter-group">
+      <label class="form-label"><i class="fa-solid fa-tag"></i> {{ text('planName') }}</label>
+      <div class="checkbox-group horizontal plan-name-group">
+        <label class="checkbox-item" *ngFor="let name of allPlanNames">
+          <input type="checkbox"
+                 [checked]="isPlanNameSelected(name)"
+                 (change)="togglePlanName(name)">
+          <span class="checkmark"></span>
+          {{ name }}
+        </label>
+      </div>
+      <small class="selected-count" *ngIf="filters.planNames.length > 0">
+        {{ filters.planNames.length }} {{ text('selected') }}
+        <span class="clear-all-plans" (click)="clearAllPlanNames()">({{ text('clear') }})</span>
+      </small>
+    </div>
 
-<div class="filter-group">
-  <label class="form-label"><i class="fa-solid fa-tag"></i> {{ text('planName') }}</label>
-  <div class="checkbox-group horizontal plan-name-group">
-    <label class="checkbox-item" *ngFor="let name of allPlanNames">
-      <input type="checkbox"
-             [checked]="isPlanNameSelected(name)"
-             (change)="togglePlanName(name)">
-      <span class="checkmark"></span>
-      {{ name }}
-    </label>
-  </div>
-  <small class="selected-count" *ngIf="filters.planNames.length > 0">
-    {{ filters.planNames.length }} {{ text('selected') }}
-    <span class="clear-all-plans" (click)="clearAllPlanNames()">({{ text('clear') }})</span>
-  </small>
-</div>
-
+    <!-- CPU Cores -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-microchip"></i> {{ text('cpuCores') }}</label>
       <div class="checkbox-group horizontal">
@@ -66,6 +71,7 @@
       </div>
     </div>
 
+    <!-- RAM -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-memory"></i> {{ text('ram') }}</label>
       <div class="checkbox-group horizontal">
@@ -77,6 +83,7 @@
       </div>
     </div>
 
+    <!-- Storage Type -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-hard-drive"></i> {{ text('storageType') }}</label>
       <div class="checkbox-group horizontal">
@@ -88,16 +95,17 @@
       </div>
     </div>
 
+    <!-- Max Price -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-dollar-sign"></i> {{ text('maxPrice') }} (USD)</label>
       <div class="price-slider-container">
-        <input type="range" class="price-slider" [(ngModel)]="filters.maxPrice" min="0" max="200" step="5" (input)="applyInstantFilter()">
+        <input type="range" class="price-slider" [(ngModel)]="filters.maxPrice" min="0" max="200" step="5"
+               (input)="applyInstantFilter()">
         <div class="price-slider-values">
           <span>${{ filters.maxPrice || 0 }}</span>
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="filter-actions-instant">
@@ -110,7 +118,8 @@
   </div>
 </aside>
 
-<section class="featured-servers pt-60 pb-40" *ngIf="!loading && products.length >= 3">
+<!-- Featured Top 3 -->
+<section class="featured-servers pt-60 pb-40" *ngIf="!loading && products.length >= 3" id="Best_VPS_Servers">
   <div class="container">
     <div class="section__header text-center">
       <span class="subtitle">{{ text('ourDeals') }}</span>
@@ -119,6 +128,7 @@
     </div>
 
     <div class="featured-grid">
+      <!-- Low Space -->
       <div class="featured-card" *ngIf="getCheapestLowSpace() as plan">
         <div class="badge-discount">{{ text('bestEntry') }}</div>
         <div class="featured-card-header">
@@ -133,7 +143,7 @@
           </div>
         </div>
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores > 1 ? '' : '' }}</li>
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores !== 1 ? 's' : '' }}</li>
           <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB }} GB {{ text('ramLabel') }}</li>
           <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
         </ul>
@@ -146,6 +156,7 @@
         </div>
       </div>
 
+      <!-- High Space (Popular) -->
       <div class="featured-card popular" *ngIf="getCheapestHighSpace() as plan">
         <div class="badge-popular">{{ text('mostStorage') }}</div>
         <div class="featured-card-header">
@@ -160,7 +171,7 @@
           </div>
         </div>
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores > 1 ? '' : '' }}</li>
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores !== 1 ? 's' : '' }}</li>
           <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB }} GB {{ text('ramLabel') }}</li>
           <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
         </ul>
@@ -173,6 +184,7 @@
         </div>
       </div>
 
+      <!-- Best Value Per Core -->
       <div class="featured-card" *ngIf="getCheapestByCore() as plan">
         <div class="badge-discount">{{ text('bestPerCore') }}</div>
         <div class="featured-card-header">
@@ -187,7 +199,7 @@
           </div>
         </div>
         <ul class="featured-specs">
-          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores > 1 ? '' : '' }}</li>
+          <li><i class="fa-solid fa-microchip"></i> {{ plan.cores }} {{ text('core') }}{{ plan.cores !== 1 ? 's' : '' }}</li>
           <li><i class="fa-solid fa-memory"></i> {{ plan.ramGB }} GB {{ text('ramLabel') }}</li>
           <li><i class="fa-solid fa-hard-drive"></i> {{ plan.storageGB }} GB {{ (plan.storageType || 'SSD') | uppercase }}</li>
         </ul>
@@ -203,28 +215,53 @@
   </div>
 </section>
 
-<section class="pricing__domain pt-60 pb-120">
+<!-- All Plans with Space Tabs -->
+<section class="pricing__domain pt-60 pb-120" id="highspace">
   <div class="container-fluid px-4">
     <div class="section__header text-center">
       <span class="subtitle">{{ text('completeRange') }}</span>
+
+      <!-- NEW: LowSpace / HighSpace Tabs -->
+      <div class="processor-tabs space-tabs">
+        <button class="processor-tab"
+                [class.active]="spaceFilter === 'all'"
+                (click)="setSpaceFilter('all')">
+          <i class="fa-solid fa-server"></i> {{ text('all') }}
+        </button>
+        <button class="processor-tab low-space-tab"
+                [class.active]="spaceFilter === 'low'"
+                (click)="setSpaceFilter('low')">
+          <i class="fa-solid fa-hdd"></i> LowSpace
+        </button>
+        <button class="processor-tab high-space-tab"
+                [class.active]="spaceFilter === 'high'"
+                (click)="setSpaceFilter('high')">
+          <i class="fa-solid fa-database"></i> HighSpace
+        </button>
+      </div>
+
       <h3 class="section-title d-flex justify-content-center align-items-center gap-3 flex-wrap">
         <div class="filter-title-group">
           <span class="filter-title-text">{{ text('filter') }}</span>
-          <button class="filter-toggle-btn-inline" [class.active]="filterSidebarOpen || getActiveFilterCount() > 0" (click)="toggleFilterSidebar()">
+          <button class="filter-toggle-btn-inline"
+                  [class.active]="filterSidebarOpen || getActiveFilterCount() > 0"
+                  (click)="toggleFilterSidebar()">
             <i class="fa-solid fa-sliders" [class.fa-times]="filterSidebarOpen"></i>
             <span class="filter-count-badge" *ngIf="getActiveFilterCount() > 0">{{ getActiveFilterCount() }}</span>
           </button>
         </div>
         <span class="all-plans-text">{{ text('allVpsPlans') }}</span>
       </h3>
+
       <p class="section-desc">
         {{ filtered.length }} {{ text('server') }}{{ filtered.length !== 1 ? 's' : '' }} {{ text('found') }}
-        <span class="filter-text" *ngIf="getActiveFilterCount() > 0">
-          • {{ getActiveFilterCount() }} {{ text('filter') }}{{ getActiveFilterCount() > 1 ? 's' : '' }} {{ text('applied') }}
+        <span class="filter-text" *ngIf="getActiveFilterCount() > 0 || spaceFilter !== 'all'">
+          • {{ getActiveFilterCount() + (spaceFilter !== 'all' ? 1 : 0) }} {{ text('filter') }}{{ getActiveFilterCount() + (spaceFilter !== 'all' ? 1 : 0) > 1 ? 's' : '' }} {{ text('applied') }}
         </span>
       </p>
     </div>
 
+    <!-- Loading / Error / No Results -->
     <div class="loading-state" *ngIf="loading">
       <div class="spinner"></div>
       <p>{{ text('loadingVps') }}</p>
@@ -248,6 +285,7 @@
       </button>
     </div>
 
+    <!-- All Plans Grid -->
     <div class="featured-grid all-plans-grid" *ngIf="!loading && filtered.length > 0">
       <div class="featured-card" *ngFor="let p of filtered; trackBy: trackByFn">
         <div class="badge-discount" *ngIf="p.discount">{{ p.discount }} OFF</div>

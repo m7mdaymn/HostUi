@@ -11,9 +11,11 @@
             <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('dedicatedResources') }}</li>
             <li><span><i class="fa-solid fa-arrow-right"></i></span> {{ text('support247Monitoring') }}</li>
           </ul>
-          <a [href]="whatsappLink" class="cmn--btn">
-            <span>{{ text('getStartedNow') }}</span>
-          </a>
+            <a [href]="whatsappLink" class="hero-cta-btn">
+              <span class="btn-text">{{ text('getStartedNow') }}</span>
+              <i class="fa-brands fa-whatsapp btn-icon"></i>
+              <span class="btn-glow"></span>
+            </a>
         </div>
       </div>
       <div class="col-lg-6">
@@ -40,7 +42,6 @@
   </div>
 
   <div class="filter-sidebar-content">
-    <!-- CPU Cores -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-microchip"></i> {{ text('cpuCores') }}</label>
       <div class="checkbox-group horizontal">
@@ -52,7 +53,6 @@
       </div>
     </div>
 
-    <!-- RAM -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-memory"></i> {{ text('ram') }}</label>
       <div class="checkbox-group horizontal">
@@ -64,7 +64,6 @@
       </div>
     </div>
 
-    <!-- Brand -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-server"></i> {{ text('brand') }}</label>
       <div class="checkbox-group horizontal">
@@ -76,12 +75,11 @@
       </div>
     </div>
 
-    <!-- Max Price -->
     <div class="filter-group">
       <label class="form-label"><i class="fa-solid fa-dollar-sign"></i> {{ text('maxPrice') }} (USD)</label>
       <div class="price-slider-container">
         <input type="range" class="price-slider" [(ngModel)]="filters.maxPrice" min="0" max="1000" step="10"
-               (input)="applyInstantFilter()">
+               (input)="applyFilters()">
         <div class="price-slider-values">
           <span>${{ filters.maxPrice || 0 }}</span>
         </div>
@@ -100,7 +98,7 @@
 </aside>
 
 <!-- Top 3 Featured -->
-<section class="featured-servers pt-60 pb-40" *ngIf="!loading && getTopThreeDedicated().length === 3">
+<section class="featured-servers pt-60 pb-40" *ngIf="!loading && getTopThreeDedicated().length === 3" id="Top_Dedicated_Servers">
   <div class="container">
     <div class="section__header text-center">
       <span class="subtitle">{{ text('bestDeals') }}</span>
@@ -149,11 +147,30 @@
   </div>
 </section>
 
-<!-- All Plans -->
-<section class="pricing__domain pt-60 pb-120">
+<!-- All Plans Section with Processor Tabs + Sidebar Filter -->
+<section class="pricing__domain pt-60 pb-120" id="Dedicated">
   <div class="container-fluid px-4">
     <div class="section__header text-center">
       <span class="subtitle">{{ text('fullPower') }}</span>
+
+      <div class="processor-tabs">
+        <button class="processor-tab"
+                [class.active]="processorFilter === 'all'"
+                (click)="setProcessorFilter('all')">
+          <i class="fa-solid fa-server"></i> {{ text('all') }}
+        </button>
+        <button class="processor-tab"
+                [class.active]="processorFilter === 'amd'"
+                (click)="setProcessorFilter('amd')">
+          <i class="fa-solid fa-microchip"></i> AMD
+        </button>
+        <button class="processor-tab"
+                [class.active]="processorFilter === 'intel'"
+                (click)="setProcessorFilter('intel')">
+          <i class="fa-solid fa-microchip"></i> Intel
+        </button>
+      </div>
+
       <h3 class="section-title d-flex justify-content-center align-items-center gap-3 flex-wrap">
         <div class="filter-title-group">
           <span class="filter-title-text">{{ text('filter') }}</span>
@@ -166,6 +183,7 @@
         </div>
         <span class="all-plans-text">{{ text('allDedicatedServers') }}</span>
       </h3>
+
       <p class="section-desc">
         {{ filtered.length }} {{ text('server') }}{{ filtered.length !== 1 ? 's' : '' }} {{ text('available') }}
         <span class="filter-text" *ngIf="getActiveFilterCount() > 0">
@@ -174,7 +192,6 @@
       </p>
     </div>
 
-    <!-- States -->
     <div class="loading-state" *ngIf="loading">
       <div class="spinner"></div>
       <p>{{ text('loadingDedicated') }}</p>
@@ -194,7 +211,6 @@
       <button class="btn btn-primary" (click)="resetFilters()"><i class="fa-solid fa-rotate-right"></i> {{ text('clearFilters') }}</button>
     </div>
 
-    <!-- Grid -->
     <div class="featured-grid all-plans-grid" *ngIf="!loading && filtered.length > 0">
       <div class="featured-card" *ngFor="let p of filtered; trackBy: trackByFn">
         <div class="badge-discount" *ngIf="p.discount">{{ p.discount }} OFF</div>

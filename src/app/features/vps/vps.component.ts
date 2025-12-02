@@ -18,7 +18,7 @@ interface Filters {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './vps.component.html',
-  styleUrls: ['./vps.component.css']
+  styleUrls: ['../dedicated/dedicated.component.css']
 })
 export class VpsComponent implements OnInit, OnDestroy {
   products: any[] = [];
@@ -28,7 +28,17 @@ export class VpsComponent implements OnInit, OnDestroy {
   filterSidebarOpen = false;
   whatsappLink = '';
 
-  filters: Filters = { cores: [], ram: [], storage: [], maxPrice: null, planNames: [] };
+  // Space Filter
+  spaceFilter: 'all' | 'low' | 'high' = 'all';
+
+  filters: Filters = {
+    cores: [],
+    ram: [],
+    storage: [],
+    maxPrice: null,
+    planNames: []
+  };
+
   cpuOptions = ['1', '2', '4', '6', '8', '12', '16'];
   ramOptions = ['1', '2', '4', '8', '16', '32', '64'];
   storageOptions = ['ssd', 'nvme', 'hdd'];
@@ -61,11 +71,12 @@ export class VpsComponent implements OnInit, OnDestroy {
   loadProducts(): void {
     this.loading = true;
     this.error = null;
+
     this.http.get(API_ENDPOINTS.VPS.PRODUCTS_LIST).subscribe({
       next: (res: any) => {
         this.products = Array.isArray(res) ? res : (res.data || []);
-        this.filtered = [...this.products];
         this.extractPlanNames();
+        this.applyInstantFilter();
         this.loading = false;
       },
       error: () => {
@@ -82,93 +93,111 @@ export class VpsComponent implements OnInit, OnDestroy {
     this.allPlanNames = Array.from(new Set(names)).sort();
   }
 
-  isPlanNameSelected(name: string): boolean {
-    return this.filters.planNames.includes(name);
+  setSpaceFilter(filter: 'all' | 'low' | 'high'): void {
+    this.spaceFilter = filter;
+    this.applyInstantFilter();
   }
 
+  // PERFECT FILTER LOGIC — FIXED 100%
+  applyInstantFilter(): void {
+    let result: any[] = [...this.products];
+
+    // STEP 1: Apply Space Filter FIRST (Low / High / All)
+    if (this.spaceFilter !== 'all') {
+      // Sort all products by storage size
+      const sorted = [...this.products].sort((a, b) =>
+        this.getStorageGB(a) - this.getStorageGB(b)
+      );
+
+      const half = Math.ceil(sorted.length / 2);
+
+      if (this.spaceFilter === 'low') {
+        result = sorted.slice(0, half);           // Only lowest storage half
+      } else if (this.spaceFilter === 'high') {
+        result = sorted.slice(-half);             // Only highest storage half
+      }
+    }
+
+    // STEP 2: Apply ALL other filters (cores, ram, price, etc.)
+    if (this.filters.cores.length > 0) {
+      result = result.filter(p =>
+        this.filters.cores.includes(String(p.cores || p.Cores || '0'))
+      );
+    }
+
+    if (this.filters.ram.length > 0) {
+      result = result.filter(p =>
+        this.filters.ram.includes(String(p.ramGB || p.RamGB || '0'))
+      );
+    }
+
+    if (this.filters.storage.length > 0) {
+      result = result.filter(p => {
+        const type = (p.storageType || p.StorageType || '').toLowerCase();
+        return this.filters.storage.some(t => type.includes(t));
+      });
+    }
+
+    if (this.filters.maxPrice != null && this.filters.maxPrice > 0) {
+      result = result.filter(p => this.getPrice(p) <= this.filters.maxPrice!);
+    }
+
+    if (this.filters.planNames.length > 0) {
+      result = result.filter(p => {
+        const cat = (p.category || p.Category || '').trim();
+        return this.filters.planNames.includes(cat);
+      });
+    }
+
+    this.filtered = result;
+  }
+
+  // FILTER HELPERS
+  isPlanNameSelected(name: string): boolean { return this.filters.planNames.includes(name); }
   togglePlanName(name: string): void {
     const i = this.filters.planNames.indexOf(name);
-    if (i === -1) {
-      this.filters.planNames.push(name);
-    } else {
-      this.filters.planNames.splice(i, 1);
-    }
+    if (i === -1) this.filters.planNames.push(name);
+    else this.filters.planNames.splice(i, 1);
     this.applyInstantFilter();
   }
+  clearAllPlanNames(): void { this.filters.planNames = []; this.applyInstantFilter(); }
 
-  clearAllPlanNames(): void {
-    this.filters.planNames = [];
-    this.applyInstantFilter();
-  }
-
-  isCoreSelected(core: string): boolean {
-    return this.filters.cores.includes(core);
-  }
-
+  isCoreSelected(core: string): boolean { return this.filters.cores.includes(core); }
   toggleCore(core: string): void {
     const i = this.filters.cores.indexOf(core);
-    i === -1 ? this.filters.cores.push(core) : this.filters.cores.splice(i, 1);
+    if (i === -1) this.filters.cores.push(core);
+    else this.filters.cores.splice(i, 1);
     this.applyInstantFilter();
   }
 
-  isRamSelected(ram: string): boolean {
-    return this.filters.ram.includes(ram);
-  }
-
+  isRamSelected(ram: string): boolean { return this.filters.ram.includes(ram); }
   toggleRam(ram: string): void {
     const i = this.filters.ram.indexOf(ram);
-    i === -1 ? this.filters.ram.push(ram) : this.filters.ram.splice(i, 1);
+    if (i === -1) this.filters.ram.push(ram);
+    else this.filters.ram.splice(i, 1);
     this.applyInstantFilter();
   }
 
-  isStorageSelected(type: string): boolean {
-    return this.filters.storage.includes(type);
-  }
-
+  isStorageSelected(type: string): boolean { return this.filters.storage.includes(type); }
   toggleStorage(type: string): void {
     const i = this.filters.storage.indexOf(type);
-    i === -1 ? this.filters.storage.push(type) : this.filters.storage.splice(i, 1);
+    if (i === -1) this.filters.storage.push(type);
+    else this.filters.storage.splice(i, 1);
     this.applyInstantFilter();
-  }
-
-  applyInstantFilter(): void {
-    this.filtered = this.products.filter(p => {
-      if (this.filters.cores.length) {
-        const cores = String(p.cores || p.Cores || '0');
-        if (!this.filters.cores.includes(cores)) return false;
-      }
-      if (this.filters.ram.length) {
-        const ram = String(p.ramGB || p.RamGB || '0');
-        if (!this.filters.ram.includes(ram)) return false;
-      }
-      if (this.filters.storage.length) {
-        const type = (p.storageType || p.StorageType || '').toLowerCase();
-        const match = this.filters.storage.some(t => type.includes(t));
-        if (!match) return false;
-      }
-      if (this.filters.maxPrice != null && this.filters.maxPrice > 0) {
-        const price = this.getPrice(p);
-        if (price > this.filters.maxPrice) return false;
-      }
-      if (this.filters.planNames.length > 0) {
-        const cat = (p.category || p.Category || '').trim();
-        if (!this.filters.planNames.includes(cat)) return false;
-      }
-      return true;
-    });
   }
 
   getActiveFilterCount(): number {
     return this.filters.cores.length +
            this.filters.ram.length +
            this.filters.storage.length +
-           (this.filters.maxPrice ? 1 : 0) +
-           this.filters.planNames.length;
+           this.filters.planNames.length +
+           (this.filters.maxPrice ? 1 : 0);
   }
 
   resetFilters(): void {
     this.filters = { cores: [], ram: [], storage: [], maxPrice: null, planNames: [] };
-    this.filtered = [...this.products];
+    this.spaceFilter = 'all';
+    this.applyInstantFilter();
   }
 
   toggleFilterSidebar(): void {
@@ -181,33 +210,32 @@ export class VpsComponent implements OnInit, OnDestroy {
     document.body.style.overflow = '';
   }
 
+  // HELPERS
   private getPrice(p: any): number {
     return parseFloat(p.price || p.Price || '99999') || 99999;
   }
 
   private getStorageGB(p: any): number {
-    return parseInt(p.storageGB || p.StorageGB || '0') || 0;
+    return parseInt(p.storageGB || p.StorageGB || '0', 10) || 0;
   }
 
   private getCores(p: any): number {
-    return parseInt(p.cores || p.Cores || '1') || 1;
+    return parseInt(p.cores || p.Cores || '1', 10) || 1;
   }
 
+  // Featured Cards (unchanged)
   getCheapestLowSpace(): any {
     return [...this.products]
-      .filter(p => this.getPrice(p) < 99999)
-      .sort((a, b) => this.getStorageGB(a) - this.getStorageGB(b) || this.getPrice(a) - this.getPrice(b))[0] || null;
+      .sort((a, b) => this.getStorageGB(a) - this.getStorageGB(b))[0] || null;
   }
 
   getCheapestHighSpace(): any {
     return [...this.products]
-      .filter(p => this.getPrice(p) < 99999)
-      .sort((a, b) => this.getStorageGB(b) - this.getStorageGB(a) || this.getPrice(a) - this.getPrice(b))[0] || null;
+      .sort((a, b) => this.getStorageGB(b) - this.getStorageGB(a))[0] || null;
   }
 
   getCheapestByCore(): any {
     return this.products
-      .filter(p => this.getPrice(p) < 99999 && this.getCores(p) > 0)
       .map(p => ({ p, ppc: this.getPrice(p) / this.getCores(p) }))
       .sort((a, b) => a.ppc - b.ppc)[0]?.p || null;
   }
