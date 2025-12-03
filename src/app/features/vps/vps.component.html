@@ -132,7 +132,8 @@
       <div class="featured-card" *ngIf="getCheapestLowSpace() as plan">
         <div class="badge-discount">{{ text('bestEntry') }}</div>
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ plan.category || text('lowSpaceStarter') }}</h4>
+          <h4 class="plan-name">{{ plan.name || text('lowSpaceStarter') }}</h4>
+          <p class="plan-subtitle-category">{{ plan.category || text('lowSpaceStarter') }}</p>
           <p class="plan-subtitle">{{ text('perfectForTesting') }}</p>
         </div>
         <div class="price-section">
@@ -160,7 +161,8 @@
       <div class="featured-card popular" *ngIf="getCheapestHighSpace() as plan">
         <div class="badge-popular">{{ text('mostStorage') }}</div>
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ plan.category || text('storageKing') }}</h4>
+          <h4 class="plan-name">{{ plan.name }}</h4>
+          <p class="plan-subtitle-category">{{  plan.category || text('storageKing') }}</p>
           <p class="plan-subtitle">{{ text('massiveStorage') }}</p>
         </div>
         <div class="price-section">
@@ -188,7 +190,8 @@
       <div class="featured-card" *ngIf="getCheapestByCore() as plan">
         <div class="badge-discount">{{ text('bestPerCore') }}</div>
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ plan.category || text('cpuChampion') }}</h4>
+          <h4 class="plan-name">{{ plan.name}}</h4>
+          <p class="plan-subtitle-category">{{  plan.category || text('cpuChampion') }}</p>
           <p class="plan-subtitle">{{ text('maxPowerPerDollar') }}</p>
         </div>
         <div class="price-section">
@@ -291,7 +294,8 @@
         <div class="badge-discount" *ngIf="p.discount">{{ p.discount }} OFF</div>
 
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ p.category || text('vpsPlan') }}</h4>
+          <h4 class="plan-name">{{ p.name }}</h4>
+          <p class="plan-subtitle-category">{{  p.category }}</p>
           <p class="plan-subtitle">{{ text('highPerformanceRoot') }}</p>
         </div>
 

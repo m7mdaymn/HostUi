@@ -22,6 +22,7 @@ interface Filters {
 export class DedicatedComponent implements OnInit, OnDestroy {
   products: any[] = [];
   filtered: any[] = [];
+  topThree: any[] = [];           // New: Dedicated array for top 3
   loading = false;
   error: string | null = null;
   filterSidebarOpen = false;
@@ -66,7 +67,8 @@ export class DedicatedComponent implements OnInit, OnDestroy {
         this.brandOptions = Array.from(new Set(this.products
           .map(p => (p.brand || p.Brand || p.cpuModel || '').trim())
           .filter(Boolean)));
-        this.applyFilters();
+
+        this.applyFilters(); // This will set both filtered & topThree
         this.loading = false;
       },
       error: () => {
@@ -125,6 +127,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     }
 
     this.filtered = result;
+    this.topThree = this.getTopThreeDedicated(); // Critical: Update top 3
   }
 
   getActiveFilterCount(): number {
@@ -138,6 +141,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     this.filters = { cores: [], ram: [], brands: [], maxPrice: null };
     this.processorFilter = 'all';
     this.filtered = [...this.products];
+    this.topThree = this.getTopThreeDedicated();
   }
 
   toggleFilterSidebar(): void {
@@ -218,7 +222,9 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     return map[type] || this.text('highPerformanceDeal');
   }
 
+  // TrackBy functions
   trackByFn = (index: number, item: any) => item?.id || index;
+  trackByTopThree = (index: number, item: any) => item?.server?.id || index;
 
   orderNow(id: number): void {
     this.http.get(API_ENDPOINTS.DEDICATED.ORDER_WHATSAPP(id.toString()), { responseType: 'text' as 'json' })

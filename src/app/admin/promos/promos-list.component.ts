@@ -34,7 +34,7 @@ export class PromosListComponent implements OnInit {
   ) {
     this.promoForm = this.fb.group({
       title: ['', Validators.required],
-      promoType: ['percentage'],
+      discountPercentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
       description: [''],
       isActive: [true]
     });
@@ -51,12 +51,12 @@ export class PromosListComponent implements OnInit {
     this.promosService.list().subscribe({
       next: (res: any) => {
         const list = Array.isArray(res) ? res : (res?.data || res?.items || []);
-        this.promos = list.map((p: { id: any; _id: any; Id: any; title: any; Title: any; promoType: any; type: any; PromoType: any; description: any; Description: any; isActive: any; IsActive: any; }) => ({
-          id: p.id || p._id || p.Id,
+        this.promos = list.map((p: any) => ({
+          id: p.id || p.Id || p._id,
           title: p.title || p.Title || 'Untitled Promo',
-          promoType: p.promoType || p.type || p.PromoType || 'percentage',
           description: p.description || p.Description || '',
-          isActive: !!p.isActive || !!p.IsActive || false
+          discountPercentage: Number(p.discountPercentage || p.DiscountPercentage || 0),
+          isActive: p.isActive === true || p.IsActive === true
         }));
         this.loading = false;
         this.cdr.detectChanges();
@@ -72,10 +72,21 @@ export class PromosListComponent implements OnInit {
 
   openPromoModal(promo?: any): void {
     this.selectedPromo = promo || null;
+
     if (promo) {
-      this.promoForm.patchValue(promo);
+      this.promoForm.patchValue({
+        title: promo.title,
+        discountPercentage: promo.discountPercentage,
+        description: promo.description,
+        isActive: promo.isActive
+      });
     } else {
-      this.promoForm.reset({ promoType: 'percentage', isActive: true });
+      this.promoForm.reset({
+        title: '',
+        discountPercentage: 0,
+        description: '',
+        isActive: true
+      });
     }
     this.modalOpen = true;
   }
@@ -92,18 +103,18 @@ export class PromosListComponent implements OnInit {
     const v = this.promoForm.value;
     const payload = {
       Title: v.title.trim(),
-      PromoType: v.promoType,
-      Description: v.description?.trim() || '',
+      DiscountPercentage: Number(v.discountPercentage),
+      Description: v.description?.trim() || null,
       IsActive: v.isActive
     };
 
-    const req = this.selectedPromo
+    const request = this.selectedPromo
       ? this.promosService.update(this.selectedPromo.id, payload)
       : this.promosService.create(payload);
 
-    req.subscribe({
+    request.subscribe({
       next: () => {
-        this.toast.show('Promo saved successfully', 'success');
+        this.toast.show('Promo saved successfully!', 'success');
         this.saving = false;
         this.closeModal();
         this.loadPromos();
@@ -132,6 +143,7 @@ export class PromosListComponent implements OnInit {
 
   deleteConfirmed(): void {
     if (!this.deleteTarget) return;
+
     this.promosService.delete(this.deleteTarget.id).subscribe({
       next: () => {
         this.toast.show('Promo deleted', 'success');

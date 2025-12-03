@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { VpsCarouselComponent } from '../../shared/vps-carousel/vps-carousel.component';
 
 interface Promo {
+discountPercentage: any;
   id?: any;
   title?: string;
   description?: string;

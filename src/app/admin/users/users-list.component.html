@@ -17,9 +17,9 @@
         </div>
       </header>
 
+      <!-- Loading / Error / Empty / Table (same as before) -->
       <div class="card">
         <div class="card-body p-0">
-
           <div *ngIf="loading" class="loading-state">
             <div class="spinner"></div>
             <p>Loading users...</p>
@@ -85,20 +85,22 @@
   </div>
 </div>
 
+<!-- Modals -->
 <ng-container>
-  <div class="modal-backdrop"
-       *ngIf="modalOpen || deleteConfirmOpen"
-       (click)="closeAllModals()">
-  </div>
+  <div class="modal-backdrop" *ngIf="modalOpen || deleteConfirmOpen" (click)="closeAllModals()"></div>
 
+  <!-- Create / Edit User Modal -->
   <div class="modal" *ngIf="modalOpen" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
         <h2>{{ selectedUser ? 'Edit User' : 'Create New User' }}</h2>
         <button class="btn-icon" (click)="closeModal()"><i class="fas fa-times"></i></button>
       </div>
+
       <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="modal-body">
         <div class="form-grid">
+
+          <!-- Name -->
           <div class="form-group">
             <label>Name <span class="required">*</span></label>
             <input type="text" formControlName="name" placeholder="John Doe" />
@@ -106,6 +108,8 @@
               Name is required
             </small>
           </div>
+
+          <!-- Email -->
           <div class="form-group">
             <label>Email <span class="required">*</span></label>
             <input type="email" formControlName="email" placeholder="user@example.com" />
@@ -113,11 +117,42 @@
               Valid email is required
             </small>
           </div>
-          <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" formControlName="phone" placeholder="+201000000000" />
+
+          <!-- Password (only on create) -->
+          <div class="form-group" *ngIf="!selectedUser">
+            <label>Password <span class="required">*</span></label>
+            <div class="password-wrapper">
+              <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Enter strong password" />
+              <button type="button" class="btn-icon password-toggle" (click)="showPassword = !showPassword">
+                <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+            <small class="text-danger" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+              Password must be at least 6 characters
+            </small>
           </div>
 
+          <!-- Confirm Password (only on create) -->
+          <div class="form-group" *ngIf="!selectedUser">
+            <label>Confirm Password <span class="required">*</span></label>
+            <div class="password-wrapper">
+              <input [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Re-type password" />
+              <button type="button" class="btn-icon password-toggle" (click)="showPassword = !showPassword">
+                <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+            <small class="text-danger" *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched">
+              Passwords do not match
+            </small>
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group">
+            <label>Phone <span class="text-muted">(optional)</span></label>
+            <input type="tel" formControlName="phone" placeholder="+201234567890" />
+          </div>
+
+          <!-- Role -->
           <div class="form-group">
             <label>Role</label>
             <div class="toggle-switch">
@@ -128,6 +163,7 @@
               </span>
             </div>
           </div>
+
         </div>
 
         <div class="modal-actions">
@@ -141,6 +177,7 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal (unchanged) -->
   <div class="modal modal-sm" *ngIf="deleteConfirmOpen" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">

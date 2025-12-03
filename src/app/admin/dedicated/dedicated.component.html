@@ -20,30 +20,32 @@
       <div class="card">
         <div class="card-body p-0">
 
-          <!-- Loading / Error / Empty States -->
+          <!-- Loading State -->
           <div *ngIf="loading" class="loading-state">
             <div class="spinner"></div>
             <p>Loading dedicated servers...</p>
           </div>
 
+          <!-- Error State -->
           <div *ngIf="error" class="alert-danger m-4">
             {{ error }}
           </div>
 
+          <!-- Empty State -->
           <div *ngIf="!loading && !servers.length && !error" class="empty-state">
             <h3>No dedicated servers found</h3>
-            <p>Click "Add New Server" to create your first offering.</p>
+            <p>Click "Add New Server" to create your first one.</p>
           </div>
 
-          <!-- Servers Table -->
+          <!-- Table -->
           <div *ngIf="servers.length">
             <table class="data-table">
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Server</th>
+                  <th>Server Name</th>
                   <th>CPU</th>
-                  <th>Specs</th>
+                  <th>Specifications</th>
                   <th>Storage</th>
                   <th>Price</th>
                   <th>Status</th>
@@ -53,26 +55,38 @@
               <tbody>
                 <tr *ngFor="let server of servers; trackBy: trackByServerId">
                   <td><code class="id-badge">#{{ server.id }}</code></td>
+
+                  <!-- Server Name + Brand + Description -->
                   <td>
                     <div class="user-info">
-                      <div class="name">{{ server.brand || 'Generic' }}</div>
-                      <div class="email-muted">{{ server.description || '—' }}</div>
+                      <div class="name"><strong>{{ server.name || '—' }}</strong></div>
+                      <div class="email-muted">
+                        {{ server.brand || 'Generic' }} • {{ server.description || '—' }}
+                      </div>
                     </div>
                   </td>
-                  <td>{{ server.cpuModel || '—' }}</td>
+
+                  <td><strong>{{ server.cpuModel || '—' }}</strong></td>
+
                   <td>
-                    <strong>{{ server.cores }} Cores</strong> •
-                    {{ server.ramGB }} GB RAM •
-                    {{ server.bandwidth || 'Standard' }}
+                    {{ server.cores }} Cores • {{ server.ramGB }} GB RAM • {{ server.bandwidth || 'Unlimited' }}
                   </td>
+
                   <td>{{ server.storage || '—' }}</td>
-                  <td><strong>${{ server.price | number:'1.2-2' }}/mo</strong></td>
+
                   <td>
-                    <span class="badge" [class.badge-customer]="!server.inStock" [class.badge-admin]="server.inStock">
+                    <strong class="text-success">${{ server.price | number:'1.2-2' }}/mo</strong>
+                  </td>
+
+                  <td>
+                    <span class="badge"
+                          [class.badge-success]="server.inStock"
+                          [class.badge-danger]="!server.inStock">
                       {{ server.inStock ? 'In Stock' : 'Out of Stock' }}
                     </span>
                   </td>
-                  <td>
+
+                  <td class="text-end">
                     <div class="actions-group">
                       <button class="btn-icon" (click)="openServerModal(server)" title="Edit">
                         <i class="fas fa-edit"></i>
@@ -100,65 +114,91 @@
        (click)="closeAllModals()">
   </div>
 
-  <!-- Create / Edit Modal -->
-  <div class="modal"
-       *ngIf="modalOpen"
-       (click)="$event.stopPropagation()">
+  <!-- Add / Edit Modal -->
+  <div class="modal" *ngIf="modalOpen" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>{{ selectedServer ? 'Edit Dedicated Server' : 'Add New Dedicated Server' }}</h2>
+        <h2>{{ selectedServer ? 'Edit Server' : 'Add New Server' }}</h2>
         <button class="btn-icon" (click)="closeModal()"><i class="fas fa-times"></i></button>
       </div>
 
       <form [formGroup]="serverForm" (ngSubmit)="saveServer()" class="modal-body">
+
+        <!-- Server Name - FULLY MANUAL -->
+        <div class="form-group full-width mb-4">
+          <label>Server Name <span class="required">*</span></label>
+          <input type="text"
+                 formControlName="name"
+                 placeholder="e.g. Ultimate Ryzen 9 7950X - 128GB RAM - 8TB NVMe"
+                 class="text-lg" />
+          <small class="text-muted">This is the exact name customers will see</small>
+        </div>
+
         <div class="form-grid">
+
           <div class="form-group">
-            <label>Brand <span class="required">*</span></label>
-            <input type="text" formControlName="brand" placeholder="Dell, HP, Lenovo..." />
+            <label>Hardware Brand <span class="required">*</span></label>
+            <input type="text" formControlName="brand" placeholder="Dell, HP, Supermicro..." />
           </div>
-        <div class="form-group">
+
+          <div class="form-group">
             <label>CPU Brand <span class="required">*</span></label>
             <select formControlName="cpuBrand">
               <option value="AMD">AMD</option>
               <option value="Intel">Intel</option>
             </select>
           </div>
+
+          <div class="form-group">
+            <label>CPU Model <span class="required">*</span></label>
+            <input type="text" formControlName="cpuModel" placeholder="Ryzen 9 7950X, EPYC 9754..." />
+          </div>
+
           <div class="form-group">
             <label>Cores <span class="required">*</span></label>
-            <input type="number" formControlName="cores" placeholder="8" />
+            <input type="number" formControlName="cores" min="1" placeholder="32" />
           </div>
+
           <div class="form-group">
             <label>RAM (GB) <span class="required">*</span></label>
-            <input type="number" formControlName="ramGB" placeholder="64" />
+            <input type="number" formControlName="ramGB" min="1" placeholder="128" />
           </div>
+
           <div class="form-group">
             <label>Storage <span class="required">*</span></label>
-            <input type="text" formControlName="storage" placeholder="2x 2TB SSD" />
+            <input type="text" formControlName="storage" placeholder="4x 3.84TB NVMe + 2x 16TB HDD" />
           </div>
+
           <div class="form-group">
             <label>Bandwidth</label>
-            <input type="text" formControlName="bandwidth" placeholder="1Gbps or Unlimited" />
+            <input type="text" formControlName="bandwidth" placeholder="1Gbps Unmetered" />
           </div>
+
           <div class="form-group">
-            <label>Price ($/mo) <span class="required">*</span></label>
-            <input type="number" step="0.01" formControlName="price" placeholder="199.99" />
+            <label>Price ($/month) <span class="required">*</span></label>
+            <input type="number" step="0.01" formControlName="price" placeholder="599.99" />
           </div>
+
           <div class="form-group">
-            <label>In Stock</label>
+            <label>Status</label>
             <select formControlName="inStock">
-              <option [value]="true">Yes</option>
-              <option [value]="false">No</option>
+              <option [value]="true">In Stock</option>
+              <option [value]="false">Out of Stock</option>
             </select>
           </div>
+
         </div>
 
         <div class="form-group mt-4">
           <label>Description (optional)</label>
-          <textarea formControlName="description" rows="3" placeholder="Server specifications and features..."></textarea>
+          <textarea formControlName="description" rows="4"
+                    placeholder="Premium dedicated server with latest AMD EPYC, DDR5 RAM, and enterprise NVMe..."></textarea>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-outline" (click)="closeModal()" [disabled]="saving">Cancel</button>
+          <button type="button" class="btn-outline" (click)="closeModal()" [disabled]="saving">
+            Cancel
+          </button>
           <button type="submit" class="btn-primary" [disabled]="saving || serverForm.invalid">
             <span *ngIf="saving" class="spinner-small"></span>
             {{ selectedServer ? 'Save Changes' : 'Add Server' }}
@@ -169,20 +209,18 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div class="modal modal-sm"
-       *ngIf="deleteConfirmOpen"
-       (click)="$event.stopPropagation()">
+  <div class="modal modal-sm" *ngIf="deleteConfirmOpen" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Delete Server?</h3>
-        <button class="btn-icon" (click)="closeAllModals()">
-          <i class="fas fa-times"></i>
-        </button>
+        <button class="btn-icon" (click)="closeAllModals()"><i class="fas fa-times"></i></button>
       </div>
       <div class="modal-body text-center py-5">
         <i class="fas fa-exclamation-triangle text-danger" style="font-size: 56px;"></i>
-        <p class="mt-4">Permanently delete this dedicated server?</p>
-        <strong>{{ deleteTarget?.brand || 'This server' }} - {{ deleteTarget?.cpuModel }}</strong>
+        <p class="mt-4">Permanently delete this server?</p>
+        <strong class="d-block mt-3 text-lg">
+          {{ deleteTarget?.name || 'Unnamed Server' }}
+        </strong>
         <p class="text-muted mt-2">This action cannot be undone.</p>
       </div>
       <div class="modal-actions">

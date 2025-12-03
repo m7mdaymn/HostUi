@@ -2,11 +2,23 @@
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
 import { UsersService, User } from '../../core/services/users.service';
+import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { AdminSidebarComponent } from '../shared/admin-sidebar/admin-sidebar.component';
 import { AdminTopbarComponent } from '../shared/admin-topbar/admin-topbar.component';
+
+// Validator: password === confirmPassword
+function confirmPasswordValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const form = control.parent;
+    if (!form) return null;
+    const password = form.get('password')?.value;
+    const confirm = control.value;
+    return password === confirm ? null : { mismatch: true };
+  };
+}
 
 @Component({
   selector: 'app-admin-users-list',
@@ -30,18 +42,26 @@ export class UsersListComponent implements OnInit {
   selectedUser: User | null = null;
   deleteTarget: User | null = null;
   saving = false;
+  showPassword = false;
 
   userForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private usersService: UsersService,
+    private authService: AuthService,
     private toast: ToastService,
     private cdr: ChangeDetectorRef
   ) {
+    this.createForm();
+  }
+
+  private createForm() {
     this.userForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, confirmPasswordValidator()]],
       phone: [''],
       isAdmin: [false],
       isBlocked: [false]
@@ -62,9 +82,7 @@ export class UsersListComponent implements OnInit {
           ...u,
           role: this.normalizeRole(u.role).toString()
         }));
-
         this.loading = false;
-        if (this.users.length === 0) this.error = 'No users found.';
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -85,8 +103,10 @@ export class UsersListComponent implements OnInit {
 
   openUserModal(user?: User) {
     this.selectedUser = user ? { ...user } : null;
+    this.showPassword = false;
 
     if (user) {
+      // EDIT MODE
       this.userForm.patchValue({
         name: user.name || '',
         email: user.email || '',
@@ -94,70 +114,106 @@ export class UsersListComponent implements OnInit {
         isAdmin: this.isAdmin(user),
         isBlocked: !!user.isBlocked
       });
+
+      // Disable password fields
+      this.userForm.get('password')?.clearValidators();
+      this.userForm.get('confirmPassword')?.clearValidators();
+      this.userForm.get('password')?.setValue('');
+      this.userForm.get('confirmPassword')?.setValue('');
+
     } else {
+      // CREATE MODE
       this.userForm.reset({
-        name: '', email: '', phone: '', isAdmin: false, isBlocked: false
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        phone: '',
+        isAdmin: false,
+        isBlocked: false
       });
+
+      this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.userForm.get('confirmPassword')?.setValidators([Validators.required, confirmPasswordValidator()]);
     }
+
+    this.userForm.get('password')?.updateValueAndValidity();
+    this.userForm.get('confirmPassword')?.updateValueAndValidity();
+
     this.modalOpen = true;
   }
 
   closeModal() {
     this.modalOpen = false;
     this.selectedUser = null;
+    this.showPassword = false;
   }
 
   saveUser() {
     if (this.userForm.invalid || this.saving) return;
-    this.saving = true;
+
+    // Mark all as touched to show validation
+    this.userForm.markAllAsTouched();
 
     const v = this.userForm.value;
-    const payload: any = {
-      Name: v.name.trim(),
-      Email: v.email.trim(),
-      Role: v.isAdmin ? 1 : 0,
-      IsBlocked: v.isBlocked,
-      PhoneNumber: v.phone?.trim() || null
-    };
 
-    if (!this.selectedUser) {
-      payload.Password = 'Welcome123!';
+    // Extra check for password match
+    if (v.password !== v.confirmPassword) {
+      this.toast.show('Passwords do not match!', 'error');
+      return;
     }
 
-    const request = this.selectedUser
-      ? this.usersService.update(this.selectedUser.id!, payload)
-      : this.usersService.create(payload);
+    this.saving = true;
 
-    request.subscribe({
-      next: () => {
-        this.toast.show(this.selectedUser ? 'User updated!' : 'User created!', 'success');
-        this.closeModal();
-        this.loadUsers();
-        this.saving = false;
-      },
-      error: (err) => {
-        this.toast.show(err.message || 'Save failed', 'error');
-        this.saving = false;
-      }
-    });
-  }
+    if (!this.selectedUser) {
+      // CREATE USER – 100% MATCHING YOUR WORKING SIGNUP COMPONENT
+      const payload = {
+        Name: v.name.trim(),
+        Email: v.email.trim().toLowerCase(),
+        PhoneNumber: v.phone?.trim() || null,
+        Password: v.password
+      };
 
-  toggleBlock(user: User) {
-    const payload: any = {
-      Name: user.name,
-      Email: user.email,
-      PhoneNumber: user.phoneNumber || null,
-      Role: this.isAdmin(user) ? 1 : 0,
-      IsBlocked: !user.isBlocked
-    };
+      console.log('Sending register payload:', payload); // For debugging
 
-    this.usersService.update(user.id!, payload).subscribe({
-      next: () => {
-        this.toast.show(user.isBlocked ? 'User unblocked' : 'User blocked', 'success');
-        this.loadUsers();
-      },
-      error: (err) => this.toast.show(err.message || 'Failed', 'error')
-    });
+      this.authService.register(payload).subscribe({
+        next: (res: any) => {
+          console.log('User created successfully:', res);
+          this.toast.show('User created successfully!', 'success');
+          this.closeModal();
+          this.loadUsers();
+          this.saving = false;
+        },
+        error: (err: any) => {
+          const msg = err?.error?.message || err?.message || 'Failed to create user. Email may already exist.';
+          this.toast.show(msg, 'error');
+          this.saving = false;
+        }
+      });
+
+    } else {
+      // EDIT USER
+      const payload: any = {
+        Name: v.name.trim(),
+        Email: v.email.trim(),
+        Role: v.isAdmin ? 1 : 0,
+        IsBlocked: v.isBlocked,
+        PhoneNumber: v.phone?.trim() || null
+      };
+
+      this.usersService.update(this.selectedUser.id!, payload).subscribe({
+        next: () => {
+          this.toast.show('User updated successfully!', 'success');
+          this.closeModal();
+          this.loadUsers();
+          this.saving = false;
+        },
+        error: (err) => {
+          this.toast.show(err.message || 'Update failed', 'error');
+          this.saving = false;
+        }
+      });
+    }
   }
 
   confirmDelete(user: User) {
@@ -170,7 +226,7 @@ export class UsersListComponent implements OnInit {
 
     this.usersService.delete(this.deleteTarget.id!).subscribe({
       next: () => {
-        this.toast.show('User deleted', 'success');
+        this.toast.show('User deleted permanently', 'success');
         this.deleteConfirmOpen = false;
         this.deleteTarget = null;
         this.loadUsers();
@@ -182,6 +238,7 @@ export class UsersListComponent implements OnInit {
   closeAllModals() {
     this.modalOpen = this.deleteConfirmOpen = false;
     this.selectedUser = this.deleteTarget = null;
+    this.showPassword = false;
   }
 
   getInitial(u: User): string {

@@ -97,8 +97,10 @@
   </div>
 </aside>
 
-<!-- Top 3 Featured -->
-<section class="featured-servers pt-60 pb-40" *ngIf="!loading && getTopThreeDedicated().length === 3" id="Top_Dedicated_Servers">
+<!-- Top 3 Featured Servers - FIXED -->
+<section class="featured-servers pt-60 pb-40"
+         *ngIf="!loading && topThree.length === 3"
+         id="Top_Dedicated_Servers">
   <div class="container">
     <div class="section__header text-center">
       <span class="subtitle">{{ text('bestDeals') }}</span>
@@ -107,15 +109,16 @@
     </div>
 
     <div class="featured-grid">
-      <ng-container *ngFor="let item of getTopThreeDedicated(); let i = index">
-        <div class="featured-card" [class.popular]="i === 1">
+      <ng-container *ngFor="let item of topThree; trackBy: trackByTopThree">
+        <div class="featured-card" [class.popular]="item.type === 'value'">
           <div class="badge-discount" *ngIf="item.type === 'intel'">{{ text('bestIntel') }}</div>
           <div class="badge-discount" *ngIf="item.type === 'amd'">{{ text('bestAmd') }}</div>
           <div class="badge-popular" *ngIf="item.type === 'value'">{{ text('bestValue') }}</div>
           <div class="badge-discount" *ngIf="item.type === 'fallback'">{{ text('greatDeal') }}</div>
 
           <div class="featured-card-header">
-            <h4 class="plan-name">{{ item.server.brand || item.server.cpuModel }}</h4>
+            <h4 class="plan-name">{{ item.server.name }}</h4>
+            <p class="plan-subtitle-category">{{ item.server.brand || item.server.cpuModel }}</p>
             <p class="plan-subtitle">{{ getSubtitleForType(item.type) }}</p>
           </div>
 
@@ -146,7 +149,6 @@
     </div>
   </div>
 </section>
-
 <!-- All Plans Section with Processor Tabs + Sidebar Filter -->
 <section class="pricing__domain pt-60 pb-120" id="Dedicated">
   <div class="container-fluid px-4">
@@ -216,7 +218,8 @@
         <div class="badge-discount" *ngIf="p.discount">{{ p.discount }} OFF</div>
 
         <div class="featured-card-header">
-          <h4 class="plan-name">{{ p.brand || p.cpuModel || text('dedicatedServer') }}</h4>
+          <h4 class="plan-name">{{ p.name }}</h4>
+          <p class="plan-subtitle-category">{{ p.brand }}</p>
           <p class="plan-subtitle">{{ text('fullRoot100Dedicated') }}</p>
         </div>
 

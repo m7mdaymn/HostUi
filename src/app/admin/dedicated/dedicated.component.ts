@@ -22,8 +22,6 @@ export class DedicatedComponent implements OnInit {
   deleteTarget: any = null;
   saving = false;
 
-  cpuBrands = ['AMD', 'Intel'];
-
   serverForm!: FormGroup;
 
   constructor(
@@ -32,6 +30,7 @@ export class DedicatedComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.serverForm = this.fb.group({
+      name: ['', Validators.required],        // ← Manual only
       cpuBrand: ['AMD', Validators.required],
       cpuModel: ['', Validators.required],
       cores: [null, [Validators.required, Validators.min(1)]],
@@ -47,6 +46,7 @@ export class DedicatedComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadServers();
+    // NO AUTO-GENERATION ANYMORE
   }
 
   loadServers(): void {
@@ -77,15 +77,16 @@ export class DedicatedComponent implements OnInit {
 
         this.servers = list.map((s: any) => ({
           id: s.id ?? s.Id ?? s._id ?? '',
+          name: s.name ?? s.Name ?? '',           // ← Only from DB, no fallback
           cpuModel: s.cpuModel ?? s.CpuModel ?? 'Unknown',
           cores: s.cores ?? s.Cores ?? 1,
           ramGB: s.ramGB ?? s.RamGB ?? 1,
-          storage: s.storage ?? s.Storage ?? '500GB',
+          storage: s.storage ?? s.Storage ?? '',
           price: s.price ?? s.Price ?? 0,
           brand: s.brand ?? s.Brand ?? 'Generic',
           bandwidth: s.bandwidth ?? s.Bandwidth ?? 'Unlimited',
           inStock: s.inStock ?? s.InStock ?? true,
-          description: s.description ?? ''
+          description: s.description ?? s.Description ?? ''
         }));
 
         this.loading = false;
@@ -105,14 +106,11 @@ export class DedicatedComponent implements OnInit {
     this.selectedServer = server || null;
 
     if (server) {
-      const model = (server.cpuModel || '').trim();
-      const isAMD = model.toLowerCase().includes('ryzen') ||
-                    model.toLowerCase().includes('epyc') ||
-                    model.toLowerCase().includes('threadripper');
-
       this.serverForm.patchValue({
-        cpuBrand: isAMD ? 'AMD' : 'Intel',
-        cpuModel: model,
+        name: server.name || '',                      // ← Only what was saved
+        cpuBrand: server.cpuModel?.toLowerCase().includes('ryzen') ||
+                  server.cpuModel?.toLowerCase().includes('epyc') ? 'AMD' : 'Intel',
+        cpuModel: server.cpuModel || '',
         cores: server.cores || 1,
         ramGB: server.ramGB || 1,
         storage: server.storage || '',
@@ -124,6 +122,7 @@ export class DedicatedComponent implements OnInit {
       });
     } else {
       this.serverForm.reset({
+        name: '',
         cpuBrand: 'AMD',
         cpuModel: '',
         cores: 1,
@@ -151,12 +150,12 @@ export class DedicatedComponent implements OnInit {
 
     this.saving = true;
     const v = this.serverForm.value;
-    const fullCpuModel = `${v.cpuBrand} ${v.cpuModel}`.trim();
 
     const payload = this.selectedServer
       ? {
           Id: this.selectedServer.id,
-          CpuModel: fullCpuModel,
+          Name: v.name.trim(),                          // ← Only what user typed
+          CpuModel: `${v.cpuBrand} ${v.cpuModel}`.trim(),
           Cores: +v.cores,
           RamGB: +v.ramGB,
           Storage: v.storage?.trim(),
@@ -167,7 +166,8 @@ export class DedicatedComponent implements OnInit {
           Description: v.description?.trim() || ''
         }
       : {
-          CpuModel: fullCpuModel,
+          Name: v.name.trim(),
+          CpuModel: `${v.cpuBrand} ${v.cpuModel}`.trim(),
           Cores: +v.cores,
           RamGB: +v.ramGB,
           Storage: v.storage?.trim(),
@@ -209,9 +209,7 @@ export class DedicatedComponent implements OnInit {
         this.deleteTarget = null;
         this.loadServers();
       },
-      error: () => {
-        alert('Failed to delete server');
-      }
+      error: () => alert('Failed to delete server')
     });
   }
 
