@@ -20,15 +20,13 @@
       <div class="card">
         <div class="card-body p-0">
 
-          <!-- Loading / Error / Empty States -->
+          <!-- Loading / Error / Empty -->
           <div *ngIf="loading" class="loading-state">
             <div class="spinner"></div>
             <p>Loading VPS plans...</p>
           </div>
 
-          <div *ngIf="error" class="alert-danger m-4">
-            {{ error }}
-          </div>
+          <div *ngIf="error" class="alert-danger m-4">{{ error }}</div>
 
           <div *ngIf="!loading && !vps.length && !error" class="empty-state">
             <h3>No VPS plans found</h3>
@@ -44,6 +42,7 @@
                   <th>Plan Name</th>
                   <th>Region</th>
                   <th>Specifications</th>
+                  <th>Connection</th>
                   <th>Price</th>
                   <th>Category</th>
                   <th class="text-end">Actions</th>
@@ -63,6 +62,11 @@
                     <strong>{{ plan.cores }} vCPU</strong> •
                     {{ plan.ramGB }} GB RAM •
                     {{ plan.storageGB }} GB {{ plan.storageType }}
+                  </td>
+                  <td>
+                    <span class="badge badge-info">
+                      <i class="fas fa-bolt"></i> {{ plan.connectionSpeedDisplay || '—' }}
+                    </span>
                   </td>
                   <td><strong>${{ plan.price | number:'1.2-2' }}/mo</strong></td>
                   <td>
@@ -95,16 +99,10 @@
 
 <!-- ==================== MODALS ==================== -->
 <ng-container>
-  <!-- Backdrop -->
-  <div class="modal-backdrop"
-       *ngIf="modalOpen || deleteConfirmOpen"
-       (click)="closeAllModals()">
-  </div>
+  <div class="modal-backdrop" *ngIf="modalOpen || deleteConfirmOpen" (click)="closeAllModals()"></div>
 
   <!-- Create / Edit Modal -->
-  <div class="modal"
-       *ngIf="modalOpen"
-       (click)="$event.stopPropagation()">
+  <div class="modal" *ngIf="modalOpen" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
         <h2>{{ selectedPlan ? 'Edit VPS Plan' : 'Create New VPS Plan' }}</h2>
@@ -114,13 +112,11 @@
       <form [formGroup]="vpsForm" (ngSubmit)="savePlan()" class="modal-body">
         <div class="form-grid">
 
-          <!-- Plan Name -->
           <div class="form-group">
             <label>Plan Name <span class="required">*</span></label>
-            <input type="text" formControlName="name" placeholder="e.g. Starter VPS, Pro Cloud" />
+            <input type="text" formControlName="name" placeholder="e.g. Starter VPS" />
           </div>
 
-          <!-- Region Select -->
           <div class="form-group">
             <label>Region <span class="required">*</span></label>
             <select formControlName="region" (change)="onRegionChange()">
@@ -131,47 +127,54 @@
             </select>
           </div>
 
-          <!-- Custom Region (shown only when Custom selected) -->
           <div class="form-group" *ngIf="vpsForm.get('region')?.value === 'custom'">
             <label>Custom Region Name <span class="required">*</span></label>
-            <input type="text" formControlName="customRegion" placeholder="e.g. Singapore, USA-West, Japan, Australia" />
+            <input type="text" formControlName="customRegion" placeholder="e.g. Singapore, USA" />
           </div>
 
-          <!-- vCPU Cores -->
           <div class="form-group">
             <label>vCPU Cores <span class="required">*</span></label>
             <input type="number" formControlName="cores" placeholder="2" min="1" />
           </div>
 
-          <!-- RAM -->
           <div class="form-group">
             <label>RAM (GB) <span class="required">*</span></label>
             <input type="number" formControlName="ramGB" placeholder="4" min="1" />
           </div>
 
-          <!-- Storage -->
           <div class="form-group">
             <label>Storage (GB) <span class="required">*</span></label>
             <input type="number" formControlName="storageGB" placeholder="50" min="1" />
           </div>
 
-          <!-- Storage Type -->
           <div class="form-group">
             <label>Storage Type</label>
             <select formControlName="storageType">
               <option value="SSD">SSD</option>
+              <option value="NVMe">NVMe</option>
               <option value="HDD">HDD</option>
-              <option value="HDD">NVMe</option>
             </select>
           </div>
 
-          <!-- Price -->
+          <!-- CONNECTION SPEED (Number + Unit) -->
+          <div class="form-group">
+            <label>Connection Speed <span class="required">*</span></label>
+            <div class="input-group">
+              <input type="number" formControlName="connectionSpeedValue" placeholder="10" min="1" class="form-control" />
+              <select formControlName="connectionSpeedUnit" class="form-control-append">
+                <option value="Mbps">Mbps</option>
+                <option value="Gbps">Gbps</option>
+                <option value="Unmetered">Unmetered</option>
+              </select>
+            </div>
+            <small class="text-muted">Enter speed (e.g. 10) and select unit. Choose "Unmetered" for unlimited.</small>
+          </div>
+
           <div class="form-group">
             <label>Price ($/mo) <span class="required">*</span></label>
             <input type="number" step="0.01" formControlName="price" placeholder="9.99" />
           </div>
 
-          <!-- Category -->
           <div class="form-group">
             <label>Category <span class="required">*</span></label>
             <select formControlName="category">
@@ -183,17 +186,13 @@
 
         </div>
 
-        <!-- Description -->
         <div class="form-group mt-4">
           <label>Description (optional)</label>
-          <textarea formControlName="description" rows="3" placeholder="High-performance VPS for developers, businesses, etc..."></textarea>
+          <textarea formControlName="description" rows="3" placeholder="High-performance VPS..."></textarea>
         </div>
 
-        <!-- Action Buttons -->
         <div class="modal-actions">
-          <button type="button" class="btn-outline" (click)="closeModal()" [disabled]="saving">
-            Cancel
-          </button>
+          <button type="button" class="btn-outline" (click)="closeModal()" [disabled]="saving">Cancel</button>
           <button type="submit" class="btn-primary" [disabled]="saving || vpsForm.invalid">
             <span *ngIf="saving" class="spinner-small"></span>
             {{ selectedPlan ? 'Save Changes' : 'Create Plan' }}
@@ -203,16 +202,12 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal modal-sm"
-       *ngIf="deleteConfirmOpen"
-       (click)="$event.stopPropagation()">
+  <!-- Delete Modal -->
+  <div class="modal modal-sm" *ngIf="deleteConfirmOpen" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Delete VPS Plan?</h3>
-        <button class="btn-icon" (click)="closeAllModals()">
-          <i class="fas fa-times"></i>
-        </button>
+        <button class="btn-icon" (click)="closeAllModals()"><i class="fas fa-times"></i></button>
       </div>
       <div class="modal-body text-center py-5">
         <i class="fas fa-exclamation-triangle text-danger" style="font-size: 56px;"></i>

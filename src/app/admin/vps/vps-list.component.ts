@@ -23,10 +23,6 @@ export class VpsListComponent implements OnInit {
   deleteTarget: any = null;
   saving = false;
 
-  // Dropdown options
-  regionOptions = ['france', 'germany', 'europe'];
-  categoryOptions = ['LowSpace', 'HighSpace', 'ByCore'];
-
   vpsForm!: FormGroup;
 
   constructor(
@@ -42,6 +38,8 @@ export class VpsListComponent implements OnInit {
       ramGB: [null, [Validators.required, Validators.min(1)]],
       storageGB: [null, [Validators.required, Validators.min(1)]],
       storageType: ['SSD'],
+      connectionSpeedValue: [1, [Validators.required, Validators.min(1)]],
+      connectionSpeedUnit: ['Gbps', Validators.required],
       price: [null, [Validators.required, Validators.min(0)]],
       category: ['LowSpace', Validators.required],
       description: ['']
@@ -59,49 +57,56 @@ export class VpsListComponent implements OnInit {
 
     this.vpsService.list().subscribe({
       next: (response: any) => {
-        let list: any[] = [];
-
         const extractArray = (data: any): any[] => {
           if (Array.isArray(data)) return data;
-          if (data && typeof data === 'object') {
-            if (data.data && Array.isArray(data.data)) return data.data;
-            if (data.vps && Array.isArray(data.vps)) return data.vps;
-            if (data.result && Array.isArray(data.result)) return data.result;
-            const found = Object.values(data).find(Array.isArray);
-            return found || [];
-          }
-          return [];
+          if (data?.data) return data.data;
+          if (data?.vps) return data.vps;
+          if (data?.result) return data.result;
+          return Object.values(data).find(Array.isArray) || [];
         };
 
-        if (Array.isArray(response)) {
-          list = response;
-        } else if (response && typeof response === 'object') {
-          list = 'data' in response ? extractArray(response.data) : extractArray(response);
-        }
+        const list = Array.isArray(response) ? response : extractArray(response);
 
-        this.vps = list.map((p: any) => ({
-          id: p.id ?? p.Id ?? p._id ?? '',
-          name: p.name ?? p.Name ?? 'Unnamed Plan',
-          region: p.region ?? p.Region ?? '',
-          cores: p.cores ?? p.Cores ?? 1,
-          ramGB: p.ramGB ?? p.RamGB ?? 1,
-          storageGB: p.storageGB ?? p.StorageGB ?? 10,
-          storageType: p.storageType ?? p.StorageType ?? 'SSD',
-          price: p.price ?? p.Price ?? 0,
-          category: p.category ?? p.Category ?? 'LowSpace',
-          description: p.description ?? ''
-        }));
+        this.vps = list.map((p: any) => {
+          const speed = this.parseConnectionSpeed(p.ConnectionSpeed || p.connectionSpeed || '1 Gbps');
+          return {
+            id: p.id ?? p.Id ?? p._id ?? '',
+            name: p.name ?? p.Name ?? 'Unnamed Plan',
+            region: p.region ?? p.Region ?? '',
+            cores: p.cores ?? p.Cores ?? 1,
+            ramGB: p.ramGB ?? p.RamGB ?? 1,
+            storageGB: p.storageGB ?? p.StorageGB ?? 10,
+            storageType: p.storageType ?? p.StorageType ?? 'SSD',
+            connectionSpeedValue: speed.value,
+            connectionSpeedUnit: speed.unit,
+            connectionSpeedDisplay: speed.display,
+            price: Number(p.price ?? p.Price ?? 0),
+            category: p.category ?? p.Category ?? 'LowSpace',
+            description: p.description ?? p.Description ?? ''
+          };
+        });
 
         this.loading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Load VPS failed:', err);
-        this.error = err?.error?.message || 'Failed to load VPS plans';
+        this.error = err?.error?.message || 'Failed to load plans';
         this.loading = false;
-        this.cdr.detectChanges();
       }
     });
+  }
+
+  private parseConnectionSpeed(input: string): any {
+    if (!input || input.toString().toLowerCase().includes('unmetered')) {
+      return { value: null, unit: 'Unmetered', display: 'Unmetered' };
+    }
+    const match = input.toString().match(/(\d+)\s*(Mbps|Gbps)?/i);
+    if (match) {
+      const value = parseInt(match[1], 10);
+      const unit = (match[2] || (value >= 1000 ? 'Gbps' : 'Mbps')).toLowerCase() === 'mbps' ? 'Mbps' : 'Gbps';
+      return { value, unit, display: value ? `${value} ${unit}` : 'Unmetered' };
+    }
+    return { value: 1, unit: 'Gbps', display: '1 Gbps' };
   }
 
   trackByPlanId = (index: number, item: any) => item.id;
@@ -111,7 +116,7 @@ export class VpsListComponent implements OnInit {
 
     if (plan) {
       const regionLower = (plan.region || '').toString().toLowerCase();
-      const isCustom = !this.regionOptions.includes(regionLower);
+      const isCustom = !['france', 'germany', 'europe'].includes(regionLower);
 
       this.vpsForm.patchValue({
         name: plan.name || '',
@@ -121,6 +126,8 @@ export class VpsListComponent implements OnInit {
         ramGB: plan.ramGB || 1,
         storageGB: plan.storageGB || 10,
         storageType: plan.storageType || 'SSD',
+        connectionSpeedValue: plan.connectionSpeedValue ?? 1,
+        connectionSpeedUnit: plan.connectionSpeedUnit ?? 'Gbps',
         price: plan.price || 0,
         category: plan.category || 'LowSpace',
         description: plan.description || ''
@@ -130,6 +137,8 @@ export class VpsListComponent implements OnInit {
         region: 'france',
         customRegion: '',
         storageType: 'SSD',
+        connectionSpeedValue: 10,
+        connectionSpeedUnit: 'Gbps',
         category: 'LowSpace'
       });
     }
@@ -143,8 +152,7 @@ export class VpsListComponent implements OnInit {
   }
 
   onRegionChange(): void {
-    const region = this.vpsForm.get('region')?.value;
-    if (region !== 'custom') {
+    if (this.vpsForm.get('region')?.value !== 'custom') {
       this.vpsForm.get('customRegion')?.setValue('');
     }
   }
@@ -153,29 +161,29 @@ export class VpsListComponent implements OnInit {
     if (this.vpsForm.invalid || this.saving) return;
 
     const v = this.vpsForm.value;
-
-    // Handle custom region
-    let finalRegion = v.region;
-    if (v.region === 'custom') {
-      if (!v.customRegion?.trim()) {
-        alert('Please enter a custom region name');
-        return;
-      }
-      finalRegion = v.customRegion.trim();
+    let finalRegion = v.region === 'custom' ? v.customRegion?.trim() : v.region;
+    if (v.region === 'custom' && !finalRegion) {
+      alert('Custom region name is required');
+      return;
     }
+
+    const speedValue = v.connectionSpeedValue;
+    const speedUnit = v.connectionSpeedUnit;
+    const connectionSpeed = speedUnit === 'Unmetered' ? 'Unmetered' : `${speedValue} ${speedUnit}`;
 
     this.saving = true;
 
     const data = {
       Id: this.selectedPlan?.id || 0,
-      Name: v.name?.trim() || '',
+      Name: v.name.trim(),
       Region: finalRegion,
-      Cores: v.cores || 1,
-      RamGB: v.ramGB || 1,
-      StorageGB: v.storageGB || 10,
-      StorageType: v.storageType || 'SSD',
-      Price: v.price || 0,
-      Category: v.category || 'LowSpace',
+      Cores: Number(v.cores),
+      RamGB: Number(v.ramGB),
+      StorageGB: Number(v.storageGB),
+      StorageType: v.storageType,
+      ConnectionSpeed: connectionSpeed,   // Saved exactly as "10 Gbps" or "Unmetered"
+      Price: Number(v.price),
+      Category: v.category,
       Description: v.description || ''
     };
 
@@ -190,8 +198,7 @@ export class VpsListComponent implements OnInit {
         this.loadVPS();
       },
       error: (err) => {
-        console.error('Save failed:', err);
-        alert('Failed to save plan: ' + (err?.error?.message || 'Unknown error'));
+        alert('Save failed: ' + (err?.error?.message || 'Unknown error'));
         this.saving = false;
       }
     });
@@ -203,18 +210,12 @@ export class VpsListComponent implements OnInit {
   }
 
   deleteConfirmed(): void {
-    if (!this.deleteTarget) return;
-
     this.vpsService.delete(this.deleteTarget.id).subscribe({
       next: () => {
-        this.deleteConfirmOpen = false;
-        this.deleteTarget = null;
+        this.closeAllModals();
         this.loadVPS();
       },
-      error: (err) => {
-        console.error('Delete failed:', err);
-        alert('Delete failed');
-      }
+      error: () => alert('Delete failed')
     });
   }
 

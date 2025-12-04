@@ -207,7 +207,13 @@ const DICT: Record<Lang, Record<string, string>> = {
     "binanceId": "Binance ID",
     "binanceEmail": "Binance Email",
     "network": "Network",
-    "loadingOrderDetails": "Loading order details..."
+    "loadingOrderDetails": "Loading order details...",
+    specialOffers: 'Special Offers',
+    discount: 'Discount',
+    ourHostingPackages: 'Our Hosting Packages',
+    limitedTimeDeals: 'Limited Time Deals',
+    choosePerfectPlan: 'Choose the perfect plan for your needs',
+
   },
   ar: {
     home: 'الرئيسية',
@@ -426,7 +432,12 @@ const DICT: Record<Lang, Record<string, string>> = {
       "network": "الشبكة",
       "loadingOrderDetails": "جاري تحميل تفاصيل الطلب...",
       confirmOrder: "تأكيد الطلب",
-      back: "عودة"
+      back: "عودة",
+      specialOffers: 'عروض خاصة',
+      discount: 'خصم',
+      ourHostingPackages: 'باقات الاستضافة الخاصة بنا',
+      limitedTimeDeals: 'عروض لفترة محدودة',
+      choosePerfectPlan: 'اختر الباقة المثالية لاحتياجاتك',
 
   }
 };

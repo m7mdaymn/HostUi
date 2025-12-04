@@ -24,8 +24,15 @@
   </div>
 </section>
 
+<!-- PROMOS SECTION -->
 <section class="pricing-section py-80">
   <div class="container">
+
+    <!-- Section Title -->
+    <div class="text-center mb-5">
+      <h2 class="section-main-title mb-3">{{ text('specialOffers') }}</h2>
+      <p class="section-subtitle">{{ text('limitedTimeDeals') }}</p>
+    </div>
 
     <div class="loading-state text-center py-5" *ngIf="loading">
       <div class="spinner"></div>
@@ -36,44 +43,41 @@
       <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
       <h3>{{ text('errorOccurred') }}</h3>
       <p class="text-muted">{{ error }}</p>
-      <button class="retry-btn" (click)="retryLoadPromos()">
-        {{ text('tryAgain') }}
-      </button>
+      <button class="retry-btn" (click)="retryLoadPromos()">{{ text('tryAgain') }}</button>
     </div>
 
     <div class="hosting-plans-grid" *ngIf="!loading && !error && promos.length">
-      <div
-        *ngFor="let promo of promos; let i = index"
-        class="hosting-plan-card-wrapper"
-        [class.featured]="isHighlighted(i)"
-      >
+      <div *ngFor="let promo of promos; let i = index" class="hosting-plan-card-wrapper" [class.featured]="isHighlighted(i)">
         <div class="hosting-plan-card" [class.featured]="isHighlighted(i)">
           <div class="hosting-popular-ribbon" *ngIf="isHighlighted(i)">
             <span>{{ text('mostPopular') }}</span>
           </div>
 
+          <div class="card-glow"></div>
+
           <div class="hosting-card-body">
+            <div class="plan-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+
             <h3 class="hosting-plan-name">{{ promo.title }}</h3>
             <p class="hosting-plan-desc">{{ promo.description || text('perfectSolution') }}</p>
 
             <div class="hosting-price-block">
               <div class="hosting-price-main">
-                <sup class="currency">%</sup>
-                <span class="amount">{{ promo.discountPercentage }}</span>
-                <sub class="period">/{{ text('perMonth') }}</sub>
+                <span class="discount-label">{{ text('discount') }}</span>
+                <div class="price-wrapper">
+                  <span class="amount">{{ promo.discountPercentage }}</span>
+                  <sup class="currency">%</sup>
+                </div>
+                <sub class="period">{{ text('off') }}</sub>
               </div>
-
-            <div class="hosting-price-note" *ngIf="promo.oldPrice">
-              <del>${{ promo.oldPrice }}/{{ text('perMonth') }}</del>
-              <span class="hosting-save-badge">
-                {{ text('save') }} {{ calculateSavePercent(promo.price, promo.oldPrice) }}%
-              </span>
-            </div>
             </div>
 
             <ul class="hosting-features-list" *ngIf="getFeatures(promo).length">
               <li *ngFor="let feature of getFeatures(promo)">
-                <span class="check-icon"></span> {{ feature }}
+                <span class="check-icon"></span>
+                <span class="feature-text">{{ feature }}</span>
               </li>
             </ul>
 
@@ -83,6 +87,113 @@
             </a>
 
             <div class="hosting-bonus">
+              <i class="fas fa-shield-check"></i>
+              <span>{{ text('moneyBack30') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REAL HOSTING PACKAGES SECTION -->
+<section class="pricing-section py-80" >
+  <div class="container">
+
+    <div class="text-center mb-5">
+      <h2 class="section-main-title mb-3">{{ text('ourHostingPackages') }}</h2>
+      <p class="section-subtitle">{{ text('choosePerfectPlan') }}</p>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state text-center py-5" *ngIf="packagesLoading">
+      <div class="spinner"></div>
+      <p class="mt-3">{{ text('loadingPackages') }}</p>
+    </div>
+
+    <!-- Error -->
+    <div class="error-state text-center py-5" *ngIf="packagesError && !packagesLoading">
+      <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+      <h3>{{ text('errorOccurred') }}</h3>
+      <p class="text-muted">{{ packagesError }}</p>
+      <button class="retry-btn" (click)="loadPackages()">{{ text('tryAgain') }}</button>
+    </div>
+
+    <!-- Packages Grid -->
+    <div class="hosting-plans-grid" *ngIf="!packagesLoading && !packagesError && packages.length">
+      <div
+        *ngFor="let pkg of packages; let i = index"
+        class="hosting-plan-card-wrapper"
+        [class.featured]="pkg.durationMonths === 6"
+      >
+        <div class="hosting-plan-card" [class.featured]="pkg.durationMonths === 6">
+
+          <!-- Best Value Ribbon -->
+          <div class="hosting-popular-ribbon" *ngIf="pkg.durationMonths === 6">
+            <span>{{ text('bestValue') }}</span>
+          </div>
+
+          <div class="card-glow"></div>
+
+          <div class="hosting-card-body">
+
+            <div class="plan-icon package-icon">
+              <i class="fas fa-server"></i>
+            </div>
+
+            <h3 class="hosting-plan-name">{{ pkg.name }}</h3>
+
+            <!-- Duration Badge -->
+            <div class="duration-badge">
+              <i class="fas fa-calendar-alt"></i>
+              <strong>{{ pkg.durationMonths }} {{ text('months') }}</strong>
+            </div>
+
+            <p class="hosting-plan-desc" *ngIf="pkg.description">{{ pkg.description }}</p>
+
+            <!-- Price -->
+            <div class="hosting-price-block">
+              <div class="hosting-price-main package-price">
+                <sup class="currency">$</sup>
+                <span class="amount">{{ getMonthlyPrice(pkg) }}</span>
+              </div>
+
+              <div class="hosting-price-total">
+                <small class="text-muted">
+                  {{ text('total') }}: <strong>${{ pkg.totalPrice | number:'1.2-2' }}</strong>
+                  <span *ngIf="pkg.durationMonths > 1">
+                    ({{ text('billedEvery') }} {{ pkg.durationMonths }} {{ text('months') }})
+                  </span>
+                </small>
+              </div>
+
+            </div>
+
+            <!-- Package Items (VPS/Dedicated) -->
+            <ul class="hosting-features-list" *ngIf="getPackageItems(pkg).length">
+              <li *ngFor="let item of getPackageItems(pkg)">
+                <span class="check-icon"></span>
+                <div class="feature-content">
+                  <span class="feature-text">
+                    <strong>{{ item.quantity }}×</strong> {{ item.productName || item.name }}
+                  </span>
+                  <small class="feature-note" *ngIf="item.productDescription || item.note">
+                    {{ item.productDescription || item.note }}
+                  </small>
+                </div>
+              </li>
+            </ul>
+
+            <!-- Order Button -->
+            <a [href]="getPackageOrderLink(pkg)" target="_blank" rel="noopener"
+               class="hosting-order-btn" [class.featured]="pkg.durationMonths === 6">
+              <span>{{ text('orderNow') }}</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <div class="hosting-bonus">
+              <i class="fas fa-shield-check"></i>
               <span>{{ text('moneyBack30') }}</span>
             </div>
           </div>
@@ -90,13 +201,15 @@
       </div>
     </div>
 
-    <div class="empty-state text-center py-5" *ngIf="!loading && !error && !promos.length">
+    <!-- Empty State -->
+    <div class="empty-state text-center py-5" *ngIf="!packagesLoading && !packagesError && !packages.length">
       <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-      <p class="text-muted">{{ text('noPromos') }}</p>
+      <p class="text-muted">{{ text('noPackagesAvailable') }}</p>
     </div>
   </div>
 </section>
 
+<!-- CTA -->
 <section class="cta-section">
   <div class="container">
     <div class="cta-content text-center">

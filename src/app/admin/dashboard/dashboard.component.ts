@@ -45,14 +45,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('Dashboard component initialized');
     this.loadStats();
     this.loadOrderData();
 
-    // Also load users directly in case stats endpoint doesn't provide them
     setTimeout(() => {
       if (this.recentUsers.length === 0) {
-        console.log('No recent users loaded yet, trying again...');
         this.loadRecentUsers();
       }
     }, 1000);
@@ -94,7 +91,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.chart = new Chart(this.orderChartRef.nativeElement, config);
         }
       },
-      error: () => console.error('Failed to load orders')
+      error: () => { /* error logged removed */ }
     });
   }
 
@@ -154,7 +151,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const weekLabels: string[] = [];
     const weekCounts: number[] = [];
 
-    // Calculate last 4 weeks
     for (let i = 3; i >= 0; i--) {
       const weekStart = new Date(now);
       weekStart.setDate(now.getDate() - (i * 7) - now.getDay());
@@ -230,7 +226,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    // Calculate last 6 months
     for (let i = 5; i >= 0; i--) {
       const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
@@ -286,39 +281,30 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotalOrders(): number {
-    // This will be calculated from the current view
-    return 0; // Placeholder
+    return 0;
   }
 
   loadOrderData(): void {
     this.ordersService.getAllOrders().subscribe({
-      next: () => {
-        // Data loaded, chart will update
-      },
-      error: () => console.error('Failed to load order data')
+      next: () => {},
+      error: () => { /* error logged removed */ }
     });
   }
 
   loadStats(): void {
     this.http.get(API_ENDPOINTS.DASHBOARD.STATS).subscribe({
       next: (res: any) => {
-        console.log('Stats response:', res);
         this.stats = res || {};
 
-        // Check if recentUsers are in the response
         if (this.stats.recentUsers && Array.isArray(this.stats.recentUsers) && this.stats.recentUsers.length > 0) {
           this.recentUsers = this.stats.recentUsers.slice(0, 5);
-          console.log('Recent users from stats:', this.recentUsers);
         } else {
-          // If not in stats, fetch separately
-          console.log('No recent users in stats, fetching separately');
           this.loadRecentUsers();
         }
 
         this.ensureCounts();
       },
-      error: (err) => {
-        console.error('Stats error:', err);
+      error: () => {
         this.ensureCounts();
         this.loadRecentUsers();
       }
@@ -340,7 +326,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             const list = Array.isArray(res) ? res : (res?.data || []);
             this.stats[s.key] = list.length;
           },
-          error: (err) => console.error(`Error loading ${s.key}:`, err)
+          error: () => { /* error logged removed */ }
         });
       }
     });
@@ -349,9 +335,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   loadRecentUsers(): void {
     this.usersService.list().subscribe({
       next: (res: any) => {
-        console.log('Users service response:', res);
-
-        // Handle different response formats
         let list: any[] = [];
         if (Array.isArray(res)) {
           list = res;
@@ -360,13 +343,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (res?.users && Array.isArray(res.users)) {
           list = res.users;
         } else {
-          console.warn('Unexpected user list format:', res);
           list = [];
         }
 
-        console.log('Extracted user list:', list);
-
-        // Sort by creation date (try multiple field names)
         this.recentUsers = list
           .sort((a: any, b: any) => {
             const dateA = new Date(a.createdAt || a.CreatedAt || a.created_at || a.created || 0).getTime();
@@ -374,11 +353,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             return dateB - dateA;
           })
           .slice(0, 5);
-
-        console.log('Recent users after sorting:', this.recentUsers);
       },
-      error: (err) => {
-        console.error('Error loading recent users:', err);
+      error: () => {
         this.recentUsers = [];
       }
     });
