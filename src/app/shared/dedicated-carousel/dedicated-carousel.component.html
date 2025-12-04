@@ -19,7 +19,6 @@
     <!-- Carousel -->
     <div *ngIf="!dedicatedLoading && !dedicatedError && dedicatedServers.length" class="dedicated-carousel-wrapper">
 
-      <!-- Previous Button (hidden on mobile via CSS) -->
       <button class="carousel-btn-dedicated prev-btn-dedicated" (click)="slideLeft()">
         <i class="fas fa-chevron-left"></i>
       </button>
@@ -104,8 +103,11 @@
                 <div class="feature-badge"><i class="fas fa-lock"></i><span>{{ translations.ddosProtection }}</span></div>
               </div>
 
-              <a [href]="getDedicatedOrderLink(server)" target="_blank" rel="noopener"
-                 class="dedicated-order-btn" [class.featured]="server.featured">
+              <!-- ONLY THIS LINE CHANGED – keeps all CSS 100% -->
+              <a (click)="orderNow(server); $event.preventDefault()"
+                 href="javascript:void(0)"
+                 class="dedicated-order-btn"
+                 [class.featured]="server.featured">
                 <span>{{ translations.configureServer }}</span>
                 <i class="fas fa-arrow-right"></i>
               </a>
@@ -119,7 +121,6 @@
         </div>
       </div>
 
-      <!-- Next Button (hidden on mobile via CSS) -->
       <button class="carousel-btn-dedicated next-btn-dedicated" (click)="slideRight()">
         <i class="fas fa-chevron-right"></i>
       </button>

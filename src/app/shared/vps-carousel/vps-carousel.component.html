@@ -5,27 +5,22 @@
       <p>{{ text('vpsCarouselDesc') }}</p>
     </div>
 
-    <!-- Loading -->
     <div *ngIf="vpsLoading" class="text-center py-5">
       <div class="spinner"></div>
       <p class="mt-3 text-muted">{{ text('loadingVps') }}</p>
     </div>
 
-    <!-- Error -->
     <div *ngIf="vpsError" class="text-center py-5 text-danger">
       {{ vpsError }}
     </div>
 
-    <!-- Carousel -->
     <div *ngIf="!vpsLoading && !vpsError && vpsServers.length" class="vps-carousel-wrapper">
-      <!-- Previous Button (hidden on mobile via CSS) -->
       <button class="carousel-btn prev-btn" (click)="slideLeft()">
         <i class="fas fa-chevron-left"></i>
       </button>
 
       <div class="vps-carousel-container">
         <div class="vps-carousel-track" [style.transform]="getTransformStyle()">
-
           <div *ngFor="let vps of vpsServers; let i = index" class="vps-card-hostinger">
             <div class="popular-badge" *ngIf="vps.featured">
               <span>{{ text('mostPopular') }}</span>
@@ -41,8 +36,6 @@
                   <span class="amount">{{ vps.price || '29' }}</span>
                   <sub class="period">/{{ text('perMonth') }}</sub>
                 </div>
-
-                <!-- Save Badge (with dynamic percent) -->
                 <div class="price-note" *ngIf="vps.oldPrice">
                   <del>${{ vps.oldPrice }}/{{ text('perMonth') }}</del>
                   <span class="save">{{ getSaveText(vps) }}</span>
@@ -57,8 +50,11 @@
                 <li><i class="fas fa-shield-alt"></i> {{ text('ddosAndBackups') }}</li>
               </ul>
 
-              <a [href]="getVPSOrderLink(vps)" target="_blank" rel="noopener"
-                 class="vps-order-btn-hostinger" [class.featured]="vps.featured">
+              <!-- FIXED: Same checkout flow, same styling -->
+              <a (click)="orderNow(vps); $event.preventDefault()"
+                 href="javascript:void(0)"
+                 class="vps-order-btn-hostinger"
+                 [class.featured]="vps.featured">
                 <span>{{ text('getStarted') }}</span>
                 <i class="fas fa-arrow-right"></i>
               </a>
@@ -71,7 +67,6 @@
         </div>
       </div>
 
-      <!-- Next Button (hidden on mobile via CSS) -->
       <button class="carousel-btn next-btn" (click)="slideRight()">
         <i class="fas fa-chevron-right"></i>
       </button>

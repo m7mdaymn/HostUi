@@ -1,0 +1,570 @@
+/* Order Component Styles - Matching Main Theme */
+
+/* Product Summary Card */
+.product-summary {
+  position: relative;
+  transform: skewX(-4deg);
+  transition: all 0.4s;
+}
+
+
+.product-summary .header-pricing,
+.product-summary ul,
+.product-summary .text-center {
+  transform: skewX(4deg);
+  transition: all 0.4s;
+}
+
+.product-summary:hover .header-pricing,
+.product-summary:hover ul,
+.product-summary:hover .text-center {
+  transform: skewX(0deg);
+}
+
+.product-summary .title {
+  color: var(--black-color);
+  margin-bottom: 15px;
+}
+
+.product-summary .home__theme {
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.product-summary .month {
+  font-size: 16px;
+  color: var(--black-color);
+  font-weight: 400;
+}
+
+.product-summary ul li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  color: var(--black-color);
+  font-weight: 500;
+}
+
+.product-summary ul li i {
+  font-size: 20px;
+  width: 24px;
+}
+
+.product-summary ul li:not(:last-child) {
+  border-bottom: 1px dashed #ebebeb;
+}
+
+/* Contact Section Styling */
+.contact__section #form {
+  padding: 40px 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset,
+              rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+  position: relative;
+}
+
+.contact__section #form h3 {
+  color: var(--black-color);
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* Form Controls */
+.contact__section #form .form-control {
+  padding: unset;
+  border: none;
+  margin-bottom: 25px;
+  padding-bottom: 0;
+  position: relative;
+}
+
+.contact__section #form .form-control label {
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  margin-bottom: 12px;
+  display: block;
+  color: var(--black-color);
+}
+
+.contact__section #form .form-control input,
+.contact__section #form .form-control textarea {
+  outline: 0;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  display: block;
+  width: 100%;
+  padding: 14px 15px;
+  font-size: 16px;
+  color: var(--black-color);
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.3s;
+}
+
+.contact__section #form .form-control input:focus,
+.contact__section #form .form-control textarea:focus {
+  outline: 0;
+  border-color: var(--theme-color);
+  box-shadow: 0 0 0 3px rgba(96, 212, 227, 0.1);
+}
+
+.contact__section #form .form-control.success input,
+.contact__section #form .form-control.success textarea {
+  border-color: #2ecc71;
+}
+
+.contact__section #form .form-control.error input,
+.contact__section #form .form-control.error textarea {
+  border-color: #e74c3c;
+}
+
+.contact__section #form .form-control small {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 8px;
+  display: block;
+  visibility: hidden;
+}
+
+.contact__section #form .form-control.error small {
+  visibility: visible;
+}
+
+/* Payment Methods Grid */
+.payment-methods-grid {
+  display: grid;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.payment-method-card {
+  border: 2px solid #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #ffffff;
+  box-shadow: rgb(204, 219, 232) 2px 2px 4px 0px inset,
+              rgba(255, 255, 255, 0.5) -2px -2px 4px 1px inset;
+}
+
+.payment-method-card:hover {
+  border-color: var(--theme-color);
+  box-shadow: rgba(96, 212, 227, 0.2) 0px 4px 12px;
+}
+
+.payment-method-card.active {
+  border-color: var(--theme-color);
+  box-shadow: rgba(96, 212, 227, 0.3) 0px 6px 20px;
+  background: linear-gradient(to bottom, #ffffff, #f0faff);
+}
+
+.payment-method-card .method-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  transition: all 0.3s;
+}
+
+.payment-method-card.active .method-header {
+  background: linear-gradient(135deg,
+    rgba(96, 212, 227, 0.1) 0%,
+    rgba(0, 205, 251, 0.05) 100%);
+}
+
+.payment-method-card .method-header i:first-child {
+  font-size: 28px;
+  color: #64748b;
+  transition: all 0.3s;
+}
+
+.payment-method-card.active .method-header i:first-child {
+  color: var(--theme-color);
+}
+
+.payment-method-card .method-header span {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--black-color);
+}
+
+.payment-method-card .method-header .check-icon {
+  font-size: 22px;
+  color: var(--theme-color);
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.payment-method-card.active .method-header .check-icon {
+  opacity: 1;
+}
+
+/* Payment Method Details */
+.method-details {
+  padding: 25px;
+  background: linear-gradient(to bottom, #f0faff, #ffffff);
+  border-top: 1px solid rgba(96, 212, 227, 0.2);
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* QR Code Section */
+.qr-section {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.qr-code {
+  width: 200px;
+  height: 250px;
+  border-radius: 12px;
+  border: 4px solid var(--white-color);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px;
+  object-fit: cover;
+}
+
+.payment-info {
+  text-align: center;
+  min-width: 200px;
+}
+
+.account-number {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--theme-color);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 4px rgba(96, 212, 227, 0.2);
+}
+
+.account-name {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.payment-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--black-color);
+  margin-top: 12px;
+}
+
+.payment-amount strong {
+  font-size: 22px;
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.payment-amount small {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+}
+
+/* Binance Section */
+.binance-section {
+  text-align: center;
+  padding: 20px;
+}
+
+.binance-id {
+  font-size: 32px;
+  font-weight: 900;
+  color: #f0b90b;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 4px;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(240, 185, 11, 0.2);
+}
+
+.binance-email {
+  font-size: 20px;
+  color: var(--black-color);
+  font-family: 'Courier New', monospace;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* File Upload */
+.file-upload-wrapper {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  margin-top: 10px;
+}
+
+.file-upload-wrapper:hover {
+  border-color: var(--theme-color);
+  background: linear-gradient(135deg,
+    rgba(96, 212, 227, 0.05) 0%,
+    rgba(0, 205, 251, 0.02) 100%);
+}
+
+.file-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-upload-content i.fa-camera {
+  font-size: 32px;
+  color: var(--theme-color);
+  margin-bottom: 5px;
+}
+
+.file-upload-content span {
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #16a34a !important;
+  font-weight: 600 !important;
+}
+
+.remove-file {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-left: 8px;
+}
+
+.remove-file:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.action-buttons button {
+  flex: 1;
+  min-width: 200px;
+  font-size: 16px;
+}
+
+.action-buttons .cmn--btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alerts */
+.alert {
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert i {
+  font-size: 20px;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  border: 2px solid #10b981;
+}
+
+.alert-error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border: 2px solid #ef4444;
+}
+
+/* Loading Wrapper */
+.loading-wrapper {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+.text-base {
+  color: var(--theme-color) !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 991px) {
+  .contact__section #form {
+    padding: 30px 20px;
+  }
+
+  .qr-section {
+    flex-direction: column;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .product-summary {
+    transform: skewX(0deg);
+    margin-bottom: 30px;
+  }
+
+  .product-summary .header-pricing,
+  .product-summary ul,
+  .product-summary .text-center {
+    transform: skewX(0deg);
+  }
+
+  .payment-method-card .method-header {
+    padding: 14px 16px;
+  }
+
+  .payment-method-card .method-header i:first-child {
+    font-size: 24px;
+  }
+
+  .payment-method-card .method-header span {
+    font-size: 16px;
+  }
+
+  .qr-code {
+    width: 120px;
+    height: 120px;
+  }
+
+  .account-number {
+    font-size: 20px;
+  }
+
+  .binance-id {
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .contact__section #form {
+    padding: 25px 15px;
+  }
+
+  .contact__section #form h3 {
+    font-size: 26px;
+  }
+
+  .contact__section #form .form-control label {
+    font-size: 16px;
+  }
+
+  .contact__section #form .form-control input,
+  .contact__section #form .form-control textarea {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .method-details {
+    padding: 20px 15px;
+  }
+
+  .qr-code {
+    width: 200px;
+    height: 200px;
+  }
+
+  .account-number {
+    font-size: 18px;
+  }
+
+  .payment-amount strong {
+    font-size: 18px;
+  }
+
+  .file-upload-wrapper {
+    padding: 20px 15px;
+  }
+
+  .file-upload-content i.fa-camera {
+    font-size: 28px;
+  }
+
+  .action-buttons {
+    gap: 12px;
+  }
+}

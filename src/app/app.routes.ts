@@ -48,6 +48,10 @@ export const routes: Routes = [
     loadComponent: () => import('./admin/dedicated/dedicated.component').then(m => m.DedicatedComponent),
     title: 'Admin - Dedicated'
   },
+  {
+  path: 'order-checkout',
+  loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
+},
 
   {
     path: 'admin/promos',
@@ -59,6 +63,12 @@ export const routes: Routes = [
     path: 'admin/packages',
     canActivate: [AdminGuard],
     loadComponent: () => import('./admin/packages/packages-list.component').then(m => m.PackagesListComponent),
+    title: 'Admin - Packages'
+  },
+  {
+    path: 'admin/orders',
+    canActivate: [AdminGuard],
+    loadComponent: () => import('./admin/orders-control/orders-control.component').then(m => m.OrdersControlComponent),
     title: 'Admin - Packages'
   },
   {

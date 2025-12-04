@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VpsService } from '../../core/services/vps.service';
 import { TranslateService } from '../../core/services/translate.service';
 
 interface VPS {
   id?: any;
+  Id?: any;                    // ← Support both id and Id
   name?: string;
   description?: string;
   cpu?: string;
@@ -32,12 +33,13 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   vpsServers: VPS[] = [];
 
   currentSlideIndex = 0;
-  cardWidth = 390; // Card width + gap (360px + 30px gap)
+  cardWidth = 390;
   isRTL = false;
   isMobile = false;
   showPeekAnimation = true;
 
   private translate = inject(TranslateService);
+  private router = inject(Router);     // ← Added
   private langSub!: Subscription;
   private peekInterval: any;
 
@@ -59,14 +61,10 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
 
     this.langSub = this.translate.lang.subscribe((lang) => {
       this.isRTL = lang === 'ar';
-      // Reset to first card when language changes
       this.currentSlideIndex = 0;
     });
 
-    // Start peek animation on mobile
-    if (this.isMobile) {
-      this.startPeekAnimation();
-    }
+    if (this.isMobile) this.startPeekAnimation();
   }
 
   ngOnDestroy(): void {
@@ -75,21 +73,15 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   }
 
   startPeekAnimation(): void {
-    // Stop animation after user interacts
-    this.peekInterval = setTimeout(() => {
-      this.showPeekAnimation = false;
-    }, 15000); // Stop after 15 seconds
+    this.peekInterval = setTimeout(() => this.showPeekAnimation = false, 15000);
   }
 
   stopPeekAnimation(): void {
-    if (this.peekInterval) {
-      clearTimeout(this.peekInterval);
-    }
+    clearTimeout(this.peekInterval);
     this.showPeekAnimation = false;
   }
 
   onUserInteraction(): void {
-    // Stop peek animation when user scrolls
     this.stopPeekAnimation();
   }
 
@@ -99,19 +91,11 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
     const wasMobile = this.isMobile;
     this.isMobile = w <= 768;
 
-    // Start peek animation when switching to mobile
     if (!wasMobile && this.isMobile && this.vpsServers.length > 0) {
       this.startPeekAnimation();
     }
 
-    if (w <= 768) {
-      // Mobile: full width card
-      this.cardWidth = w - 100; // Account for padding and arrows
-    } else if (w <= 1024) {
-      this.cardWidth = 390;
-    } else {
-      this.cardWidth = 390;
-    }
+    this.cardWidth = w <= 768 ? w - 100 : 390;
   }
 
   loadVPS(): void {
@@ -133,41 +117,22 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
 
   slideLeft(): void {
     if (this.vpsServers.length === 0) return;
-
-    // Infinite loop: if at first card, go to last card
-    if (this.currentSlideIndex === 0) {
-      this.currentSlideIndex = this.vpsServers.length - 1;
-    } else {
-      this.currentSlideIndex--;
-    }
+    this.currentSlideIndex = this.currentSlideIndex === 0
+      ? this.vpsServers.length - 1
+      : this.currentSlideIndex - 1;
   }
 
   slideRight(): void {
     if (this.vpsServers.length === 0) return;
-
-    // Infinite loop: if at last card, go to first card
-    if (this.currentSlideIndex >= this.vpsServers.length - 1) {
-      this.currentSlideIndex = 0;
-    } else {
-      this.currentSlideIndex++;
-    }
+    this.currentSlideIndex = this.currentSlideIndex >= this.vpsServers.length - 1
+      ? 0
+      : this.currentSlideIndex + 1;
   }
 
   getTransformStyle(): string {
-    // On mobile, don't apply transform - let native scrolling handle it
-    if (this.isMobile) {
-      return 'translateX(0)';
-    }
-
+    if (this.isMobile) return 'translateX(0)';
     const translateValue = this.currentSlideIndex * this.cardWidth;
-
-    if (this.isRTL) {
-      // For RTL, translate in positive direction
-      return `translateX(${translateValue}px)`;
-    } else {
-      // For LTR, translate in negative direction
-      return `translateX(-${translateValue}px)`;
-    }
+    return this.isRTL ? `translateX(${translateValue}px)` : `translateX(-${translateValue}px)`;
   }
 
   calculateSavePercent(current: any, old: any): number {
@@ -177,13 +142,20 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
     return Math.round(((o - c) / o) * 100);
   }
 
-  getVPSOrderLink(vps: VPS): string {
-    if (vps?.link) return vps.link;
+  // NEW: Same checkout flow as Dedicated & VPS pages
+  orderNow(vps: VPS): void {
+    const id = vps.id ?? vps.Id;
 
-    const msg = this.translate.current === 'ar'
-      ? `مرحباً، أنا مهتم بخطة ${vps?.name || 'VPS'}`
-      : `Hi, I'm interested in ${vps?.name || 'VPS'}`;
+    if (!id) {
+      const msg = this.isRTL
+        ? `مرحباً، أنا مهتم بخطة ${vps.name || 'VPS'}`
+        : `Hi, I'm interested in ${vps.name || 'VPS'}`;
+      window.open(`https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`, '_blank');
+      return;
+    }
 
-    return `https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`;
+    this.router.navigate(['/order-checkout'], {
+      queryParams: { id, type: 'vps' }
+    });
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // ← Added
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { TranslateService } from '../../core/services/translate.service';
 
@@ -22,7 +23,7 @@ interface Filters {
 export class DedicatedComponent implements OnInit, OnDestroy {
   products: any[] = [];
   filtered: any[] = [];
-  topThree: any[] = [];           // New: Dedicated array for top 3
+  topThree: any[] = [];
   loading = false;
   error: string | null = null;
   filterSidebarOpen = false;
@@ -36,6 +37,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
 
   private translate = inject(TranslateService);
   private http = inject(HttpClient);
+  private router = inject(Router); // ← Added Router
 
   text(key: string): string {
     return this.translate.t(key);
@@ -61,6 +63,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
   loadProducts(): void {
     this.loading = true;
     this.error = null;
+
     this.http.get(API_ENDPOINTS.DEDICATED.PRODUCTS_LIST).subscribe({
       next: (res: any) => {
         this.products = Array.isArray(res) ? res : (res.data || []);
@@ -68,7 +71,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
           .map(p => (p.brand || p.Brand || p.cpuModel || '').trim())
           .filter(Boolean)));
 
-        this.applyFilters(); // This will set both filtered & topThree
+        this.applyFilters();
         this.loading = false;
       },
       error: () => {
@@ -127,7 +130,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     }
 
     this.filtered = result;
-    this.topThree = this.getTopThreeDedicated(); // Critical: Update top 3
+    this.topThree = this.getTopThreeDedicated();
   }
 
   getActiveFilterCount(): number {
@@ -140,8 +143,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
   resetFilters(): void {
     this.filters = { cores: [], ram: [], brands: [], maxPrice: null };
     this.processorFilter = 'all';
-    this.filtered = [...this.products];
-    this.topThree = this.getTopThreeDedicated();
+    this.applyFilters();
   }
 
   toggleFilterSidebar(): void {
@@ -222,20 +224,13 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     return map[type] || this.text('highPerformanceDeal');
   }
 
-  // TrackBy functions
   trackByFn = (index: number, item: any) => item?.id || index;
   trackByTopThree = (index: number, item: any) => item?.server?.id || index;
 
+  // NOW SAME AS VPS: GO TO CHECKOUT PAGE
   orderNow(id: number): void {
-    this.http.get(API_ENDPOINTS.DEDICATED.ORDER_WHATSAPP(id.toString()), { responseType: 'text' as 'json' })
-      .subscribe({
-        next: (res: any) => {
-          const link = typeof res === 'string' ? res : (res?.link || res?.url || '');
-          window.open(link || `https://wa.me/+201063194547?text=I'm interested in Dedicated Server #${id}`, '_blank');
-        },
-        error: () => {
-          window.open(`https://wa.me/+201063194547?text=I'm interested in Dedicated Server #${id}`, '_blank');
-        }
-      });
+    this.router.navigate(['/order-checkout'], {
+      queryParams: { id, type: 'dedicated' }
+    });
   }
 }

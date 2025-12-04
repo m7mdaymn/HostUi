@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { DedicatedService } from '../../core/services/dedicated.service';
 import { TranslateService } from '../../core/services/translate.service';
 import { Subscription } from 'rxjs';
 
 interface DedicatedServer {
   id?: any;
+  Id?: any;                    // ← Added for backward compatibility
   name?: string;
   description?: string;
   cpu?: string;
@@ -35,11 +36,12 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   currentSlideIndex = 0;
   isRTL = false;
   isMobile = false;
-  cardWidth = 390; // 360px card + 30px gap
+  cardWidth = 390;
 
   translations: any = {};
-
   private langSub?: Subscription;
+
+  private router = inject(Router);
 
   constructor(
     private dedicatedService: DedicatedService,
@@ -60,14 +62,7 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
   updateCardWidth(): void {
     const w = window.innerWidth;
     this.isMobile = w <= 768;
-
-    if (w <= 768) {
-      this.cardWidth = w - 100; // Account for padding and arrows on mobile
-    } else if (w <= 1024) {
-      this.cardWidth = 390;
-    } else {
-      this.cardWidth = 390;
-    }
+    this.cardWidth = w <= 768 ? w - 100 : 390;
   }
 
   private loadDedicatedServers(): void {
@@ -89,7 +84,7 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
     this.langSub = this.translateService.lang.subscribe((lang) => {
       this.isRTL = lang === 'ar';
       this.updateTranslations();
-      this.currentSlideIndex = 0; // Reset to first card when language changes
+      this.currentSlideIndex = 0;
     });
     this.updateTranslations();
   }
@@ -123,41 +118,22 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
 
   slideLeft(): void {
     if (this.dedicatedServers.length === 0) return;
-
-    // Infinite loop: if at first card, go to last card
-    if (this.currentSlideIndex === 0) {
-      this.currentSlideIndex = this.dedicatedServers.length - 1;
-    } else {
-      this.currentSlideIndex--;
-    }
+    this.currentSlideIndex = this.currentSlideIndex === 0
+      ? this.dedicatedServers.length - 1
+      : this.currentSlideIndex - 1;
   }
 
   slideRight(): void {
     if (this.dedicatedServers.length === 0) return;
-
-    // Infinite loop: if at last card, go to first card
-    if (this.currentSlideIndex >= this.dedicatedServers.length - 1) {
-      this.currentSlideIndex = 0;
-    } else {
-      this.currentSlideIndex++;
-    }
+    this.currentSlideIndex = this.currentSlideIndex >= this.dedicatedServers.length - 1
+      ? 0
+      : this.currentSlideIndex + 1;
   }
 
   getCarouselTransform(): string {
-    // On mobile, don't apply transform - let native scrolling handle it
-    if (this.isMobile) {
-      return 'translateX(0)';
-    }
-
+    if (this.isMobile) return 'translateX(0)';
     const translateValue = this.currentSlideIndex * this.cardWidth;
-
-    if (this.isRTL) {
-      // For RTL, translate in positive direction
-      return `translateX(${translateValue}px)`;
-    } else {
-      // For LTR, translate in negative direction
-      return `translateX(-${translateValue}px)`;
-    }
+    return this.isRTL ? `translateX(${translateValue}px)` : `translateX(-${translateValue}px)`;
   }
 
   calculateSavePercent(current: any, old: any): number {
@@ -173,13 +149,21 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
     return this.translations.savePercent.replace('{percent}', percent.toString());
   }
 
-  getDedicatedOrderLink(server: DedicatedServer): string {
-    if (server?.link) return server.link;
+  // NEW: Same checkout flow as VPS & Dedicated pages
+  orderNow(server: DedicatedServer): void {
+    const id = server.id ?? server.Id; // Supports both id and Id
 
-    const msg = this.isRTL
-      ? `مرحباً، أنا مهتم بـ ${server?.name || 'Dedicated Server'}`
-      : `Hi, I am interested in ${server?.name || 'Dedicated Server'}`;
+    if (!id) {
+      // Fallback to WhatsApp if no ID (very rare)
+      const msg = this.isRTL
+        ? `مرحباً، أنا مهتم بـ ${server.name || 'خادم مخصص'}`
+        : `Hi, I'm interested in ${server.name || 'Dedicated Server'}`;
+      window.open(`https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`, '_blank');
+      return;
+    }
 
-    return `https://wa.me/+201063194547?text=${encodeURIComponent(msg)}`;
+    this.router.navigate(['/order-checkout'], {
+      queryParams: { id, type: 'dedicated' }
+    });
   }
 }

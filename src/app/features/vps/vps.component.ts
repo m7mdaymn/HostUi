@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // ← Added
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { TranslateService } from '../../core/services/translate.service';
 
@@ -46,6 +47,7 @@ export class VpsComponent implements OnInit, OnDestroy {
 
   private translate = inject(TranslateService);
   private http = inject(HttpClient);
+  private router = inject(Router); // ← Added
 
   text(key: string): string {
     return this.translate.t(key);
@@ -102,23 +104,19 @@ export class VpsComponent implements OnInit, OnDestroy {
   applyInstantFilter(): void {
     let result: any[] = [...this.products];
 
-    // STEP 1: Apply Space Filter FIRST (Low / High / All)
     if (this.spaceFilter !== 'all') {
-      // Sort all products by storage size
       const sorted = [...this.products].sort((a, b) =>
         this.getStorageGB(a) - this.getStorageGB(b)
       );
-
       const half = Math.ceil(sorted.length / 2);
 
       if (this.spaceFilter === 'low') {
-        result = sorted.slice(0, half);           // Only lowest storage half
+        result = sorted.slice(0, half);
       } else if (this.spaceFilter === 'high') {
-        result = sorted.slice(-half);             // Only highest storage half
+        result = sorted.slice(-half);
       }
     }
 
-    // STEP 2: Apply ALL other filters (cores, ram, price, etc.)
     if (this.filters.cores.length > 0) {
       result = result.filter(p =>
         this.filters.cores.includes(String(p.cores || p.Cores || '0'))
@@ -223,7 +221,7 @@ export class VpsComponent implements OnInit, OnDestroy {
     return parseInt(p.cores || p.Cores || '1', 10) || 1;
   }
 
-  // Featured Cards (unchanged)
+  // Featured Cards
   getCheapestLowSpace(): any {
     return [...this.products]
       .sort((a, b) => this.getStorageGB(a) - this.getStorageGB(b))[0] || null;
@@ -242,14 +240,10 @@ export class VpsComponent implements OnInit, OnDestroy {
 
   trackByFn = (index: number, item: any) => item?.id || item?.Id || index;
 
+  // UPDATED: Now navigates to checkout page
   orderNow(id: number): void {
-    this.http.get(API_ENDPOINTS.VPS.ORDER_WHATSAPP(id.toString()), { responseType: 'text' as 'json' })
-      .subscribe({
-        next: (res: any) => {
-          const link = typeof res === 'string' ? res : (res?.link || res?.url || '');
-          window.open(link || `https://wa.me/+201063194547?text=I'm interested in VPS #${id}`, '_blank');
-        },
-        error: () => window.open(`https://wa.me/+201063194547?text=I'm interested in VPS #${id}`, '_blank')
-      });
+    this.router.navigate(['/order-checkout'], {
+      queryParams: { id, type: 'vps' }
+    });
   }
 }

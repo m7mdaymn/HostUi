@@ -62,4 +62,9 @@ export const API_ENDPOINTS = {
     UPDATE: (id: string) => `${environment.apiUrl}/Promos/${id}`,
     DELETE: (id: string) => `${environment.apiUrl}/Promos/${id}`,
   },
+  ORDERS: {
+  CREATE: `${environment.apiUrl}/Orders`,
+  LIST: `${environment.apiUrl}/Orders`,
+  SINGLE: (id: number) => `${environment.apiUrl}/Orders/${id}`
+},
 };

@@ -1,8 +1,11 @@
 <div class="admin-shell">
-<app-admin-sidebar></app-admin-sidebar>
+  <app-admin-sidebar></app-admin-sidebar>
+
   <div class="admin-content">
     <app-admin-topbar></app-admin-topbar>
+
     <main class="dashboard-main">
+      <!-- Header -->
       <header class="dashboard-header">
         <div>
           <h1 class="title">Dashboard Overview</h1>
@@ -73,34 +76,90 @@
 
       <!-- Bottom Panels -->
       <section class="panels-grid">
+        <!-- Chart Panel with View Switcher -->
         <div class="panel activity-panel">
           <div class="panel-header">
-            <h3>System Activity</h3>
-            <span class="badge">Live</span>
+            <h3>Orders Analytics</h3>
+            <div class="chart-view-switcher">
+              <button
+                [class.active]="currentView === 'week'"
+                (click)="switchView('week')"
+                class="view-btn">
+                <i class="fas fa-calendar-day"></i> Week Days
+              </button>
+              <button
+                [class.active]="currentView === 'weeks'"
+                (click)="switchView('weeks')"
+                class="view-btn">
+                <i class="fas fa-calendar-week"></i> 4 Weeks
+              </button>
+              <button
+                [class.active]="currentView === 'months'"
+                (click)="switchView('months')"
+                class="view-btn">
+                <i class="fas fa-calendar-alt"></i> 6 Months
+              </button>
+            </div>
           </div>
-          <div class="chart-placeholder">
-            <p>Real-time analytics chart coming soon</p>
+
+          <div class="chart-container">
+            <canvas #orderChart></canvas>
+          </div>
+
+          <div class="chart-footer">
+            <div class="chart-stat">
+              <i class="fas fa-chart-line"></i>
+              <span>
+                <ng-container [ngSwitch]="currentView">
+                  <span *ngSwitchCase="'week'">Showing orders by day of the week</span>
+                  <span *ngSwitchCase="'weeks'">Showing orders for the last 4 weeks</span>
+                  <span *ngSwitchCase="'months'">Showing orders for the last 6 months</span>
+                </ng-container>
+              </span>
+            </div>
           </div>
         </div>
 
+        <!-- Recent Users Panel -->
         <div class="panel recent-users-panel">
           <div class="panel-header">
             <h3>Recent Users</h3>
-            <a routerLink="/admin/users" class="view-all">View all</a>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button
+                (click)="loadRecentUsers()"
+                class="refresh-users-btn"
+                title="Refresh users">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <a routerLink="/admin/users" class="view-all">View all</a>
+            </div>
           </div>
-          <div class="recent-list" *ngIf="recentUsers.length; else noUsers">
-            <div *ngFor="let user of recentUsers" class="user-item">
-              <div class="avatar">{{ (user.name || user.Name || user.email || '?')[0].toUpperCase() }}</div>
+
+          <!-- Debug info (remove after testing) -->
+          <div style="padding: 8px; background: #fef3c7; border-radius: 8px; margin-bottom: 12px; font-size: 12px;" *ngIf="recentUsers.length === 0">
+            <strong>Debug:</strong> Users array length: {{ recentUsers.length }}
+            <br>Stats object: {{ stats ? 'exists' : 'null' }}
+          </div>
+
+          <div class="recent-list" *ngIf="recentUsers.length > 0; else noUsers">
+            <div *ngFor="let user of recentUsers; let i = index" class="user-item">
+              <div class="avatar">
+                {{ (user.name || user.Name || user.username || user.email || '?')[0].toUpperCase() }}
+              </div>
               <div class="user-info">
-                <p class="name">{{ user.name || user.Name || user.email || 'Unknown' }}</p>
-                <p class="email">{{ user.email || user.Email || '-' }}</p>
+                <p class="name">{{ user.name || user.Name || user.username || user.email || 'User ' + (i + 1) }}</p>
+                <p class="email">{{ user.email || user.Email || user.mail || 'No email' }}</p>
               </div>
             </div>
           </div>
+
           <ng-template #noUsers>
             <div class="empty-state">
-              <i class="fas fa-inbox"></i>
-              <p>No recent activity</p>
+              <i class="fas fa-user-plus"></i>
+              <p>No users found</p>
+              <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 8px;">
+                Check console for debugging info
+              </small>
             </div>
           </ng-template>
         </div>
