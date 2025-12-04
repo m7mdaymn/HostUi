@@ -226,3 +226,4 @@ export class VpsListComponent implements OnInit {
     this.deleteTarget = null;
   }
 }
+
