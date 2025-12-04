@@ -7,17 +7,22 @@ import { TranslateService } from '../../core/services/translate.service';
 
 interface VPS {
   id?: any;
-  Id?: any;                    // ← Support both id and Id
+  Id?: any;
   name?: string;
   description?: string;
-  cpu?: string;
-  ram?: string;
-  storage?: string;
+  category?: string;
+  cores?: number;       // ← Changed from cpu string
+  ramGB?: number;       // ← Changed from ram string
+  storageGB?: number;   // ← Changed from storage string
+  storageType?: string; // ← Added
   bandwidth?: string;
+  connectionSpeed?: string; // ← Added
   price?: string | number;
   oldPrice?: string | number;
+  discount?: string;    // ← Added
   link?: string;
   featured?: boolean;
+  limited?: boolean;    // ← Added
 }
 
 @Component({
@@ -39,7 +44,7 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
   showPeekAnimation = true;
 
   private translate = inject(TranslateService);
-  private router = inject(Router);     // ← Added
+  private router = inject(Router);
   private langSub!: Subscription;
   private peekInterval: any;
 
@@ -105,10 +110,23 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
 
     this.vpsService.productsList().subscribe({
       next: (res) => {
-        this.vpsServers = Array.isArray(res) ? res : (res.data || []);
+        console.log('🔍 Raw backend response:', res);
+
+        // Extract array - your backend returns res.data or res directly
+        const rawData = Array.isArray(res) ? res : (res.data || []);
+
+        console.log('📦 Raw data array:', rawData);
+
+        // NO MAPPING NEEDED! Backend already uses the correct property names
+        // Just use the data as-is (it matches your VPS interface)
+        this.vpsServers = rawData;
+
+        console.log('✅ VPS servers loaded:', this.vpsServers);
+
         this.vpsLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ VPS loading error:', err);
         this.vpsError = this.text('unableToLoadVps') || 'Unable to load VPS servers.';
         this.vpsLoading = false;
       }
@@ -142,7 +160,6 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
     return Math.round(((o - c) / o) * 100);
   }
 
-  // NEW: Same checkout flow as Dedicated & VPS pages
   orderNow(vps: VPS): void {
     const id = vps.id ?? vps.Id;
 

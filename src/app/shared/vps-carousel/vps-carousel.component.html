@@ -28,12 +28,12 @@
 
             <div class="vps-card-body">
               <h3 class="vps-plan-name">{{ vps.name }}</h3>
-              <p class="vps-plan-desc">{{ vps.description || text('highPerformanceVps') }}</p>
+              <p class="vps-plan-desc">{{ vps.description || vps.category || text('highPerformanceVps') }}</p>
 
               <div class="vps-price-block">
                 <div class="price-main">
                   <sup class="currency">$</sup>
-                  <span class="amount">{{ vps.price || '29' }}</span>
+                  <span class="amount">{{ vps.price }}</span>
                   <sub class="period">/{{ text('perMonth') }}</sub>
                 </div>
                 <div class="price-note" *ngIf="vps.oldPrice">
@@ -43,14 +43,32 @@
               </div>
 
               <ul class="vps-specs-list">
-                <li><i class="fas fa-microchip"></i> <strong>{{ vps.cpu || '4' }}</strong> {{ text('vCpu') }}</li>
-                <li><i class="fas fa-memory"></i> <strong>{{ vps.ram || '8 GB' }}</strong> {{ text('ramLabel') }}</li>
-                <li><i class="fas fa-hdd"></i> <strong>{{ vps.storage || '160 GB' }}</strong> NVMe SSD</li>
-                <li><i class="fas fa-arrow-up"></i> <strong>{{ vps.bandwidth || '4 TB' }}</strong> {{ text('bandwidthLabel') }}</li>
-                <li><i class="fas fa-shield-alt"></i> {{ text('ddosAndBackups') }}</li>
+                <!-- FIXED: Use correct property names from backend -->
+                <li>
+                  <i class="fas fa-microchip"></i>
+                  <strong>{{ vps.cores }}</strong> {{ text('core') }}{{ vps.cores !== 1 ? 's' : '' }}
+                </li>
+                <li>
+                  <i class="fas fa-memory"></i>
+                  <strong>{{ vps.ramGB }} GB</strong> {{ text('ramLabel') }}
+                </li>
+                <li>
+                  <i class="fas fa-hdd"></i>
+                  <strong>{{ vps.storageGB }} GB</strong> {{ (vps.storageType || 'SSD') | uppercase }}
+                </li>
+                <li *ngIf="vps.bandwidth">
+                  <i class="fas fa-arrow-up"></i>
+                  <strong>{{ vps.bandwidth }}</strong> {{ text('bandwidthLabel') }}
+                </li>
+                <li *ngIf="vps.connectionSpeed">
+                  <i class="fas fa-gauge-high"></i>
+                  <strong>{{ vps.connectionSpeed }}</strong>
+                </li>
+                <li>
+                  <i class="fas fa-shield-alt"></i> {{ text('ddosAndBackups') }}
+                </li>
               </ul>
 
-              <!-- FIXED: Same checkout flow, same styling -->
               <a (click)="orderNow(vps); $event.preventDefault()"
                  href="javascript:void(0)"
                  class="vps-order-btn-hostinger"

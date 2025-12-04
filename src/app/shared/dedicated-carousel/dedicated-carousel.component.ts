@@ -7,17 +7,23 @@ import { Subscription } from 'rxjs';
 
 interface DedicatedServer {
   id?: any;
-  Id?: any;                    // ← Added for backward compatibility
+  Id?: any;
   name?: string;
   description?: string;
-  cpu?: string;
-  ram?: string;
-  storage?: string;
+  brand?: string;           // ← Added (Intel/AMD/etc)
+  cpuModel?: string;        // ← Added
+  cores?: number;           // ← Changed to number
+  ramGB?: number;           // ← Changed to number
+  storage?: string;         // ← Keep as string (e.g., "2x 1TB NVMe")
+  storageGB?: number;       // ← Added
   bandwidth?: string;
+  connectionSpeed?: string; // ← Added
   price?: string | number;
   oldPrice?: string | number;
+  discount?: string;        // ← Added
   link?: string;
   featured?: boolean;
+  limited?: boolean;        // ← Added
   ipAddresses?: string;
   location?: string;
 }
@@ -67,13 +73,28 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
 
   private loadDedicatedServers(): void {
     this.dedicatedLoading = true;
+    this.dedicatedError = '';
+
     this.dedicatedService.productsList().subscribe({
       next: (res) => {
-        this.dedicatedServers = Array.isArray(res) ? res : (res.data || []);
+        console.log('🔍 Raw dedicated backend response:', res);
+
+        // Extract array - backend returns res.data or res directly
+        const rawData = Array.isArray(res) ? res : (res.data || []);
+
+        console.log('📦 Raw dedicated data array:', rawData);
+
+        // NO MAPPING NEEDED! Backend already uses correct property names
+        // Just use the data as-is (matches DedicatedServer interface)
+        this.dedicatedServers = rawData;
+
+        console.log('✅ Dedicated servers loaded:', this.dedicatedServers);
+
         this.dedicatedLoading = false;
         this.currentSlideIndex = 0;
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Dedicated loading error:', err);
         this.dedicatedError = 'Unable to load Dedicated servers.';
         this.dedicatedLoading = false;
       }
@@ -112,7 +133,9 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
       configureServer: t('configureServer'),
       uptimeGuarantee: t('uptimeGuarantee'),
       exploreAllDedicated: t('exploreAllDedicated'),
-      swipeToExplore: t('swipeToExplore')
+      swipeToExplore: t('swipeToExplore'),
+      core: t('core'),
+      cores: t('cores')
     };
   }
 
@@ -149,12 +172,10 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
     return this.translations.savePercent.replace('{percent}', percent.toString());
   }
 
-  // NEW: Same checkout flow as VPS & Dedicated pages
   orderNow(server: DedicatedServer): void {
-    const id = server.id ?? server.Id; // Supports both id and Id
+    const id = server.id ?? server.Id;
 
     if (!id) {
-      // Fallback to WhatsApp if no ID (very rare)
       const msg = this.isRTL
         ? `مرحباً، أنا مهتم بـ ${server.name || 'خادم مخصص'}`
         : `Hi, I'm interested in ${server.name || 'Dedicated Server'}`;
