@@ -30,8 +30,8 @@
             <ul class="submenu" [class.active]="activeSubmenu === 'hosting'"
                 (mouseenter)="onMenuItemEnter('hosting')"
                 (mouseleave)="onMenuItemLeave()">
-              <li><a [routerLink]="'/dedicated'" (click)="closeMobileMenu()">Dedicated</a></li>
-              <li><a [routerLink]="'/vps'" (click)="closeMobileMenu()">VPS</a></li>
+              <li><a [routerLink]="'/dedicated'" (click)="closeMobileMenu()">{{text('navdedicated')}}</a></li>
+              <li><a [routerLink]="'/vps'" (click)="closeMobileMenu()">{{text('navvps')}}</a></li>
             </ul>
           </li>
 

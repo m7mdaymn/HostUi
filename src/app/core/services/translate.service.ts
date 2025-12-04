@@ -213,6 +213,8 @@ const DICT: Record<Lang, Record<string, string>> = {
     ourHostingPackages: 'Our Hosting Packages',
     limitedTimeDeals: 'Limited Time Deals',
     choosePerfectPlan: 'Choose the perfect plan for your needs',
+    navdedicated: 'Dedicated',
+    navvps: 'VPS',
 
   },
   ar: {
@@ -438,6 +440,8 @@ const DICT: Record<Lang, Record<string, string>> = {
       ourHostingPackages: 'باقات الاستضافة الخاصة بنا',
       limitedTimeDeals: 'عروض لفترة محدودة',
       choosePerfectPlan: 'اختر الباقة المثالية لاحتياجاتك',
+      navdedicated: 'مخصصة',
+      navvps: 'VPS',
 
   }
 };
