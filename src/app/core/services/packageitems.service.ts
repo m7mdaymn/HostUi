@@ -1,17 +1,21 @@
-// src/app/core/services/package-items.service.ts  (rename if needed)
+// src/app/core/services/packageitems.service.ts
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../constant/apiendpoints';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class PackageItemsService {
   constructor(private http: HttpClient) {}
 
   getItems(packageId: string): Observable<any> {
-    return this.http.get(`${API_ENDPOINTS.PACKAGES.SINGLE(packageId)}/items`);
-
+    return this.http.get(API_ENDPOINTS.PACKAGE_ITEMS.LIST, {
+      params: { packageId }
+    });
+    // Calls: GET /api/PackageItems?packageId=14
   }
 
   addItem(payload: any): Observable<any> {

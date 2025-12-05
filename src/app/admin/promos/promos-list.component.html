@@ -44,7 +44,6 @@
                   <th>Title</th>
                   <th>Discount</th>
                   <th>Description</th>
-                  <th>Status</th>
                   <th class="text-end">Actions</th>
                 </tr>
               </thead>
@@ -64,22 +63,9 @@
                     {{ promo.description ? (promo.description.length > 60 ? (promo.description | slice:0:60) + '...' : promo.description) : '—' }}
                   </td>
                   <td>
-                    <span class="badge"
-                          [class.badge-success]="promo.isActive"
-                          [class.badge-secondary]="!promo.isActive">
-                      {{ promo.isActive ? 'Active' : 'Inactive' }}
-                    </span>
-                  </td>
-                  <td>
                     <div class="actions-group">
                       <button class="btn-icon" (click)="openPromoModal(promo)" title="Edit">
                         <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="btn-icon"
-                              [class.text-danger]="!promo.isActive"
-                              (click)="toggleActive(promo)"
-                              title="Toggle Status">
-                        <i class="fas fa-power-off"></i>
                       </button>
                       <button class="btn-icon text-danger" (click)="confirmDelete(promo)" title="Delete">
                         <i class="fas fa-trash"></i>
@@ -130,7 +116,7 @@
             <label>Status</label>
             <div style="padding-top: 8px;">
               <input type="checkbox" formControlName="isActive" style="width:18px;height:18px;cursor:pointer;" />
-              <span style="margin-left:8px;font-size:14px;color:#475569;">Enable this promotion</span>
+              <span style="margin-left:8px;font-size:14px;">Enable this promotion</span>
             </div>
           </div>
         </div>

@@ -313,7 +313,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     close: 'إغلاق',
     bestDeals: 'أفضل العروض هذا الشهر',
     topDedicatedThisMonth: 'أفضل الخوادم مخصصة هذا الشهر',
-    moneyBackUptimeSupport: 'ضمان استرداد 30 يوم · تشغيل 99.9% · دعم 24/7',
+    moneyBackUptimeSupport: 'ضمان استرداد 24 ساعة · تشغيل 99.9% · دعم 24/7',
     bestIntel: 'أفضل سعر Intel',
     bestAmd: 'أفضل سعر AMD',
     bestValue: 'أفضل قيمة',

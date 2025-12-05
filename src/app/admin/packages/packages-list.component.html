@@ -133,14 +133,16 @@
 
           <div class="form-group">
             <label>Product <span class="required">*</span></label>
-            <select formControlName="productId">
+            <select formControlName="productId" [disabled]="productsLoading">
               <option value="">-- Select Product --</option>
-              <option *ngFor="let prod of (itemForm.value.productType === 'vps' ? vps : dedicated)"
-                      [value]="prod.id ?? prod._id">
+              <option *ngFor="let prod of currentProducts" [value]="prod.id ?? prod._id">
                 {{ prod.name || prod.brand || 'Unnamed' }}
-                <span class="text-muted">({{ prod.ram }}GB RAM, {{ prod.cpu }} CPU)</span>
+                ({{ prod.ram }}GB RAM, {{ prod.cpu || prod.cores }} CPU)
               </option>
             </select>
+            <div *ngIf="productsLoading" class="text-muted small mt-1">
+              Loading servers...
+            </div>
           </div>
 
           <div class="form-group">
@@ -184,7 +186,7 @@
                 <td><strong>{{ item.displayType }}</strong></td>
                 <td>
                   <div><strong>{{ item.productName }}</strong></div>
-                  <small class="muted">{{ item.productDescription }}</small>
+                  <small class="text-muted">{{ item.productDescription }}</small>
                 </td>
                 <td><strong>{{ item.quantity }}</strong></td>
                 <td class="muted">{{ item.note || '—' }}</td>
