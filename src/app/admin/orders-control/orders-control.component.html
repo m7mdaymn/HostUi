@@ -5,6 +5,7 @@
     <app-admin-topbar></app-admin-topbar>
 
     <main class="dashboard-main">
+      <!-- ==================== HEADER ==================== -->
       <header class="dashboard-header">
         <div>
           <h1 class="title">Orders Control Panel</h1>
@@ -18,52 +19,68 @@
         </div>
       </header>
 
-      <!-- CREATE ORDER FORM -->
+      <!-- ==================== CREATE ORDER FORM ==================== -->
       <div class="card" *ngIf="showCreateForm" style="margin-bottom:32px; animation: slideDown 0.4s ease;">
         <div class="card-body">
           <h2 style="margin:0 0 24px; font-size:20px; font-weight:700; color:#1e293b;">
-            <i class="fas fa-plus-circle" style="color:#3b82f6;"></i> Create New Order
+            Create New Order
           </h2>
 
           <form [formGroup]="orderForm" (ngSubmit)="createOrder()">
+
             <!-- Customer Information -->
             <div class="form-section">
               <h3 class="section-title">
-                <i class="fas fa-user"></i> Customer Information
+                <i class="fas fa-user"></i>
+                Customer Information
               </h3>
               <div class="form-grid">
                 <div class="form-group">
                   <label>Customer Name <span class="required">*</span></label>
-                  <input formControlName="customerName" placeholder="Ahmed Mohamed" />
+                  <input formControlName="customerName" placeholder="Ahmed Mohamed" type="text" />
                   <small class="error-text" *ngIf="orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched">
                     Name is required (min 2 characters)
                   </small>
                 </div>
                 <div class="form-group">
                   <label>Phone Number <span class="required">*</span></label>
-                  <input formControlName="phoneNumber" placeholder="+201234567890" />
+                  <input formControlName="phoneNumber" placeholder="01001234567" type="tel" />
                   <small class="error-text" *ngIf="orderForm.get('phoneNumber')?.invalid && orderForm.get('phoneNumber')?.touched">
-                    Valid phone number required
+                    Enter valid Egyptian phone number
                   </small>
                 </div>
+              </div>
+            </div>
+
+            <!-- Operating System Selection -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <i class="fas fa-desktop"></i>
+                Operating System <span class="required">*</span>
+              </h3>
+              <div class="os-selection">
+                <label *ngFor="let os of operatingSystems" class="os-card" [class.selected]="orderForm.get('OS')?.value === os.value">
+                  <input type="radio" formControlName="OS" [value]="os.value" hidden />
+                  <div class="os-content">
+                    <i [class]="os.icon"></i>
+                    <span>{{ os.label }}</span>
+                  </div>
+                  <div class="check-icon" *ngIf="orderForm.get('OS')?.value === os.value">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                </label>
               </div>
             </div>
 
             <!-- Payment Method -->
             <div class="form-section">
               <h3 class="section-title">
-                <i class="fas fa-credit-card"></i> Payment Method
+                <i class="fas fa-credit-card"></i>
+                Payment Method <span class="required">*</span>
               </h3>
               <div class="payment-methods">
-                <label
-                  *ngFor="let method of paymentMethods"
-                  class="payment-method-card"
-                  [class.selected]="orderForm.get('paymentMethod')?.value === method.value">
-                  <input
-                    type="radio"
-                    formControlName="paymentMethod"
-                    [value]="method.value"
-                    style="display: none;">
+                <label *ngFor="let method of paymentMethods" class="payment-method-card" [class.selected]="orderForm.get('paymentMethod')?.value === method.value">
+                  <input type="radio" formControlName="paymentMethod" [value]="method.value" hidden />
                   <div class="method-content">
                     <i class="fas" [class]="method.icon"></i>
                     <span>{{ method.label }}</span>
@@ -78,14 +95,15 @@
               </small>
             </div>
 
-            <!-- Product Selection -->
+            <!-- Product Type Selection -->
             <div class="form-section">
               <h3 class="section-title">
-                <i class="fas fa-server"></i> Select Product Type
+                <i class="fas fa-server"></i>
+                Product Type <span class="required">*</span>
               </h3>
               <div class="product-type-selector">
                 <label class="product-type-card" [class.selected]="selectedProductType === 'vps'">
-                  <input type="radio" formControlName="productType" value="vps" style="display: none;">
+                  <input type="radio" formControlName="productType" value="vps" hidden />
                   <div class="type-icon vps-icon">
                     <i class="fas fa-server"></i>
                   </div>
@@ -99,7 +117,7 @@
                 </label>
 
                 <label class="product-type-card" [class.selected]="selectedProductType === 'dedicated'">
-                  <input type="radio" formControlName="productType" value="dedicated" style="display: none;">
+                  <input type="radio" formControlName="productType" value="dedicated" hidden />
                   <div class="type-icon dedicated-icon">
                     <i class="fas fa-microchip"></i>
                   </div>
@@ -117,13 +135,14 @@
             <!-- VPS Selection -->
             <div class="form-section" *ngIf="selectedProductType === 'vps'">
               <h3 class="section-title">
-                <i class="fas fa-list"></i> Choose VPS Plan
+                <i class="fas fa-list"></i>
+                Choose VPS Plan <span class="required">*</span>
               </h3>
               <div class="form-group">
                 <select formControlName="selectedVps">
-                  <option [ngValue]="null" disabled selected>— Select a VPS Plan —</option>
+                  <option [ngValue]="null" disabled>— Select a VPS Plan —</option>
                   <option *ngFor="let vps of vpsList" [value]="vps.id">
-                    {{ vps.name }} — {{ vps.cores }}vCPU / {{ vps.ramGB }}GB RAM / {{ vps.storageGB }}GB — ${{ vps.price }}/month
+                    {{ vps.name }} — {{ vps.cores }} Cores • {{ vps.ramGB }}GB RAM • {{ vps.storageGB }}GB {{ vps.storageType || 'NVMe' }} • ${{ vps.price }}/mo
                   </option>
                 </select>
               </div>
@@ -132,13 +151,14 @@
             <!-- Dedicated Selection -->
             <div class="form-section" *ngIf="selectedProductType === 'dedicated'">
               <h3 class="section-title">
-                <i class="fas fa-list"></i> Choose Dedicated Server
+                <i class="fas fa-list"></i>
+                Choose Dedicated Server <span class="required">*</span>
               </h3>
               <div class="form-group">
                 <select formControlName="selectedDedicated">
-                  <option [ngValue]="null" disabled selected>— Select a Dedicated Server —</option>
+                  <option [ngValue]="null" disabled>— Select a Dedicated Server —</option>
                   <option *ngFor="let ded of dedicatedList" [value]="ded.id">
-                    {{ ded.name }} — {{ ded.cores }} Cores / {{ ded.ramGB }}GB RAM — ${{ ded.price }}/month
+                    {{ ded.name }} — {{ ded.cpuModel || ded.cores + ' Cores' }} • {{ ded.ramGB }}GB RAM • ${{ ded.price }}/mo
                   </option>
                 </select>
               </div>
@@ -147,15 +167,16 @@
             <!-- Payment Proof -->
             <div class="form-section">
               <h3 class="section-title">
-                <i class="fas fa-image"></i> Payment Proof (Optional)
+                <i class="fas fa-image"></i>
+                Payment Proof (Optional)
               </h3>
               <div class="form-group">
                 <div class="file-upload-area">
                   <input #fileInput type="file" accept="image/*" (change)="onFileChange($event)" id="fileUpload" />
                   <label for="fileUpload" class="file-upload-label">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <span *ngIf="!orderForm.get('paymentImage')?.value">Click to upload payment screenshot</span>
-                    <span *ngIf="orderForm.get('paymentImage')?.value" style="color:#16a34a;">
+                    <span *ngIf="!orderForm.get('paymentImage')?.value">Click to upload screenshot</span>
+                    <span *ngIf="orderForm.get('paymentImage')?.value" style="color:#16a34a; font-weight:600;">
                       <i class="fas fa-check-circle"></i> {{ orderForm.get('paymentImage')?.value.name }}
                     </span>
                   </label>
@@ -168,38 +189,33 @@
               <button type="button" class="btn-outline" (click)="toggleCreateForm()">
                 <i class="fas fa-times"></i> Cancel
               </button>
-              <button
-                type="submit"
-                class="btn-primary"
-                [disabled]="isLoading || loadingProducts || orderForm.invalid">
-                <span *ngIf="loadingProducts">
-                  <span class="spinner-small"></span> Loading Plans...
-                </span>
-                <span *ngIf="isLoading && !loadingProducts">
-                  <span class="spinner-small"></span> Creating...
-                </span>
-                <span *ngIf="!isLoading && !loadingProducts">
-                  <i class="fas fa-check"></i> Create Order
-                </span>
+              <button type="submit" class="btn-primary" [disabled]="isLoading || loadingProducts || orderForm.invalid">
+                <i class="fas" [class.fa-spinner]="isLoading || loadingProducts" [class.fa-spin]="isLoading || loadingProducts" [class.fa-check]="!isLoading && !loadingProducts"></i>
+                <span *ngIf="loadingProducts">Loading Plans...</span>
+                <span *ngIf="isLoading && !loadingProducts">Creating Order...</span>
+                <span *ngIf="!isLoading && !loadingProducts">Create Order</span>
               </button>
             </div>
           </form>
 
           <div class="alert-danger" *ngIf="error">
-            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error }}</span>
           </div>
           <div class="alert-success" *ngIf="message">
-            <i class="fas fa-check-circle"></i> {{ message }}
+            <i class="fas fa-check-circle"></i>
+            <span>{{ message }}</span>
           </div>
         </div>
       </div>
 
-      <!-- ORDERS TABLE -->
+      <!-- ==================== ORDERS TABLE ==================== -->
       <div class="card">
         <div class="card-body p-0">
           <div class="table-header">
             <h2>
-              <i class="fas fa-shopping-cart"></i> All Orders
+              <i class="fas fa-list-alt"></i>
+              All Orders
               <span class="count-badge">{{ orders.length }}</span>
             </h2>
           </div>
@@ -207,42 +223,39 @@
           <div *ngIf="orders.length === 0" class="empty-state">
             <i class="fas fa-inbox"></i>
             <h3>No orders yet</h3>
-            <p>Click the "Create New Order" button above to get started.</p>
+            <p>Click "Create New Order" to add your first order.</p>
           </div>
 
-          <div class="table-responsive" *ngIf="orders.length">
+          <div class="table-responsive" *ngIf="orders.length > 0">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Order ID</th>
+                  <th>ID</th>
                   <th>Customer</th>
                   <th>Phone</th>
+                  <th>OS</th>
                   <th>Payment</th>
                   <th>Product</th>
                   <th>Date</th>
-                  <th class="text-center">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let o of orders">
-                  <td>
-                    <code class="id-badge">#{{ o.id }}</code>
-                  </td>
-                  <td>
-                    <div class="user-info">
-                      <div class="name">{{ o.customerName }}</div>
-                    </div>
-                  </td>
+                  <td><code class="id-badge">#{{ o.id }}</code></td>
+                  <td><strong>{{ o.customerName }}</strong></td>
                   <td>
                     <a [href]="'https://wa.me/' + o.phoneNumber" target="_blank" class="phone-link">
                       <i class="fab fa-whatsapp"></i> {{ o.phoneNumber }}
                     </a>
                   </td>
                   <td>
-                    <span class="payment-badge">
-                      <i class="fas" [class]="getPaymentMethodIcon(o.paymentMethod)"></i>
-                      {{ getPaymentMethodLabel(o.paymentMethod) }}
+                    <span class="os-badge" [class.linux]="o.OS === 'linux'" [class.windows]="o.OS === 'windows'">
+                      {{ o.OS === 'linux' ? 'Linux' : 'Windows' }}
                     </span>
+                  </td>
+                  <td>
+                    <span class="payment-badge">{{ getPaymentMethodLabel(o.paymentMethod) }}</span>
                   </td>
                   <td>
                     <span class="product-badge" [class]="getProductBadgeClass(o)">
@@ -250,7 +263,7 @@
                     </span>
                   </td>
                   <td>{{ o.createdAt | date:'MMM d, y • h:mm a' }}</td>
-                  <td class="text-center">
+                  <td>
                     <button class="btn-icon" (click)="viewOrder(o)" title="View Details">
                       <i class="fas fa-eye"></i>
                     </button>
@@ -265,113 +278,102 @@
   </div>
 </div>
 
-<!-- ORDER DETAILS MODAL -->
+<!-- ==================== ORDER DETAILS MODAL ==================== -->
 <div class="modal-backdrop" *ngIf="selectedOrder || isLoadingDetails" (click)="closeDetails()"></div>
+
 <div class="modal" *ngIf="selectedOrder || isLoadingDetails" (click)="$event.stopPropagation()">
   <div class="modal-content">
     <div class="modal-header">
-      <h2>
-        <i class="fas fa-file-invoice"></i> Order #{{ selectedOrder?.id || '...' }}
-      </h2>
-      <button class="btn-icon" (click)="closeDetails()">
+      <h2><i class="fas fa-file-invoice"></i> Order #{{ selectedOrder?.id || '...' }}</h2>
+      <button class="btn-icon" (click)="closeDetails()" title="Close">
         <i class="fas fa-times"></i>
       </button>
     </div>
 
     <div class="modal-body">
-      <!-- Loading State -->
       <div *ngIf="isLoadingDetails" class="text-center py-5">
         <div class="spinner"></div>
-        <p>Loading order details...</p>
+        <p style="color:#64748b; font-weight:500;">Loading order details...</p>
       </div>
 
-      <!-- Order Details -->
       <div *ngIf="selectedOrder && !isLoadingDetails">
-        <!-- Customer Info Section -->
+        <!-- Customer Information -->
         <div class="detail-section">
-          <h3 class="detail-section-title">
-            <i class="fas fa-user"></i> Customer Information
-          </h3>
+          <h3 class="detail-section-title"><i class="fas fa-user"></i> Customer Information</h3>
           <div class="detail-grid">
             <div class="detail-item">
-              <span class="detail-label">Customer Name</span>
+              <span class="detail-label">Name</span>
               <span class="detail-value">{{ selectedOrder.customerName }}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Phone (WhatsApp)</span>
-              <span class="detail-value">
-                <a [href]="'https://wa.me/' + selectedOrder.phoneNumber" target="_blank" class="phone-link">
-                  <i class="fab fa-whatsapp"></i> {{ selectedOrder.phoneNumber }}
-                </a>
+              <span class="detail-label">Phone</span>
+              <a [href]="'https://wa.me/' + selectedOrder.phoneNumber" target="_blank" class="phone-link">
+                <i class="fab fa-whatsapp"></i> {{ selectedOrder.phoneNumber }}
+              </a>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Operating System</span>
+              <span class="os-badge" [class.linux]="selectedOrder.OS === 'linux'" [class.windows]="selectedOrder.OS === 'windows'">
+                {{ selectedOrder.OS === 'linux' ? 'Linux' : 'Windows' }}
               </span>
             </div>
             <div class="detail-item">
               <span class="detail-label">Payment Method</span>
-              <span class="detail-value">
-                <span class="payment-badge">
-                  <i class="fas" [class]="getPaymentMethodIcon(selectedOrder.paymentMethod)"></i>
-                  {{ getPaymentMethodLabel(selectedOrder.paymentMethod) }}
-                </span>
-              </span>
+              <span class="payment-badge">{{ getPaymentMethodLabel(selectedOrder.paymentMethod) }}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Order Date</span>
-              <span class="detail-value">{{ selectedOrder.createdAt | date:'fullDate' }} • {{ selectedOrder.createdAt | date:'shortTime' }}</span>
+              <span class="detail-label">Date</span>
+              <span class="detail-value">
+                {{ selectedOrder.createdAt | date:'fullDate' }} at {{ selectedOrder.createdAt | date:'shortTime' }}
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- Product Details Section -->
+        <!-- Product Details -->
         <div class="detail-section" *ngIf="selectedOrder.vps || selectedOrder.dedicated">
           <h3 class="detail-section-title">
             <i class="fas fa-server"></i>
-            {{ selectedOrder.vps ? 'VPS Plan Details' : 'Dedicated Server Details' }}
+            {{ selectedOrder.vps ? 'VPS Plan' : 'Dedicated Server' }} Details
           </h3>
-
           <div class="product-details-card">
             <div class="product-header">
               <h4>{{ selectedOrder.vps?.name || selectedOrder.dedicated?.name }}</h4>
               <div class="product-price">
-                ${{ selectedOrder.vps?.price || selectedOrder.dedicated?.price }}<span>/month</span>
+                ${{ selectedOrder.vps?.price || selectedOrder.dedicated?.price }}/month
               </div>
             </div>
-
             <div class="specs-grid">
-
-
               <div class="spec-item">
-                <i class="fas fa-memory"></i>
-                <div>
-                  <strong>RAM</strong>
-                  <span>{{ selectedOrder.vps?.ramGB || selectedOrder.dedicated?.ramGB }} GB DDR4</span>
-                </div>
+                <strong><i class="fas fa-microchip"></i> {{ selectedOrder.vps ? 'CPU Cores' : 'CPU' }}</strong>
+                <span>
+                  {{ selectedOrder.vps
+                      ? (selectedOrder.vps.cores + ' vCPU')
+                      : (selectedOrder.dedicated?.cpuModel || (selectedOrder.dedicated?.cores + ' Cores')) }}
+                </span>
               </div>
-
               <div class="spec-item">
-                <i class="fas fa-hdd"></i>
-                <div>
-                  <strong>Storage</strong>
-                  <span *ngIf="selectedOrder.vps">
-                    {{ selectedOrder.vps.storageGB }} GB {{ selectedOrder.vps.storageType || 'NVMe' }}
-                  </span>
-                  <span *ngIf="selectedOrder.dedicated">
-                    {{ selectedOrder.dedicated.storage || '2×512 GB NVMe' }}
-                  </span>
-                </div>
+                <strong><i class="fas fa-memory"></i> RAM</strong>
+                <span>{{ selectedOrder.vps?.ramGB || selectedOrder.dedicated?.ramGB }} GB</span>
               </div>
-
-              <div class="spec-item" *ngIf="selectedOrder.dedicated">
-                <i class="fas fa-network-wired"></i>
-                <div>
-                  <strong>Bandwidth</strong>
-                  <span>{{ selectedOrder.dedicated.bandwidth || '1 Gbps Unmetered' }}</span>
-                </div>
+              <div class="spec-item">
+                <strong><i class="fas fa-hdd"></i> Storage</strong>
+                <span *ngIf="selectedOrder.vps">
+                  {{ selectedOrder.vps.storageGB }} GB {{ selectedOrder.vps.storageType || 'NVMe' }}
+                </span>
+                <span *ngIf="selectedOrder.dedicated">
+                  {{ selectedOrder.dedicated.storage || 'Multiple NVMe Drives' }}
+                </span>
+              </div>
+              <div class="spec-item">
+                <strong><i class="fas fa-network-wired"></i> Connection</strong>
+                <span>{{ selectedOrder.vps?.connectionSpeed || selectedOrder.dedicated?.connectionSpeed || '1 Gbps' }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Description Section -->
+        <!-- Order Summary -->
         <div class="detail-section" *ngIf="selectedOrder.description">
           <h3 class="detail-section-title">
             <i class="fas fa-file-alt"></i> Order Summary
@@ -381,13 +383,13 @@
           </div>
         </div>
 
-        <!-- Payment Proof Section -->
+        <!-- Payment Proof -->
         <div class="detail-section" *ngIf="selectedOrder.paymentConfirmationImageUrl">
           <h3 class="detail-section-title">
-            <i class="fas fa-image"></i> Payment Confirmation
+            <i class="fas fa-receipt"></i> Payment Confirmation
           </h3>
           <div class="payment-proof">
-            <img [src]="selectedOrder.paymentConfirmationImageUrl" alt="Payment proof">
+            <img [src]="selectedOrder.paymentConfirmationImageUrl" alt="Payment proof" />
           </div>
         </div>
       </div>
@@ -395,7 +397,7 @@
 
     <div class="modal-actions">
       <button class="btn-primary" (click)="closeDetails()">
-        <i class="fas fa-times"></i> Close
+        <i class="fas fa-check"></i> Close
       </button>
     </div>
   </div>

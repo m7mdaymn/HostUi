@@ -1,22 +1,32 @@
-// src/app/features/orders/orders.component.ts
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '../../core/services/translate.service';
+import { OrdersService } from '../../core/services/orders.service';
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { Subscription } from 'rxjs';
 
 interface Product {
+  [key: string]: any;
   id: number;
   name: string;
+  price: number;
   cores?: number;
   ramGB?: number;
   storageGB?: number;
   storageType?: string;
-  price: number;
+  storage?: string;
+  brand?: string;
+  cpuModel?: string;
+  connectionSpeed?: string;
+  uplink?: string;
+  bandwidth?: string;
+  ip?: number;
+  ips?: number;
+  location?: string;
+  datacenter?: string;
 }
 
 @Component({
@@ -33,29 +43,32 @@ export class OrdersComponent implements OnInit, OnDestroy {
   selectedFile: File | null = null;
   submitting = false;
   successMessage = '';
-
+  instanttext = '';
   orderForm: FormGroup;
   private langSub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private fb: FormBuilder,
     private http: HttpClient,
-    private translate: TranslateService // ← Translation service injected
+    private translate: TranslateService,
+    private ordersService: OrdersService
   ) {
     this.orderForm = this.fb.group({
       customerName: ['', [Validators.required, Validators.minLength(3)]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^01[0125][0-]?[0-9]{8}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       paymentMethod: ['', Validators.required],
+      OS: ['linux', Validators.required],
       notes: ['']
     });
   }
 
   ngOnInit(): void {
-    // Re-render when language changes
+    this.instanttext = this.t('instantActivation');
+
     this.langSub = this.translate.lang.subscribe(() => {
       this.orderForm.markAsUntouched();
+      this.instanttext = this.t('instantActivation');
     });
 
     const idStr = this.route.snapshot.queryParamMap.get('id');
@@ -68,37 +81,24 @@ export class OrdersComponent implements OnInit, OnDestroy {
     }
 
     const id = Number(idStr);
-    const type = typeStr as 'vps' | 'dedicated';
-
-    this.loadProduct(id, type);
+    this.loadProduct(id, typeStr as 'vps' | 'dedicated');
   }
 
   ngOnDestroy(): void {
     this.langSub?.unsubscribe();
   }
 
-  // Translation helper
   t(key: string): string {
     return this.translate.t(key);
   }
 
   private loadProduct(id: number, type: 'vps' | 'dedicated'): void {
-    const endpoint =
-      type === 'vps'
-        ? API_ENDPOINTS.VPS.PRODUCTS_LIST
-        : API_ENDPOINTS.DEDICATED.PRODUCTS_LIST;
+    const endpoint = type === 'vps' ? API_ENDPOINTS.VPS.PRODUCTS_LIST : API_ENDPOINTS.DEDICATED.PRODUCTS_LIST;
 
     this.http.get<any>(endpoint).subscribe({
       next: (response) => {
-        const products = Array.isArray(response)
-          ? response
-          : (response as any).data || (response as any).items || [];
-
+        const products = Array.isArray(response) ? response : response.data || response.items || [];
         this.product = products.find((p: any) => p.id === id) || null;
-
-        if (!this.product) {
-          this.error = this.t('productNotFound');
-        }
         this.loading = false;
       },
       error: () => {
@@ -108,15 +108,45 @@ export class OrdersComponent implements OnInit, OnDestroy {
     });
   }
 
+  displayStorage(): string {
+    if (!this.product) return '—';
+    if (this.product.storage) return this.product.storage;
+    const gb = this.product.storageGB ?? 0;
+    const type = (this.product.storageType || 'NVMe').toUpperCase();
+    return `${gb} GB ${type}`;
+  }
+
+  getExtraSpecs(): string[] {
+    if (!this.product) return [];
+
+    const neverShow = [
+      'id','name','price','cores','ramGB','storageGB','storageType','storage',
+      'brand','cpuModel','connectionSpeed','uplink','bandwidth','ip','ips',
+      'location','datacenter','discount','limited','isActive','active','status',
+      'stock','inStock','createdAt','updatedAt','__priceNum','__v','_id',
+      'order','available','soldOut','is_available'
+    ];
+
+    return Object.keys(this.product)
+      .filter(k => !neverShow.includes(k) && this.product![k] != null && this.product![k] !== '' && typeof this.product![k] !== 'object')
+      .filter(k => String(this.product![k]).trim().length <= 100)
+      .sort();
+  }
+
+  formatKey(key: string): string {
+    return key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files?.[0] && input.files[0].type.startsWith('image/')) {
+    if (input.files?.[0]?.type.startsWith('image/')) {
       this.selectedFile = input.files[0];
     }
   }
 
   removeFile(): void {
     this.selectedFile = null;
+  null;
   }
 
   submitOrder(): void {
@@ -129,32 +159,29 @@ export class OrdersComponent implements OnInit, OnDestroy {
     this.error = '';
     this.successMessage = '';
 
-    const formData = new FormData();
-    formData.append('customerName', this.orderForm.get('customerName')?.value.trim());
-    formData.append('phoneNumber', this.orderForm.get('phoneNumber')?.value);
-    formData.append('paymentMethod', this.orderForm.get('paymentMethod')?.value);
-    formData.append('notes', this.orderForm.get('notes')?.value || '');
+    const type = this.route.snapshot.queryParamMap.get('type');
 
-    if (this.product.id < 1000) {
-      formData.append('vpsId', this.product.id.toString());
-    } else {
-      formData.append('dedicatedId', this.product.id.toString());
-    }
+    const orderData: any = {
+      customerName: this.orderForm.get('customerName')?.value.trim(),
+      phoneNumber: this.orderForm.get('phoneNumber')?.value,
+      paymentMethod: this.orderForm.get('paymentMethod')?.value,
+      OS: this.orderForm.get('OS')?.value,
+      notes: this.orderForm.get('notes')?.value?.trim() || undefined,
+      paymentImage: this.selectedFile || undefined,
+      ...(type === 'vps' ? { vpsId: this.product.id, dedicatedId: null } : {}),
+      ...(type === 'dedicated' ? { dedicatedId: this.product.id, vpsId: null } : {})
+    };
 
-    if (this.selectedFile) {
-      formData.append('paymentImage', this.selectedFile);
-    }
-
-    this.http.post(API_ENDPOINTS.ORDERS.CREATE, formData).subscribe({
-      next: (res: any) => {
-        const orderId = res.orderId || res.id || '';
-        this.successMessage = this.t('orderSuccess').replace('{id}', orderId || '—');
+    this.ordersService.createOrder(orderData).subscribe({
+      next: (res) => {
+        this.successMessage = this.t('orderSuccess').replace('{id}', res.orderId.toString());
         this.orderForm.reset();
+        this.orderForm.patchValue({ OS: 'linux' });
         this.selectedFile = null;
         this.submitting = false;
       },
-      error: (err: any) => {
-        this.error = err.error?.message || this.t('orderFailed');
+      error: (err) => {
+        this.error = err.error?.message || 'حدث خطأ أثناء إرسال الطلب';
         this.submitting = false;
       }
     });

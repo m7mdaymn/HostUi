@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // ← Added
+import { Router } from '@angular/router';
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { TranslateService } from '../../core/services/translate.service';
 
@@ -37,7 +37,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
 
   private translate = inject(TranslateService);
   private http = inject(HttpClient);
-  private router = inject(Router); // ← Added Router
+  private router = inject(Router);
 
   text(key: string): string {
     return this.translate.t(key);
@@ -66,10 +66,21 @@ export class DedicatedComponent implements OnInit, OnDestroy {
 
     this.http.get(API_ENDPOINTS.DEDICATED.PRODUCTS_LIST).subscribe({
       next: (res: any) => {
-        this.products = Array.isArray(res) ? res : (res.data || []);
+        const raw = Array.isArray(res) ? res : (res.data || []);
+
+        // FINAL: Sort once by real numeric price and store it
+        this.products = raw
+          .map((p: any) => {
+            const priceNum = this.getPrice(p);
+            return { ...p, __priceNum: priceNum };
+          })
+          .sort((a: any, b: any) => a.__priceNum - b.__priceNum); // Cheapest first
+
+        // Extract brands
         this.brandOptions = Array.from(new Set(this.products
           .map(p => (p.brand || p.Brand || p.cpuModel || '').trim())
-          .filter(Boolean)));
+          .filter(Boolean)))
+          .sort();
 
         this.applyFilters();
         this.loading = false;
@@ -88,48 +99,66 @@ export class DedicatedComponent implements OnInit, OnDestroy {
 
   toggleCore(core: string): void {
     const idx = this.filters.cores.indexOf(core);
-    idx === -1 ? this.filters.cores.push(core) : this.filters.cores.splice(idx, 1);
+    if (idx === -1) this.filters.cores.push(core);
+    else this.filters.cores.splice(idx, 1);
     this.applyFilters();
   }
 
   toggleRam(ram: string): void {
     const idx = this.filters.ram.indexOf(ram);
-    idx === -1 ? this.filters.ram.push(ram) : this.filters.ram.splice(idx, 1);
+    if (idx === -1) this.filters.ram.push(ram);
+    else this.filters.ram.splice(idx, 1);
     this.applyFilters();
   }
 
   toggleBrand(brand: string): void {
     const idx = this.filters.brands.indexOf(brand);
-    idx === -1 ? this.filters.brands.push(brand) : this.filters.brands.splice(idx, 1);
+    if (idx === -1) this.filters.brands.push(brand);
+    else this.filters.brands.splice(idx, 1);
     this.applyFilters();
   }
 
   public applyFilters(): void {
     let result = [...this.products];
 
+    // Processor Filter (Intel/AMD/All)
     if (this.processorFilter !== 'all') {
       result = result.filter(p =>
         this.processorFilter === 'amd' ? this.isAmd(p) : this.isIntel(p)
       );
     }
 
+    // Cores
     if (this.filters.cores.length) {
-      result = result.filter(p => this.filters.cores.includes(String(p.cores || p.Cores || '')));
+      result = result.filter(p =>
+        this.filters.cores.includes(String(p.cores || p.Cores || ''))
+      );
     }
+
+    // RAM
     if (this.filters.ram.length) {
-      result = result.filter(p => this.filters.ram.includes(String(p.ramGB || p.RamGB || '')));
+      result = result.filter(p =>
+        this.filters.ram.includes(String(p.ramGB || p.RamGB || ''))
+      );
     }
+
+    // Brand
     if (this.filters.brands.length) {
       result = result.filter(p => {
         const b = (p.brand || p.Brand || p.cpuModel || '').trim();
         return this.filters.brands.includes(b);
       });
     }
+
+    // Max Price
     if (this.filters.maxPrice != null && this.filters.maxPrice > 0) {
-      result = result.filter(p => this.getPrice(p) <= this.filters.maxPrice!);
+      result = result.filter(p => p.__priceNum <= this.filters.maxPrice!);
     }
 
-    this.filtered = result;
+    // FINAL: Always sort by price — 100% accurate cheapest first
+    this.filtered = result.sort((a, b) => a.__priceNum - b.__priceNum);
+
+    // Update Top 3
     this.topThree = this.getTopThreeDedicated();
   }
 
@@ -156,8 +185,11 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     document.body.style.overflow = '';
   }
 
+  // SAFE PRICE PARSING
   private getPrice(p: any): number {
-    return parseFloat(p.price || p.Price || '99999') || 99999;
+    const priceStr = String(p.price || p.Price || '99999').trim();
+    const num = parseFloat(priceStr.replace(/[^0-9.-]/g, '')); // removes $, commas
+    return isNaN(num) ? 99999 : num;
   }
 
   private isIntel(p: any): boolean {
@@ -171,44 +203,57 @@ export class DedicatedComponent implements OnInit, OnDestroy {
   }
 
   private getCheapestIntel(): any {
-    return this.products.filter(p => this.isIntel(p) && this.getPrice(p) < 99999)
-      .sort((a, b) => this.getPrice(a) - this.getPrice(b))[0] || null;
+    return this.products
+      .filter(p => this.isIntel(p))
+      .sort((a, b) => a.__priceNum - b.__priceNum)[0] || null;
   }
 
   private getCheapestAmd(): any {
-    return this.products.filter(p => this.isAmd(p) && this.getPrice(p) < 99999)
-      .sort((a, b) => this.getPrice(a) - this.getPrice(b))[0] || null;
+    return this.products
+      .filter(p => this.isAmd(p))
+      .sort((a, b) => a.__priceNum - b.__priceNum)[0] || null;
   }
 
   private getBestValuePerCore(): any {
-    return this.products
-      .filter(p => this.getPrice(p) < 99999 && (p.cores || p.Cores))
+    const valid = this.products
+      .filter(p => {
+        const cores = parseInt(p.cores || p.Cores || '0') || 0;
+        return cores > 0 && p.__priceNum < 99999;
+      });
+
+    if (valid.length === 0) return null;
+
+    return valid
       .map(p => ({
         server: p,
-        ppc: this.getPrice(p) / (parseInt(p.cores || p.Cores || '1') || 1)
+        ppc: p.__priceNum / (parseInt(p.cores || p.Cores || '1') || 1)
       }))
-      .sort((a, b) => a.ppc - b.ppc)[0]?.server || null;
+      .sort((a, b) => a.ppc - b.ppc)[0].server;
   }
 
   getTopThreeDedicated(): any[] {
     const result: { server: any; type: 'intel' | 'amd' | 'value' | 'fallback' }[] = [];
-    const intel = this.getCheapestIntel();
-    const amd = this.getCheapestAmd();
-    const value = this.getBestValuePerCore();
+    const seen = new Set<number | string>();
 
-    if (intel) result.push({ server: intel, type: 'intel' });
-    if (amd) result.push({ server: amd, type: 'amd' });
-    if (value && !result.some(r => r.server.id === value.id)) {
-      result.push({ server: value, type: 'value' });
-    }
+    const addIfNotSeen = (server: any, type: any) => {
+      if (server && !seen.has(server.id || server.Id)) {
+        seen.add(server.id || server.Id);
+        result.push({ server, type });
+      }
+    };
 
-    const seenIds = new Set(result.map(r => r.server.id));
+    addIfNotSeen(this.getCheapestIntel(), 'intel');
+    addIfNotSeen(this.getCheapestAmd(), 'amd');
+    addIfNotSeen(this.getBestValuePerCore(), 'value');
+
+    // Fill remaining with cheapest not yet shown
     const remaining = this.products
-      .filter(p => !seenIds.has(p.id) && this.getPrice(p) < 99999)
-      .sort((a, b) => this.getPrice(a) - this.getPrice(b));
+      .filter(p => !seen.has(p.id || p.Id))
+      .sort((a, b) => a.__priceNum - b.__priceNum);
 
     while (result.length < 3 && remaining.length > 0) {
-      result.push({ server: remaining.shift()!, type: 'fallback' });
+      const next = remaining.shift()!;
+      addIfNotSeen(next, 'fallback');
     }
 
     return result.slice(0, 3);
@@ -224,10 +269,9 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     return map[type] || this.text('highPerformanceDeal');
   }
 
-  trackByFn = (index: number, item: any) => item?.id || index;
+  trackByFn = (index: number, item: any) => item?.id || item?.Id || index;
   trackByTopThree = (index: number, item: any) => item?.server?.id || index;
 
-  // NOW SAME AS VPS: GO TO CHECKOUT PAGE
   orderNow(id: number): void {
     this.router.navigate(['/order-checkout'], {
       queryParams: { id, type: 'dedicated' }

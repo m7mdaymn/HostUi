@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // ← Added
+import { Router } from '@angular/router';
 import { API_ENDPOINTS } from '../../core/constant/apiendpoints';
 import { TranslateService } from '../../core/services/translate.service';
 
@@ -47,7 +47,7 @@ export class VpsComponent implements OnInit, OnDestroy {
 
   private translate = inject(TranslateService);
   private http = inject(HttpClient);
-  private router = inject(Router); // ← Added
+  private router = inject(Router);
 
   text(key: string): string {
     return this.translate.t(key);
@@ -76,7 +76,16 @@ export class VpsComponent implements OnInit, OnDestroy {
 
     this.http.get(API_ENDPOINTS.VPS.PRODUCTS_LIST).subscribe({
       next: (res: any) => {
-        this.products = Array.isArray(res) ? res : (res.data || []);
+        const raw = Array.isArray(res) ? res : (res.data || []);
+
+        // CRITICAL: Sort by real numeric price + store it safely
+        this.products = raw
+          .map((p: any) => {
+            const priceNum = this.getPrice(p);
+            return { ...p, __priceNum: priceNum };
+          })
+          .sort((a: any, b: any) => a.__priceNum - b.__priceNum); // CHEAPEST FIRST
+
         this.extractPlanNames();
         this.applyInstantFilter();
         this.loading = false;
@@ -100,23 +109,24 @@ export class VpsComponent implements OnInit, OnDestroy {
     this.applyInstantFilter();
   }
 
-  // PERFECT FILTER LOGIC — FIXED 100%
   applyInstantFilter(): void {
     let result: any[] = [...this.products];
 
+    // LowSpace / HighSpace — keep only half, but DO NOT break price order later
     if (this.spaceFilter !== 'all') {
-      const sorted = [...this.products].sort((a, b) =>
+      const sortedByStorage = [...this.products].sort((a, b) =>
         this.getStorageGB(a) - this.getStorageGB(b)
       );
-      const half = Math.ceil(sorted.length / 2);
+      const half = Math.ceil(sortedByStorage.length / 2);
 
       if (this.spaceFilter === 'low') {
-        result = sorted.slice(0, half);
+        result = sortedByStorage.slice(0, half);
       } else if (this.spaceFilter === 'high') {
-        result = sorted.slice(-half);
+        result = sortedByStorage.slice(-half);
       }
     }
 
+    // Apply all other filters
     if (this.filters.cores.length > 0) {
       result = result.filter(p =>
         this.filters.cores.includes(String(p.cores || p.Cores || '0'))
@@ -137,7 +147,7 @@ export class VpsComponent implements OnInit, OnDestroy {
     }
 
     if (this.filters.maxPrice != null && this.filters.maxPrice > 0) {
-      result = result.filter(p => this.getPrice(p) <= this.filters.maxPrice!);
+      result = result.filter(p => p.__priceNum <= this.filters.maxPrice!);
     }
 
     if (this.filters.planNames.length > 0) {
@@ -147,7 +157,8 @@ export class VpsComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.filtered = result;
+    // FINAL: ALWAYS sort by price — guarantees 100% accuracy
+    this.filtered = result.sort((a, b) => a.__priceNum - b.__priceNum);
   }
 
   // FILTER HELPERS
@@ -208,9 +219,11 @@ export class VpsComponent implements OnInit, OnDestroy {
     document.body.style.overflow = '';
   }
 
-  // HELPERS
+  // HELPERS — Super safe price parsing
   private getPrice(p: any): number {
-    return parseFloat(p.price || p.Price || '99999') || 99999;
+    const priceStr = String(p.price || p.Price || '99999').trim();
+    const num = parseFloat(priceStr.replace(/[^0-9.-]/g, '')); // removes $, commas, etc.
+    return isNaN(num) ? 99999 : num;
   }
 
   private getStorageGB(p: any): number {
@@ -221,26 +234,27 @@ export class VpsComponent implements OnInit, OnDestroy {
     return parseInt(p.cores || p.Cores || '1', 10) || 1;
   }
 
-  // Featured Cards
+  // FEATURED CARDS — Now 100% accurate
   getCheapestLowSpace(): any {
-    return [...this.products]
-      .sort((a, b) => this.getStorageGB(a) - this.getStorageGB(b))[0] || null;
+    const lowSpace = [...this.products]
+      .sort((a, b) => this.getStorageGB(a) - this.getStorageGB(b));
+    return lowSpace[0] || null;
   }
 
   getCheapestHighSpace(): any {
-    return [...this.products]
-      .sort((a, b) => this.getStorageGB(b) - this.getStorageGB(a))[0] || null;
+    const highSpace = [...this.products]
+      .sort((a, b) => this.getStorageGB(b) - this.getStorageGB(a));
+    return highSpace[0] || null;
   }
 
   getCheapestByCore(): any {
     return this.products
-      .map(p => ({ p, ppc: this.getPrice(p) / this.getCores(p) }))
+      .map(p => ({ p, ppc: p.__priceNum / this.getCores(p) }))
       .sort((a, b) => a.ppc - b.ppc)[0]?.p || null;
   }
 
   trackByFn = (index: number, item: any) => item?.id || item?.Id || index;
 
-  // UPDATED: Now navigates to checkout page
   orderNow(id: number): void {
     this.router.navigate(['/order-checkout'], {
       queryParams: { id, type: 'vps' }

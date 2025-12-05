@@ -11,18 +11,18 @@ interface VPS {
   name?: string;
   description?: string;
   category?: string;
-  cores?: number;       // ← Changed from cpu string
-  ramGB?: number;       // ← Changed from ram string
-  storageGB?: number;   // ← Changed from storage string
-  storageType?: string; // ← Added
+  cores?: number;
+  ramGB?: number;
+  storageGB?: number;
+  storageType?: string;
   bandwidth?: string;
-  connectionSpeed?: string; // ← Added
+  connectionSpeed?: string;
   price?: string | number;
   oldPrice?: string | number;
-  discount?: string;    // ← Added
+  discount?: string;
   link?: string;
   featured?: boolean;
-  limited?: boolean;    // ← Added
+  limited?: boolean;
 }
 
 @Component({
@@ -66,7 +66,7 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
 
     this.langSub = this.translate.lang.subscribe((lang) => {
       this.isRTL = lang === 'ar';
-      this.currentSlideIndex = 0;
+      this.currentSlideIndex = 0; // Reset to show cheapest again
     });
 
     if (this.isMobile) this.startPeekAnimation();
@@ -103,6 +103,13 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
     this.cardWidth = w <= 768 ? w - 100 : 390;
   }
 
+  // SAFE PRICE PARSING (handles $19.99, 19.99, "19", etc.)
+  private getNumericPrice(vps: any): number {
+    const priceStr = String(vps.price || vps.Price || '99999').trim();
+    const num = parseFloat(priceStr.replace(/[^0-9.-]/g, ''));
+    return isNaN(num) ? 99999 : num;
+  }
+
   loadVPS(): void {
     this.vpsLoading = true;
     this.vpsError = '';
@@ -110,23 +117,30 @@ export class VpsCarouselComponent implements OnInit, OnDestroy {
 
     this.vpsService.productsList().subscribe({
       next: (res) => {
-        console.log('🔍 Raw backend response:', res);
+        console.log('Raw VPS carousel response:', res);
 
-        // Extract array - your backend returns res.data or res directly
         const rawData = Array.isArray(res) ? res : (res.data || []);
 
-        console.log('📦 Raw data array:', rawData);
+        // CRITICAL: Sort by real price (cheapest first) + store numeric value
+        this.vpsServers = rawData
+          .map((vps: any) => ({
+            ...vps,
+            __priceNum: this.getNumericPrice(vps) // safe numeric version
+          }))
+          .sort((a: any, b: any) => a.__priceNum - b.__priceNum) // CHEAPEST FIRST
+          .map((vps: any) => {
+            // Remove helper after sorting
+            const { __priceNum, ...clean } = vps;
+            return clean;
+          });
 
-        // NO MAPPING NEEDED! Backend already uses the correct property names
-        // Just use the data as-is (it matches your VPS interface)
-        this.vpsServers = rawData;
-
-        console.log('✅ VPS servers loaded:', this.vpsServers);
+        console.log('VPS Carousel — Cheapest first:', this.vpsServers);
 
         this.vpsLoading = false;
+        this.currentSlideIndex = 0; // Always start with the cheapest
       },
       error: (err) => {
-        console.error('❌ VPS loading error:', err);
+        console.error('VPS carousel loading error:', err);
         this.vpsError = this.text('unableToLoadVps') || 'Unable to load VPS servers.';
         this.vpsLoading = false;
       }

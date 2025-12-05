@@ -33,34 +33,60 @@
             </h6>
           </div>
 
-          <ul class="mb-30">
-            <li>
+          <!-- Specifications List -->
+          <ul class="mb-30 specs-list">
+            <li *ngIf="product.cores">
               <i class="fas fa-microchip text-base"></i>
-              <span>{{ product.cores ?? 0 }} {{ (product.cores ?? 0) > 1 ? t('cores_plural') : t('cores') }}</span>
+              <span>{{ product.cores }} {{ (product.cores > 1 ? t('cores_plural') : t('cores')) }}</span>
             </li>
-            <li>
+
+            <li *ngIf="product.ramGB">
               <i class="fas fa-memory text-base"></i>
-              <span>{{ product.ramGB ?? 0 }} GB {{ t('ram') }}</span>
+              <span>{{ product.ramGB }} GB {{ t('ram') }}</span>
             </li>
+
             <li>
               <i class="fas fa-hard-drive text-base"></i>
-              <span>{{ product.storageGB ?? 0 }} GB {{ (product.storageType || 'NVMe') | uppercase }}</span>
+              <span>{{ displayStorage() }}</span>
             </li>
-            <li>
-              <i class="fas fa-shield-alt text-base"></i>
-              <span>{{ t('moneyBackGuarantee') }}</span>
+            <li *ngIf="product.cpuModel || product.brand">
+              <i class="fas fa-microchip text-base"></i>
+              <span>
+                <strong>{{ product.brand || '' }} </strong>
+                {{ product.cpuModel || product.brand || t('unknownProcessor') }}
+              </span>
             </li>
-            <li>
-              <i class="fas fa-headset text-base"></i>
-              <span>{{ t('technicalSupport') }}</span>
-            </li>
-          </ul>
 
-          <div class="text-center"></div>
+            <li *ngIf="product.connectionSpeed || product.uplink">
+              <i class="fas fa-tachometer-alt text-base"></i>
+              <span>{{ product.connectionSpeed || product.uplink }} {{ t('dedicatedPort') }}</span>
+            </li>
+
+            <li *ngIf="product.bandwidth">
+              <i class="fas fa-exchange-alt text-base"></i>
+              <span>{{ product.bandwidth }} {{ t('bandwidth') }}</span>
+            </li>
+
+            <!-- Location / Datacenter -->
+            <li *ngIf="product.location || product.datacenter">
+              <i class="fas fa-map-marker-alt text-base"></i>
+              <span>{{ product.location || product.datacenter }}</span>
+            </li>
+
+            <!-- Dynamic Extra Specifications (Safe & Clean) -->
+            <ng-container *ngFor="let key of getExtraSpecs()">
+              <li>
+                <i class="fas fa-cog text-base"></i>
+                <span>
+                  <strong>{{ formatKey(key) }}:</strong> {{ product[key] }}
+                </span>
+              </li>
+            </ng-container>
+
+          </ul>
         </div>
       </div>
 
-      <!-- Checkout Form -->
       <div class="col-lg-7">
         <div class="contact__section">
           <div id="form">
@@ -71,12 +97,7 @@
               <!-- Full Name -->
               <div class="form-control" [class.error]="orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched">
                 <label for="customerName">{{ t('fullName') }} *</label>
-                <input
-                  type="text"
-                  id="customerName"
-                  formControlName="customerName"
-                  [placeholder]="t('enterFullName')"
-                />
+                <input type="text" id="customerName" formControlName="customerName" [placeholder]="t('enterFullName')" />
                 <small *ngIf="orderForm.get('customerName')?.hasError('required') && orderForm.get('customerName')?.touched">
                   {{ t('nameRequired') }}
                 </small>
@@ -85,21 +106,31 @@
                 </small>
               </div>
 
-              <!-- WhatsApp Number -->
               <div class="form-control" [class.error]="orderForm.get('phoneNumber')?.invalid && orderForm.get('phoneNumber')?.touched">
                 <label for="phoneNumber">{{ t('whatsappNumber') }} *</label>
-                <input
-                  type="tel"
-                  id="phoneNumber"
-                  formControlName="phoneNumber"
-                  [placeholder]="t('enterWhatsapp')"
-                />
+                <input type="tel" id="phoneNumber" formControlName="phoneNumber" [placeholder]="t('enterWhatsapp')" />
                 <small *ngIf="orderForm.get('phoneNumber')?.hasError('required') && orderForm.get('phoneNumber')?.touched">
                   {{ t('phoneRequired') }}
                 </small>
                 <small *ngIf="orderForm.get('phoneNumber')?.hasError('pattern') && orderForm.get('phoneNumber')?.touched">
                   {{ t('invalidEgyptPhone') }}
                 </small>
+              </div>
+
+              <div class="form-control">
+                <label>{{ t('selectOperatingSystem') }} *</label>
+                <div class="os-selection-grid">
+                  <div class="os-card" [class.active]="orderForm.get('OS')?.value === 'linux'" (click)="orderForm.patchValue({ OS: 'linux' })">
+                    <input type="radio" formControlName="OS" value="linux" hidden />
+                    <span class="os-name">Linux</span>
+                    <i class="fas fa-check-circle check-icon"></i>
+                  </div>
+                  <div class="os-card" [class.active]="orderForm.get('OS')?.value === 'windows'" (click)="orderForm.patchValue({ OS: 'windows' })">
+                    <input type="radio" formControlName="OS" value="windows" hidden />
+                    <span class="os-name">Windows</span>
+                    <i class="fas fa-check-circle check-icon"></i>
+                  </div>
+                </div>
               </div>
 
               <!-- Payment Methods -->
@@ -146,7 +177,7 @@
                         <img src="assets/img/payment-qr/instapayQR.jpeg" alt="InstaPay QR" class="qr-code">
                         <div class="payment-info">
                           <div class="account-number">0106 319 4547</div>
-                          <div class="account-name">topservers4{{ '@' }}instapay</div>
+                          <div class="account-name">topservers4&#64;instapay</div>
                           <div class="payment-amount">
                             {{ t('sendAmount') }} <strong class="home__theme">${{ product.price }}</strong>
                           </div>
@@ -164,11 +195,14 @@
                       <img src="/assets/img/footer/biance.png" alt="Binance Pay" style="width:24px;">
                       <span>{{ t('binance') }}</span>
                       <i class="fas fa-check-circle check-icon"></i>
+ <span class="badge badge-success">
+        <i class="fas fa-bolt"></i> {{ instanttext }}
+      </span>
                     </div>
                     <div class="method-details" *ngIf="orderForm.get('paymentMethod')?.value === 'binance'">
                       <div class="binance-section">
                         <div class="binance-id">42280170</div>
-                        <div class="binance-email">topresvers000{{ '@' }}gmail.com</div>
+                        <div class="binance-email">topresvers000&#64;gmail.com</div>
                         <div class="payment-amount">
                           {{ t('sendAmount') }} <strong class="home__theme">${{ product.price }}</strong> USDT<br>
                           <small>(TRC20 or BEP20 Network)</small>
@@ -204,48 +238,34 @@
               <!-- Additional Notes -->
               <div class="form-control">
                 <label for="notes">{{ t('additionalNotes') }}</label>
-                <textarea
-                  id="notes"
-                  formControlName="notes"
-                  rows="3"
-                  [placeholder]="t('notesPlaceholder')">
-                </textarea>
+                <textarea id="notes" formControlName="notes" rows="3" [placeholder]="t('notesPlaceholder')"></textarea>
               </div>
 
               <!-- Action Buttons -->
               <div class="action-buttons">
-                <button type="button" class="cmn--btn border__trans" (click)="goBack()" style="background-color: red;">
+                <button type="button" class="cmn--btn border__trans" (click)="goBack()">
                   <span><i class="fas fa-arrow-left"></i> {{ t('back') }}</span>
                 </button>
                 <button type="submit" class="cmn--btn" [disabled]="submitting || orderForm.invalid">
                   <span>
-                    <i class="fas"
-                       [ngClass]="{
-                         'fa-spinner fa-spin': submitting,
-                         'fa-check': !submitting
-                       }"></i>
+                    <i class="fas" [ngClass]="{ 'fa-spinner fa-spin': submitting, 'fa-check': !submitting }"></i>
                     {{ submitting ? t('processing') : t('confirmOrder') }}
                   </span>
                 </button>
               </div>
 
-              <!-- Success Message -->
-              <div class="alert alert-success" *ngIf="successMessage">
-                <i class="fas fa-check-circle"></i>
-                {{ successMessage }}
+              <!-- Messages -->
+              <div class="alert alert-success mt-4" *ngIf="successMessage">
+                <i class="fas fa-check-circle"></i> {{ successMessage }}
               </div>
-
-              <!-- Error Message -->
-              <div class="alert alert-error" *ngIf="error">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ error }}
+              <div class="alert alert-error mt-4" *ngIf="error">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
               </div>
 
             </form>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -254,7 +274,7 @@
 <ng-template #loadingTemplate>
   <section class="pt-120 pb-120">
     <div class="container">
-      <div class="loading-wrapper">
+      <div class="loading-wrapper text-center">
         <div class="spinner-border text-base" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>

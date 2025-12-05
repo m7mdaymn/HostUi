@@ -75,7 +75,6 @@ const DICT: Record<Lang, Record<string, string>> = {
     locationLabel: 'Location',
     fullRootAccess: 'Full Root Access',
     support247: '24/7 Support',
-    ddosProtection: 'DDoS Protection',
     configureServer: 'Configure Server',
     uptimeGuarantee: '99.9% Uptime Guarantee',
     exploreAllDedicated: 'Explore All Dedicated Servers',
@@ -215,6 +214,8 @@ const DICT: Record<Lang, Record<string, string>> = {
     choosePerfectPlan: 'Choose the perfect plan for your needs',
     navdedicated: 'Dedicated',
     navvps: 'VPS',
+    selectOperatingSystem: 'Select Operating System',
+     instantActivation: 'Instant Activation',
 
   },
   ar: {
@@ -442,6 +443,8 @@ const DICT: Record<Lang, Record<string, string>> = {
       choosePerfectPlan: 'اختر الباقة المثالية لاحتياجاتك',
       navdedicated: 'مخصصة',
       navvps: 'VPS',
+      selectOperatingSystem: 'اختر نظام التشغيل',
+       instantActivation: 'تفعيل فوري',
 
   }
 };

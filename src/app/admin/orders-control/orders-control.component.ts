@@ -16,18 +16,17 @@ interface Product {
   storageGB?: number;
   storageType?: string;
   price: number;
-  cpuName?: string;
-  bandwidth?: string;
+  cpuModel?: string;
+  connectionSpeed?: string;
   storage?: string;
+  bandwidth?: string;
 }
 
 interface FullOrderResponse extends OrderResponse {
   vps?: Product;
   dedicated?: Product;
 }
-
 type ProductType = 'vps' | 'dedicated' | null;
-type PaymentMethod = 'instapay' | 'vodafonecash' | 'binance' | '';
 
 @Component({
   selector: 'app-orders-control',
@@ -53,14 +52,17 @@ export class OrdersControlComponent implements OnInit {
   vpsList: Product[] = [];
   dedicatedList: Product[] = [];
 
-  // Product type selection
   selectedProductType: ProductType = null;
 
-  // Payment methods
   paymentMethods = [
+    { value: 'vodafone_cash', label: 'Vodafone Cash', icon: 'fa-mobile-alt' },
     { value: 'instapay', label: 'InstaPay', icon: 'fa-credit-card' },
-    { value: 'vodafonecash', label: 'Vodafone Cash', icon: 'fa-mobile-alt' },
-    { value: 'binance', label: 'Binance', icon: 'fa-bitcoin' }
+    { value: 'binance', label: 'Binance Pay', icon: 'fa-bitcoin' }
+  ];
+
+  operatingSystems = [
+    { value: 'linux', label: 'Linux', icon: 'fab fa-linux' },
+    { value: 'windows', label: 'Windows', icon: 'fab fa-windows' }
   ];
 
   constructor(
@@ -71,8 +73,9 @@ export class OrdersControlComponent implements OnInit {
   ) {
     this.orderForm = this.fb.group({
       customerName: ['', [Validators.required, Validators.minLength(2)]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^[\d\s\-\+\(\)]{10,20}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       paymentMethod: ['', Validators.required],
+      OS: ['linux', Validators.required],
       productType: ['', Validators.required],
       selectedVps: [{ value: null, disabled: true }],
       selectedDedicated: [{ value: null, disabled: true }],
@@ -89,31 +92,29 @@ export class OrdersControlComponent implements OnInit {
   setupProductTypeListener(): void {
     this.orderForm.get('productType')?.valueChanges.subscribe((type: ProductType) => {
       this.selectedProductType = type;
-
-      const vpsControl = this.orderForm.get('selectedVps');
-      const dedicatedControl = this.orderForm.get('selectedDedicated');
+      const vpsCtrl = this.orderForm.get('selectedVps');
+      const dedCtrl = this.orderForm.get('selectedDedicated');
 
       if (type === 'vps') {
-        vpsControl?.enable();
-        vpsControl?.setValidators(Validators.required);
-        dedicatedControl?.disable();
-        dedicatedControl?.clearValidators();
-        dedicatedControl?.setValue(null);
+        vpsCtrl?.enable();
+        vpsCtrl?.setValidators(Validators.required);
+        dedCtrl?.disable();
+        dedCtrl?.clearValidators();
+        dedCtrl?.setValue(null);
       } else if (type === 'dedicated') {
-        dedicatedControl?.enable();
-        dedicatedControl?.setValidators(Validators.required);
-        vpsControl?.disable();
-        vpsControl?.clearValidators();
-        vpsControl?.setValue(null);
+        dedCtrl?.enable();
+        dedCtrl?.setValidators(Validators.required);
+        vpsCtrl?.disable();
+        vpsCtrl?.clearValidators();
+        vpsCtrl?.setValue(null);
       } else {
-        vpsControl?.disable();
-        dedicatedControl?.disable();
-        vpsControl?.clearValidators();
-        dedicatedControl?.clearValidators();
+        vpsCtrl?.disable();
+        dedCtrl?.disable();
+        vpsCtrl?.clearValidators();
+        dedCtrl?.clearValidators();
       }
-
-      vpsControl?.updateValueAndValidity();
-      dedicatedControl?.updateValueAndValidity();
+      vpsCtrl?.updateValueAndValidity();
+      dedCtrl?.updateValueAndValidity();
     });
   }
 
@@ -126,9 +127,7 @@ export class OrdersControlComponent implements OnInit {
     });
 
     this.dedicatedService.productsList().subscribe({
-      next: (res: any) => {
-        this.dedicatedList = this.extractArray(res);
-      },
+      next: (res: any) => this.dedicatedList = this.extractArray(res),
       error: () => this.error = 'Failed to load Dedicated servers',
       complete: () => this.loadingProducts = false
     });
@@ -136,9 +135,8 @@ export class OrdersControlComponent implements OnInit {
 
   private extractArray(response: any): Product[] {
     if (Array.isArray(response)) return response;
-    if (response?.data && Array.isArray(response.data)) return response.data;
-    if (response?.Data && Array.isArray(response.Data)) return response.Data;
-    if (response?.result && Array.isArray(response.result)) return response.result;
+    if (response?.data) return response.data;
+    if (response?.result) return response.result;
     return [];
   }
 
@@ -151,30 +149,85 @@ export class OrdersControlComponent implements OnInit {
 
   createOrder(): void {
     if (this.orderForm.invalid) {
-      this.error = 'Please fill all required fields correctly.';
+      this.error = 'Please fill all required fields.';
       this.orderForm.markAllAsTouched();
       return;
     }
 
     const v = this.orderForm.value;
-
     this.isLoading = true;
     this.error = '';
     this.message = '';
 
-    const orderData: CreateOrderDto = {
+    let selectedProduct: Product | undefined;
+    let productTypeLabel = '';
+
+    if (v.productType === 'vps' && v.selectedVps) {
+      selectedProduct = this.vpsList.find(p => p.id === Number(v.selectedVps));
+      productTypeLabel = 'VPS Plan';
+    } else if (v.productType === 'dedicated' && v.selectedDedicated) {
+      selectedProduct = this.dedicatedList.find(p => p.id === Number(v.selectedDedicated));
+      productTypeLabel = 'Dedicated Server';
+    }
+
+    let description = `New Hosting Order\n`;
+    description += `${'='.repeat(50)}\n\n`;
+    description += `Customer: ${v.customerName.trim()}\n`;
+    description += `Phone: ${v.phoneNumber.trim()}\n`;
+    description += `OS: ${v.OS === 'linux' ? 'Linux' : 'Windows'}\n`;
+    description += `Payment Method: ${this.getPaymentMethodLabel(v.paymentMethod)}\n\n`;
+
+    if (selectedProduct) {
+      const isVps = v.productType === 'vps';
+      description += `${isVps ? 'VPS Plan' : 'Dedicated Server'}: ${selectedProduct.name}\n`;
+      description += `${'-'.repeat(40)}\n`;
+
+      if (isVps) {
+        description += `CPU Cores: ${selectedProduct.cores} vCPU\n`;
+      } else {
+        const cpuText = selectedProduct.cpuModel || `${selectedProduct.cores || '?'} Core Dedicated CPU`;
+        description += `CPU: ${cpuText}\n`;
+      }
+
+      description += `RAM: ${selectedProduct.ramGB} GB\n`;
+
+      if (selectedProduct.storageGB != null) {
+        const type = selectedProduct.storageType ? ` ${selectedProduct.storageType}` : ' NVMe';
+        description += `Storage: ${selectedProduct.storageGB} GB${type}\n`;
+      }
+      if (selectedProduct.storage) {
+        description += `Storage: ${selectedProduct.storage}\n`;
+      }
+
+      description += `Price: $${selectedProduct.price}/month\n`;
+
+      if (selectedProduct.connectionSpeed) {
+        description += `Connection: ${selectedProduct.connectionSpeed}\n`;
+      } else if (isVps) {
+        description += `Connection: 1 Gbps Shared\n`;
+      }
+    } else {
+      description += `Warning: Product not found in local list!\n`;
+    }
+
+    description += `\nOrder created on: ${new Date().toLocaleString('en-GB')}`;
+
+    const orderData: any = {
       customerName: v.customerName.trim(),
       phoneNumber: v.phoneNumber.trim(),
       paymentMethod: v.paymentMethod,
+      OS: v.OS,
       vpsId: v.selectedVps ? Number(v.selectedVps) : null,
       dedicatedId: v.selectedDedicated ? Number(v.selectedDedicated) : null,
-      paymentImage: v.paymentImage || null
+      paymentImage: v.paymentImage || undefined,
+      description: description.trim()
     };
 
     this.ordersService.createOrder(orderData).subscribe({
       next: (res) => {
-        this.message = `Order #${res.orderId || res.id} created successfully!`;
+        this.message = `Order #${res.orderId} created successfully!`;
         this.resetForm();
+        this.showCreateForm = false;
         this.loadOrders();
         this.isLoading = false;
         setTimeout(() => this.message = '', 8000);
@@ -188,9 +241,11 @@ export class OrdersControlComponent implements OnInit {
 
   loadOrders(): void {
     this.ordersService.getAllOrders().subscribe({
-      next: (data) => this.orders = data.sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      ),
+      next: (data) => {
+        this.orders = data.sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      },
       error: () => this.error = 'Failed to load orders.'
     });
   }
@@ -200,12 +255,11 @@ export class OrdersControlComponent implements OnInit {
     this.selectedOrder = null;
 
     this.ordersService.getOrderById(order.id).subscribe({
-      next: (fullOrder: FullOrderResponse) => {
+      next: (fullOrder: any) => {
         this.selectedOrder = fullOrder;
         this.isLoadingDetails = false;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.error = 'Failed to load order details';
         this.isLoadingDetails = false;
       }
@@ -219,13 +273,20 @@ export class OrdersControlComponent implements OnInit {
 
   toggleCreateForm(): void {
     this.showCreateForm = !this.showCreateForm;
-    if (!this.showCreateForm) {
-      this.resetForm();
-    }
+    if (!this.showCreateForm) this.resetForm();
   }
 
   private resetForm(): void {
-    this.orderForm.reset();
+    this.orderForm.reset({
+      customerName: '',
+      phoneNumber: '',
+      OS: 'linux',
+      paymentMethod: '',
+      productType: '',
+      selectedVps: null,
+      selectedDedicated: null,
+      paymentImage: null
+    });
     this.selectedProductType = null;
     this.error = '';
     this.message = '';
@@ -234,21 +295,35 @@ export class OrdersControlComponent implements OnInit {
     }
   }
 
-  getPaymentMethodLabel(method: string): string {
-    const found = this.paymentMethods.find(m => m.value === method.toLowerCase());
-    return found ? found.label : method;
-  }
-
-  getPaymentMethodIcon(method: string): string {
-    const found = this.paymentMethods.find(m => m.value === method.toLowerCase());
-    return found ? found.icon : 'fa-wallet';
-  }
-
   getProductName(order: OrderResponse): string {
-    return order.vpsId ? 'VPS Plan' : order.dedicatedId ? 'Dedicated Server' : 'No Product';
+    if (order.vpsId && this.vpsList.length) {
+      const vps = this.vpsList.find(v => v.id === order.vpsId);
+      if (vps) {
+        const cpu = vps.cpuModel ? vps.cpuModel : `${vps.cores} Cores`;
+        return `${vps.name} (${cpu})`;
+      }
+    }
+    if (order.dedicatedId && this.dedicatedList.length) {
+      const ded = this.dedicatedList.find(d => d.id === order.dedicatedId);
+      if (ded) {
+        const cpu = ded.cpuModel ? ded.cpuModel : `${ded.cores || '?'} Cores`;
+        return `${ded.name} (${cpu})`;
+      }
+    }
+    return 'Unknown Product';
   }
 
   getProductBadgeClass(order: OrderResponse): string {
     return order.vpsId ? 'badge-vps' : order.dedicatedId ? 'badge-dedicated' : 'badge-empty';
+  }
+
+  getPaymentMethodLabel(method: string): string {
+    const m = this.paymentMethods.find(x => x.value === method);
+    return m ? m.label : method;
+  }
+
+  getPaymentMethodIcon(method: string): string {
+    const m = this.paymentMethods.find(x => x.value === method);
+    return m ? m.icon : 'fa-wallet';
   }
 }

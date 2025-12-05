@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../constant/apiendpoints';
 
-
 export interface CreateOrderDto {
   customerName: string;
   phoneNumber: string;
@@ -12,6 +11,7 @@ export interface CreateOrderDto {
   vpsId?: number | null;
   dedicatedId?: number | null;
   paymentImage?: File | null;
+  OS?: 'linux' | 'windows'; // This matches your backend exactly
 }
 
 export interface OrderResponse {
@@ -24,10 +24,10 @@ export interface OrderResponse {
   paymentConfirmationImageUrl: string | null;
   description: string | null;
   createdAt: string;
+  OS: string;
 }
 
 export interface CreateOrderResponse {
-  id: number;
   message: string;
   orderId: number;
   description: string;
@@ -43,14 +43,17 @@ export class OrdersService {
   createOrder(orderData: CreateOrderDto): Observable<CreateOrderResponse> {
     const formData = new FormData();
 
-    // EXACT NAMES YOUR BACKEND EXPECTS (case-sensitive!)
     formData.append('CustomerName', orderData.customerName);
     formData.append('PhoneNumber', orderData.phoneNumber);
     formData.append('PaymentMethod', orderData.paymentMethod);
 
-    // Always send these, even if null → backend expects them
+    // Send IDs (can be empty string if not selected)
     formData.append('VpsId', orderData.vpsId?.toString() ?? '');
     formData.append('DedicatedId', orderData.dedicatedId?.toString() ?? '');
+
+    if (orderData.OS) {
+      formData.append('OS', orderData.OS); // CORRECT
+    }
 
     // File must be named exactly "PaymentImage"
     if (orderData.paymentImage) {

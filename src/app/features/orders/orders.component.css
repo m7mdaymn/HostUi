@@ -568,3 +568,116 @@
     gap: 12px;
   }
 }
+/* ——————— Operating System Selection (Linux / Windows) ——————— */
+.os-selection-grid {
+  display: grid;
+  gap: 20px;
+  margin-top: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.os-card {
+  border: 2px solid #f0f0f0;
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.os-card:hover {
+  border-color: var(--theme-color);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(96, 212, 227, 0.25);
+}
+
+.os-card.active {
+  border-color: var(--theme-color);
+  background: linear-gradient(135deg, #f0faff 0%, #f8fdff 100%);
+  box-shadow: 0 0 30px rgba(96, 212, 227, 0.4);
+}
+
+.os-card .os-icon img {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  transition: transform 0.3s ease;
+  filter: grayscale(30%);
+}
+
+.os-card:hover .os-icon img,
+.os-card.active .os-icon img {
+  transform: scale(1.15);
+  filter: grayscale(0%);
+}
+
+.os-card .os-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black-color);
+}
+
+.os-card .check-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 26px;
+  color: var(--theme-color);
+  opacity: 0;
+  transition: all 0.3s ease;
+  background: white;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.os-card.active .check-icon {
+  opacity: 1;
+  animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  80% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive for small screens */
+@media (max-width: 576px) {
+  .os-card {
+    padding: 25px 15px;
+  }
+  .os-card .os-icon img {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.payment-method-card {
+  position: relative;
+  overflow: visible;
+}
+
+.instant-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f7931a;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  white-space: 3px solid white;
+  box-shadow: 0 4px 12px rgba(247, 147, 26, 0.4);
+  z-index: 10;
+}

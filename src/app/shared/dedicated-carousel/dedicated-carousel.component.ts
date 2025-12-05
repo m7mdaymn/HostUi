@@ -10,20 +10,20 @@ interface DedicatedServer {
   Id?: any;
   name?: string;
   description?: string;
-  brand?: string;           // ← Added (Intel/AMD/etc)
-  cpuModel?: string;        // ← Added
-  cores?: number;           // ← Changed to number
-  ramGB?: number;           // ← Changed to number
-  storage?: string;         // ← Keep as string (e.g., "2x 1TB NVMe")
-  storageGB?: number;       // ← Added
+  brand?: string;
+  cpuModel?: string;
+  cores?: number;
+  ramGB?: number;
+  storage?: string;
+  storageGB?: number;
   bandwidth?: string;
-  connectionSpeed?: string; // ← Added
+  connectionSpeed?: string;
   price?: string | number;
   oldPrice?: string | number;
-  discount?: string;        // ← Added
+  discount?: string;
   link?: string;
   featured?: boolean;
-  limited?: boolean;        // ← Added
+  limited?: boolean;
   ipAddresses?: string;
   location?: string;
 }
@@ -77,24 +77,33 @@ export class DedicatedCarouselComponent implements OnInit, OnDestroy {
 
     this.dedicatedService.productsList().subscribe({
       next: (res) => {
-        console.log('🔍 Raw dedicated backend response:', res);
+        console.log('Raw dedicated backend response:', res);
 
-        // Extract array - backend returns res.data or res directly
         const rawData = Array.isArray(res) ? res : (res.data || []);
 
-        console.log('📦 Raw dedicated data array:', rawData);
+        console.log('Raw dedicated data array:', rawData);
 
-        // NO MAPPING NEEDED! Backend already uses correct property names
-        // Just use the data as-is (matches DedicatedServer interface)
-        this.dedicatedServers = rawData;
+        // Sort by price (cheapest first) - convert price to number safely
+        this.dedicatedServers = rawData
+          .map((server: any) => ({
+            ...server,
+            price: Number(server.price) || 999999,      // fallback high number if invalid
+            oldPrice: server.oldPrice ? Number(server.oldPrice) : undefined
+          }))
+          .sort((a: any, b: any) => a.price - b.price)   // Cheapest first
+          .map((server: any) => ({
+            ...server,
+            price: server.price === 999999 ? server.price : server.price.toString(), // keep original string if needed
+            oldPrice: server.oldPrice ? server.oldPrice.toString() : undefined
+          }));
 
-        console.log('✅ Dedicated servers loaded:', this.dedicatedServers);
+        console.log('Dedicated servers loaded & sorted (cheapest first):', this.dedicatedServers);
 
         this.dedicatedLoading = false;
-        this.currentSlideIndex = 0;
+        this.currentSlideIndex = 0; // Always start with the cheapest
       },
       error: (err) => {
-        console.error('❌ Dedicated loading error:', err);
+        console.error('Dedicated loading error:', err);
         this.dedicatedError = 'Unable to load Dedicated servers.';
         this.dedicatedLoading = false;
       }
