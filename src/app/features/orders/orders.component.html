@@ -157,6 +157,14 @@
                           <div class="payment-amount">
                             {{ t('sendAmount') }} <strong class="home__theme">${{ product.price }}</strong>
                           </div>
+                                  <!-- EGP Equivalent - Highlighted -->
+        <div class="payment-amount-egp mt-2 p-3 rounded" style="background:#f8f9fa; border:1px solid #eee;">
+          <strong>المبلغ المطلوب تحويله بالجنيه المصري:</strong><br>
+          <span class="text-danger fs-4 fw-bold">
+            {{ getEgpAmount() | number:'1.0-2' }} EGP
+          </span><br>
+          <small class="text-muted">(بناءً على سعر الدولار = 49.5 جنيه)</small>
+        </div>
                         </div>
                       </div>
                     </div>
@@ -181,36 +189,64 @@
                           <div class="payment-amount">
                             {{ t('sendAmount') }} <strong class="home__theme">${{ product.price }}</strong>
                           </div>
+                                  <!-- EGP Equivalent - Highlighted -->
+        <div class="payment-amount-egp mt-2 p-3 rounded" style="background:#f8f9fa; border:1px solid #eee;">
+          <strong>المبلغ المطلوب تحويله بالجنيه المصري:</strong><br>
+          <span class="text-danger fs-4 fw-bold">
+            {{ getEgpAmount() | number:'1.0-2' }} EGP
+          </span><br>
+          <small class="text-muted">(بناءً على سعر الدولار = 49.5 جنيه)</small>
+        </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Binance Pay -->
-                  <div class="payment-method-card"
-                       [class.active]="orderForm.get('paymentMethod')?.value === 'binance'"
-                       (click)="orderForm.patchValue({ paymentMethod: 'binance' })">
-                    <input type="radio" formControlName="paymentMethod" value="binance" hidden />
-                    <div class="method-header">
-                      <img src="/assets/img/footer/biance.png" alt="Binance Pay" style="width:24px;">
-                      <span>{{ t('binance') }}</span>
-                      <i class="fas fa-check-circle check-icon"></i>
- <span class="badge badge-success">
-        <i class="fas fa-bolt"></i> {{ instanttext }}
-      </span>
-                    </div>
-                    <div class="method-details" *ngIf="orderForm.get('paymentMethod')?.value === 'binance'">
-                      <div class="binance-section">
-                        <div class="binance-id">42280170</div>
-                        <div class="binance-email">topresvers000&#64;gmail.com</div>
-                        <div class="payment-amount">
-                          {{ t('sendAmount') }} <strong class="home__theme">${{ product.price }}</strong> USDT<br>
-                          <small>(TRC20 or BEP20 Network)</small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+<!-- Binance Pay -->
+<div class="payment-method-card"
+     [class.active]="orderForm.get('paymentMethod')?.value === 'binance'"
+     (click)="orderForm.patchValue({ paymentMethod: 'binance' })">
+  <input type="radio" formControlName="paymentMethod" value="binance" hidden />
 
+  <div class="method-header">
+    <img src="/assets/img/footer/biance.png" alt="Binance Pay" style="width:24px;">
+    <span>{{ t('binance') }}</span>
+    <i class="fas fa-check-circle check-icon"></i>
+    <span class="badge badge-success">
+      <i class="fas fa-bolt"></i> {{ instanttext }}
+    </span>
+  </div>
+
+  <div class="method-details" *ngIf="orderForm.get('paymentMethod')?.value === 'binance'">
+    <div class="qr-section">
+      <img src="/assets/img/payment-qr/bainanceQR.png" alt="Binance Pay QR" class="qr-code" style="width: 230px;">
+
+      <div class="payment-info">
+        <div class="binance-id"><strong style="color: black;">Wallet address:</strong> TGJ2mfkqCPtk31pjiuqQWSvFuU4g6fPdyp</div>
+        <div class="binance-email"><strong>Network:</strong> TRC20</div>
+
+        <!-- USD Amount -->
+        <div class="payment-amount mt-3">
+          <strong>{{ t('sendAmount') }}</strong><br>
+          <span class="home__theme">${{ product.price }} USDT</span>
+        </div>
+
+        <!-- EGP Equivalent - Highlighted -->
+        <div class="payment-amount-egp mt-2 p-3 rounded" style="background:#f8f9fa; border:1px solid #eee;">
+          <strong>المبلغ المطلوب تحويله بالجنيه المصري:</strong><br>
+          <span class="text-danger fs-4 fw-bold">
+            {{ getEgpAmount() | number:'1.0-2' }} EGP
+          </span><br>
+          <small class="text-muted">(بناءً على سعر الدولار = 49.5 جنيه)</small>
+        </div>
+
+        <div class="mt-2 text-warning">
+          <small><strong>ملاحظة:</strong> أرسل المبلغ بالضبط بالدولار USDT (وليس بالجنيه)</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
                 </div>
                 <small *ngIf="orderForm.get('paymentMethod')?.invalid && orderForm.get('paymentMethod')?.touched">
                   {{ t('pleaseSelectPayment') }}

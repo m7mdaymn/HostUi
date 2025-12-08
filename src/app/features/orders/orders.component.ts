@@ -44,6 +44,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   submitting = false;
   successMessage = '';
   instanttext = '';
+  readonly USD_TO_EGP_RATE = 49.5;
   orderForm: FormGroup;
   private langSub?: Subscription;
 
@@ -186,7 +187,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+getEgpAmount(): number {
+  if (!this.product?.price) return 0;
+  return this.product.price * this.USD_TO_EGP_RATE;
+}
   goBack(): void {
     window.history.back();
   }
