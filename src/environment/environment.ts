@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://hostapi.runasp.net/api'
+  apiUrl: 'https://www.toprdps.com/api'
 };
