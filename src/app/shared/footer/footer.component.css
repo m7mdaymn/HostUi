@@ -52,6 +52,11 @@
 .payment-item:hover .payment-logo {
     transform: scale(1.05);
 }
+.footer-logo{
+  img{
+    width: 300px;
+  }
+}
 
 /* Responsive adjustments */
 @media screen and (max-width: 1199px) {
@@ -80,6 +85,11 @@
     .payment-logo {
         max-height: 56px;
     }
+    .footer-logo{
+  img{
+    width: 200px;
+  }
+}
 }
 
 @media screen and (max-width: 480px) {

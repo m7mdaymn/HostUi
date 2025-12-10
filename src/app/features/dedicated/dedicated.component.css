@@ -842,7 +842,7 @@ html { scroll-behavior: smooth; }
   .featured-card { padding: 24px 20px 20px; }
   .plan-name { font-size: 18px; }
   .amount { font-size: 32px; }
-  .badge-discount { top: 12px; right: 12px; padding: 5px 12px; font-size: 10px; }
+  .badge-discount { right: 12px; padding: 5px 12px; font-size: 10px; }
   .breadcumnd__banner .banner__content h6 { font-size: 16px; }
   .breadcumnd__banner .ssd__list li { font-size: 16px; }
 }

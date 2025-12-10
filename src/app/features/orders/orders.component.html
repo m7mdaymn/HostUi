@@ -279,10 +279,10 @@
 
               <!-- Action Buttons -->
               <div class="action-buttons">
-                <button type="button" class="cmn--btn border__trans" (click)="goBack()">
+                <button type="button" class="cmn--btn " (click)="goBack()">
                   <span><i class="fas fa-arrow-left"></i> {{ t('back') }}</span>
                 </button>
-                <button type="submit" class="cmn--btn" [disabled]="submitting || orderForm.invalid">
+                <button type="submit" class="cmn--btn " [disabled]="submitting || orderForm.invalid">
                   <span>
                     <i class="fas" [ngClass]="{ 'fa-spinner fa-spin': submitting, 'fa-check': !submitting }"></i>
                     {{ submitting ? t('processing') : t('confirmOrder') }}
