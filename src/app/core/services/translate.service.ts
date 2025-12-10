@@ -59,7 +59,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     footerDedicated: 'Dedicated Servers',
     footerPrivacy: 'Privacy',
     footerTerms: 'Terms & Conditions',
-    copyrightBy: 'Copyright © 2025 | Designed by <a href="https://wa.me/+201029907297" ',
+    copyrightBy: 'Copyright © 2025 ',
     enterpriseSolutions: 'Enterprise Solutions',
     premiumDedicatedServers: 'Premium Dedicated Servers',
     dedicatedDesc: 'Unmatched performance with exclusive hardware resources for your business',

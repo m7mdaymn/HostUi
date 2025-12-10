@@ -1,4 +1,6 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -19,40 +21,48 @@ import { CtaSectionComponent } from "../../shared/cta-section/cta-section.compon
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit, OnDestroy {
+  isHomePage = true;
+  private routerSubscription!: Subscription;
 
-  constructor(private translate: TranslateService) {}
+  constructor(
+    private translate: TranslateService,
+    private router: Router
+  ) {
+    // Detect current route to show/hide preview cards
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const url = event.urlAfterRedirects;
+        this.isHomePage = url === '/' || url === '/home' || url.startsWith('/?') || url === '';
+      });
+  }
 
   text(key: string): string {
     return this.translate.t(key);
   }
 
   ngAfterViewInit(): void {
-    // Small delay to ensure jQuery & Owl Carousel are fully loaded from angular.json scripts
+    // Initialize Owl Carousel if needed (your banner)
     setTimeout(() => {
       const $ = (window as any).$;
-      const $banner = $('.banner__section');
-
-      if ($ && $.fn?.owlCarousel && $banner.length) {
-        $banner.owlCarousel({
+      if ($ && $.fn?.owlCarousel) {
+        $('.banner__section').owlCarousel({
           items: 1,
           loop: true,
           nav: true,
           dots: true,
           autoplay: true,
           autoplayTimeout: 5000,
-          autoplayHoverPause: true,
-          navText: [
-            '<i class="fas fa-chevron-left"></i>',
-            '<i class="fas fa-chevron-right"></i>'
-          ],
-          responsive: {
-            0: { items: 1 },
-            768: { items: 1 },
-            992: { items: 1 }
-          }
+          navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>']
         });
       }
     }, 100);
+  }
+
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 }

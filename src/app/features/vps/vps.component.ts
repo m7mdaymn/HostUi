@@ -112,18 +112,14 @@ export class VpsComponent implements OnInit, OnDestroy {
   applyInstantFilter(): void {
     let result: any[] = [...this.products];
 
-    // LowSpace / HighSpace — keep only half, but DO NOT break price order later
+    // Space filter: use product category only (do NOT use storage or other fields)
     if (this.spaceFilter !== 'all') {
-      const sortedByStorage = [...this.products].sort((a, b) =>
-        this.getStorageGB(a) - this.getStorageGB(b)
-      );
-      const half = Math.ceil(sortedByStorage.length / 2);
-
-      if (this.spaceFilter === 'low') {
-        result = sortedByStorage.slice(0, half);
-      } else if (this.spaceFilter === 'high') {
-        result = sortedByStorage.slice(-half);
-      }
+      result = result.filter(p => {
+        const cat = (p.category || p.Category || '').toString().toLowerCase().trim();
+        if (!cat) return false;
+        if (this.spaceFilter === 'low') return this.isLowCategory(cat);
+        return this.isHighCategory(cat);
+      });
     }
 
     // Apply all other filters
@@ -234,17 +230,28 @@ export class VpsComponent implements OnInit, OnDestroy {
     return parseInt(p.cores || p.Cores || '1', 10) || 1;
   }
 
+  // Category-based matchers: determine low/high by category text only
+  private isLowCategory(cat: string): boolean {
+    const lowKeywords = ['low', 'small', 'mini', 'starter', 'basic', 'economy', 'lite', 'lowspace', 'low-space', 'low space'];
+    return lowKeywords.some(k => cat.includes(k));
+  }
+
+  private isHighCategory(cat: string): boolean {
+    const highKeywords = ['high', 'large', 'pro', 'premium', 'max', 'ultimate', 'plus', 'enterprise', 'highspace', 'high-space', 'high space'];
+    return highKeywords.some(k => cat.includes(k));
+  }
+
   // FEATURED CARDS — Now 100% accurate
   getCheapestLowSpace(): any {
-    const lowSpace = [...this.products]
-      .sort((a, b) => this.getStorageGB(a) - this.getStorageGB(b));
-    return lowSpace[0] || null;
+    const lowSpace = this.products
+      .filter(p => this.isLowCategory((p.category || p.Category || '').toString().toLowerCase()));
+    return lowSpace.sort((a, b) => a.__priceNum - b.__priceNum)[0] || null;
   }
 
   getCheapestHighSpace(): any {
-    const highSpace = [...this.products]
-      .sort((a, b) => this.getStorageGB(b) - this.getStorageGB(a));
-    return highSpace[0] || null;
+    const highSpace = this.products
+      .filter(p => this.isHighCategory((p.category || p.Category || '').toString().toLowerCase()));
+    return highSpace.sort((a, b) => a.__priceNum - b.__priceNum)[0] || null;
   }
 
   getCheapestByCore(): any {
