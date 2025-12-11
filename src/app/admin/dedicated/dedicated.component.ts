@@ -30,7 +30,7 @@ export class DedicatedComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.serverForm = this.fb.group({
-      name: ['', Validators.required],        // ← Manual only
+      name: ['', Validators.required],
       cpuBrand: ['AMD', Validators.required],
       cpuModel: ['', Validators.required],
       cores: [null, [Validators.required, Validators.min(1)]],
@@ -38,7 +38,7 @@ export class DedicatedComponent implements OnInit {
       storage: ['', Validators.required],
       price: [null, [Validators.required, Validators.min(0)]],
       brand: ['', Validators.required],
-      bandwidth: [''],
+      bandwidth: [''],  // Optional, no default
       inStock: [true],
       description: ['']
     });
@@ -46,7 +46,6 @@ export class DedicatedComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadServers();
-    // NO AUTO-GENERATION ANYMORE
   }
 
   loadServers(): void {
@@ -77,15 +76,15 @@ export class DedicatedComponent implements OnInit {
 
         this.servers = list.map((s: any) => ({
           id: s.id ?? s.Id ?? s._id ?? '',
-          name: s.name ?? s.Name ?? '',           // ← Only from DB, no fallback
+          name: s.name ?? s.Name ?? '',
           cpuModel: s.cpuModel ?? s.CpuModel ?? 'Unknown',
           cores: s.cores ?? s.Cores ?? 1,
           ramGB: s.ramGB ?? s.RamGB ?? 1,
           storage: s.storage ?? s.Storage ?? '',
           price: s.price ?? s.Price ?? 0,
           brand: s.brand ?? s.Brand ?? 'Generic',
-          bandwidth: s.bandwidth ?? s.Bandwidth ?? 'Unlimited',
-          inStock: s.inStock ?? s.InStock ?? true,
+          bandwidth: s.connectionSpeed ?? s.ConnectionSpeed ?? s.bandwidth ?? s.Bandwidth ?? '',  // ← FIXED: Check connectionSpeed first
+          inStock: s.isActive ?? s.IsActive ?? s.inStock ?? s.InStock ?? true,
           description: s.description ?? s.Description ?? ''
         }));
 
@@ -107,7 +106,7 @@ export class DedicatedComponent implements OnInit {
 
     if (server) {
       this.serverForm.patchValue({
-        name: server.name || '',                      // ← Only what was saved
+        name: server.name || '',
         cpuBrand: server.cpuModel?.toLowerCase().includes('ryzen') ||
                   server.cpuModel?.toLowerCase().includes('epyc') ? 'AMD' : 'Intel',
         cpuModel: server.cpuModel || '',
@@ -116,7 +115,7 @@ export class DedicatedComponent implements OnInit {
         storage: server.storage || '',
         price: server.price || 0,
         brand: server.brand || '',
-        bandwidth: server.bandwidth || '',
+        bandwidth: server.bandwidth || '',  // ← FIXED: Keep actual value or empty
         inStock: server.inStock ?? true,
         description: server.description || ''
       });
@@ -130,7 +129,7 @@ export class DedicatedComponent implements OnInit {
         storage: '',
         price: 0,
         brand: '',
-        bandwidth: '',
+        bandwidth: '',  // ← FIXED: Empty by default
         inStock: true,
         description: ''
       });
@@ -154,15 +153,15 @@ export class DedicatedComponent implements OnInit {
     const payload = this.selectedServer
       ? {
           Id: this.selectedServer.id,
-          Name: v.name.trim(),                          // ← Only what user typed
+          Name: v.name.trim(),
           CpuModel: `${v.cpuBrand} ${v.cpuModel}`.trim(),
           Cores: +v.cores,
           RamGB: +v.ramGB,
           Storage: v.storage?.trim(),
           Price: +v.price,
           Brand: v.brand?.trim(),
-          Bandwidth: v.bandwidth?.trim() || 'Unlimited',
-          InStock: !!v.inStock,
+          ConnectionSpeed: v.bandwidth?.trim() || '',  // ← FIXED: Send as ConnectionSpeed
+          IsActive: !!v.inStock,
           Description: v.description?.trim() || ''
         }
       : {
@@ -173,8 +172,8 @@ export class DedicatedComponent implements OnInit {
           Storage: v.storage?.trim(),
           Price: +v.price,
           Brand: v.brand?.trim(),
-          Bandwidth: v.bandwidth?.trim() || 'Unlimited',
-          InStock: true,
+          ConnectionSpeed: v.bandwidth?.trim() || '',  // ← FIXED: Send as ConnectionSpeed
+          IsActive: true,
           Description: v.description?.trim() || ''
         };
 

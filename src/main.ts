@@ -9,25 +9,6 @@ import * as jquery from 'jquery';
 
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
-// تعطيل الـ console كلياً في ng serve و production معاً
-(window as any).console = {
-  log: () => {},
-  warn: () => {},
-  error: () => {},
-  info: () => {},
-  debug: () => {},
-  trace: () => {},
-  table: () => {},
-  group: () => {},
-  groupEnd: () => {},
-  clear: () => {},
-  dir: () => {},
-  time: () => {},
-  timeEnd: () => {}
-};
 
-// إخفاء أي أخطاء عالمية عشان ما تظهرش في الـ console
-window.addEventListener('error', () => {});
-window.addEventListener('unhandledrejection', () => {});
 
 bootstrapApplication(AppComponent, appConfig);

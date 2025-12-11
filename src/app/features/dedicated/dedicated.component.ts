@@ -68,17 +68,34 @@ export class DedicatedComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         const raw = Array.isArray(res) ? res : (res.data || []);
 
-        // FINAL: Sort once by real numeric price and store it
+        // Map backend fields to frontend, including connectionSpeed
         this.products = raw
           .map((p: any) => {
             const priceNum = this.getPrice(p);
-            return { ...p, __priceNum: priceNum };
+            return {
+              id: p.id ?? p.Id,
+              name: p.name ?? p.Name,
+              cpuModel: p.cpuModel ?? p.CpuModel,
+              cores: p.cores ?? p.Cores,
+              ramGB: p.ramGB ?? p.RamGB,
+              storage: p.storage ?? p.Storage,
+              storageGB: p.storageGB ?? p.StorageGB,
+              price: p.price ?? p.Price,
+              brand: p.brand ?? p.Brand,
+              // FIXED: Map connectionSpeed properly
+              connectionSpeed: p.connectionSpeed ?? p.ConnectionSpeed ?? '',
+              description: p.description ?? p.Description,
+              isActive: p.isActive ?? p.IsActive,
+              discount: p.discount ?? p.Discount,
+              limited: p.limited ?? p.Limited,
+              __priceNum: priceNum
+            };
           })
           .sort((a: any, b: any) => a.__priceNum - b.__priceNum); // Cheapest first
 
         // Extract brands
         this.brandOptions = Array.from(new Set(this.products
-          .map(p => (p.brand || p.Brand || p.cpuModel || '').trim())
+          .map(p => (p.brand || p.cpuModel || '').trim())
           .filter(Boolean)))
           .sort();
 
@@ -131,21 +148,21 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     // Cores
     if (this.filters.cores.length) {
       result = result.filter(p =>
-        this.filters.cores.includes(String(p.cores || p.Cores || ''))
+        this.filters.cores.includes(String(p.cores || ''))
       );
     }
 
     // RAM
     if (this.filters.ram.length) {
       result = result.filter(p =>
-        this.filters.ram.includes(String(p.ramGB || p.RamGB || ''))
+        this.filters.ram.includes(String(p.ramGB || ''))
       );
     }
 
     // Brand
     if (this.filters.brands.length) {
       result = result.filter(p => {
-        const b = (p.brand || p.Brand || p.cpuModel || '').trim();
+        const b = (p.brand || p.cpuModel || '').trim();
         return this.filters.brands.includes(b);
       });
     }
@@ -155,7 +172,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
       result = result.filter(p => p.__priceNum <= this.filters.maxPrice!);
     }
 
-    // FINAL: Always sort by price — 100% accurate cheapest first
+    // Always sort by price — cheapest first
     this.filtered = result.sort((a, b) => a.__priceNum - b.__priceNum);
 
     // Update Top 3
@@ -217,7 +234,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
   private getBestValuePerCore(): any {
     const valid = this.products
       .filter(p => {
-        const cores = parseInt(p.cores || p.Cores || '0') || 0;
+        const cores = parseInt(p.cores || '0') || 0;
         return cores > 0 && p.__priceNum < 99999;
       });
 
@@ -226,7 +243,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     return valid
       .map(p => ({
         server: p,
-        ppc: p.__priceNum / (parseInt(p.cores || p.Cores || '1') || 1)
+        ppc: p.__priceNum / (parseInt(p.cores || '1') || 1)
       }))
       .sort((a, b) => a.ppc - b.ppc)[0].server;
   }
@@ -236,8 +253,8 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     const seen = new Set<number | string>();
 
     const addIfNotSeen = (server: any, type: any) => {
-      if (server && !seen.has(server.id || server.Id)) {
-        seen.add(server.id || server.Id);
+      if (server && !seen.has(server.id)) {
+        seen.add(server.id);
         result.push({ server, type });
       }
     };
@@ -248,7 +265,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
 
     // Fill remaining with cheapest not yet shown
     const remaining = this.products
-      .filter(p => !seen.has(p.id || p.Id))
+      .filter(p => !seen.has(p.id))
       .sort((a, b) => a.__priceNum - b.__priceNum);
 
     while (result.length < 3 && remaining.length > 0) {
@@ -269,7 +286,7 @@ export class DedicatedComponent implements OnInit, OnDestroy {
     return map[type] || this.text('highPerformanceDeal');
   }
 
-  trackByFn = (index: number, item: any) => item?.id || item?.Id || index;
+  trackByFn = (index: number, item: any) => item?.id || index;
   trackByTopThree = (index: number, item: any) => item?.server?.id || index;
 
   orderNow(id: number): void {

@@ -134,7 +134,10 @@
             <li><i class="fa-solid fa-microchip"></i> {{ item.server.cores }} {{ text('cores') }}</li>
             <li><i class="fa-solid fa-memory"></i> {{ item.server.ramGB }} GB {{ text('ramLabel') }}</li>
             <li><i class="fa-solid fa-hard-drive"></i> {{ item.server.storage || item.server.storageGB }}</li>
-            <li><i class="fa-solid fa-gauge-high"></i> {{ item.server.connectionSpeed || '10 Gbps' }}</li>
+            <!-- FIXED: Only show if connectionSpeed exists and is not empty -->
+            <li *ngIf="item.server.connectionSpeed && item.server.connectionSpeed.trim()">
+              <i class="fa-solid fa-gauge-high"></i> {{ item.server.connectionSpeed }}
+            </li>
           </ul>
 
           <div class="featured-card-footer">
@@ -149,7 +152,8 @@
     </div>
   </div>
 </section>
-<!-- All Plans Section with Processor Tabs + Sidebar Filter -->
+
+
 <section class="pricing__domain pt-60 pb-120" id="Dedicated">
   <div class="container-fluid px-4">
     <div class="section__header text-center">
