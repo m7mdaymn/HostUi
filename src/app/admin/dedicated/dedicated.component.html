@@ -48,7 +48,6 @@
                   <th>Specifications</th>
                   <th>Storage</th>
                   <th>Price</th>
-                  <th>Status</th>
                   <th class="text-end">Actions</th>
                 </tr>
               </thead>
@@ -69,21 +68,14 @@
                   <td><strong>{{ server.cpuModel || '—' }}</strong></td>
 
                   <td>
-                    {{ server.cores }} Cores • {{ server.ramGB }} GB RAM • {{ server.bandwidth || 'Unlimited' }}
+                    {{ server.cores }} Cores • {{ server.ramGB }} GB RAM
+                    <span *ngIf="server.connectionSpeed"> • {{ server.connectionSpeed }}</span>
                   </td>
 
                   <td>{{ server.storage || '—' }}</td>
 
                   <td>
                     <strong class="text-success">${{ server.price | number:'1.2-2' }}/mo</strong>
-                  </td>
-
-                  <td>
-                    <span class="badge"
-                          [class.badge-success]="server.inStock"
-                          [class.badge-danger]="!server.inStock">
-                      {{ server.inStock ? 'In Stock' : 'Out of Stock' }}
-                    </span>
                   </td>
 
                   <td class="text-end">
@@ -151,7 +143,8 @@
 
           <div class="form-group">
             <label>CPU Model <span class="required">*</span></label>
-            <input type="text" formControlName="cpuModel" placeholder="Ryzen 9 7950X, EPYC 9754..." />
+            <input type="text" formControlName="cpuModel" placeholder="Ryzen 9 7950X, EPYC 9754, Core i9-9900K..." />
+            <small class="text-muted">Enter model without brand prefix (e.g., "Core i7-7700" not "Intel Core i7-7700")</small>
           </div>
 
           <div class="form-group">
@@ -169,9 +162,24 @@
             <input type="text" formControlName="storage" placeholder="4x 3.84TB NVMe + 2x 16TB HDD" />
           </div>
 
+          <!-- SPLIT CONNECTION SPEED INPUT -->
           <div class="form-group">
-            <label>Bandwidth</label>
-            <input type="text" formControlName="bandwidth" placeholder="1Gbps Unmetered" />
+            <label>Connection Speed (Optional)</label>
+            <div class="input-group">
+              <input type="number"
+                     formControlName="connectionSpeedValue"
+                     placeholder="10"
+                     min="1"
+                     class="form-control"
+                     [disabled]="serverForm.get('connectionSpeedUnit')?.value === 'Unmetered' || serverForm.get('connectionSpeedUnit')?.value === ''" />
+              <select formControlName="connectionSpeedUnit" class="form-control-append">
+                <option value="">Not specified</option>
+                <option value="Mbps">Mbps</option>
+                <option value="Gbps">Gbps</option>
+                <option value="Unmetered">Unmetered</option>
+              </select>
+            </div>
+            <small class="text-muted">Leave empty or select "Not specified" to skip. Choose "Unmetered" for unlimited bandwidth.</small>
           </div>
 
           <div class="form-group">
