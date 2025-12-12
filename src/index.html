@@ -57,26 +57,20 @@
 <body>
   <app-root></app-root>
 
-  <!-- Scripts -->
   <script src="polyfills.js" type="module"></script>
   <script src="main.js" type="module"></script>
 
-  <!-- الكود السحري: تحديد اللغة والاتجاه تلقائيًا حسب الـ URL -->
   <script>
     (function () {
       const path = window.location.pathname;
 
-      // إذا الرابط فيه /ar أو بدأ بـ /ar/ → عربي
       const isArabic = path === '/ar' || path.startsWith('/ar/') || path.includes('/ar/');
 
-      // تحديث لغة الـ HTML + الاتجاه
       document.documentElement.lang = isArabic ? 'ar' : 'en';
       document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
 
-      // حفظ اللغة في localStorage عشان تظل محفوظة
       localStorage.setItem('lang', isArabic ? 'ar' : 'en');
 
-      // إزالة /ar من الـ URL لو موجود (من غير ما يعمل ريفريش)
       if (isArabic && path.startsWith('/ar/')) {
         const cleanPath = path.replace(/^\/ar/, '') || '/';
         if (window.location.pathname !== cleanPath) {
