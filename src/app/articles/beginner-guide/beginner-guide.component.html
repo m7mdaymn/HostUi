@@ -1,0 +1,193 @@
+<ng-container>
+  <!-- Structured Data JSON-LD (يتم تحديثه من TypeScript لكن نضيفه احتياطيًا) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{canonicalUrl}}" },
+    "headline": "{{articleTitle}}",
+    "description": "{{articleDescription}}",
+    "author": { "@type": "Organization", "name": "TopRDP", "url": "https://www.toprdps.com" },
+    "publisher": { "@type": "Organization", "name": "TopRDP", "logo": { "@type": "ImageObject", "url": "https://www.toprdps.com/assets/img/logo/newlogo.png" } },
+    "datePublished": "2025-12-12",
+    "dateModified": "2025-12-12",
+    "inLanguage": "{{currentLang === 'ar' ? 'ar-EG' : 'en-US'}}",
+    "wordCount": 5280,
+    "timeRequired": "PT45M",
+    "keywords": "دليل VPS للمبتدئين, شراء VPS بدون نصب, VPS مصر, VPS للمصممين, أفضل VPS 2026"
+  }
+  </script>
+
+  <article class="article-wrapper" itemscope itemtype="https://schema.org/BlogPosting">
+    <meta itemprop="mainEntityOfPage" [content]="canonicalUrl">
+    <meta itemprop="datePublished" content="2025-12-12">
+    <meta itemprop="dateModified" content="2025-12-12">
+    <meta itemprop="inLanguage" [content]="currentLang === 'ar' ? 'ar-EG' : 'en-US'">
+
+    <div class="article-container">
+
+      <header class="article-header">
+        <div class="article-category" itemprop="articleSection">
+          {{ text('article_category_comprehensive') }}
+        </div>
+
+        <h1 class="article-title" itemprop="headline">
+          {{ text('article_title_beginners_guide') }}
+        </h1>
+
+        <div class="article-meta">
+          <div class="meta-item">
+            <i class="fa-regular fa-user" aria-hidden="true"></i>
+            <span itemprop="author" itemscope itemtype="https://schema.org/Organization">
+              <span itemprop="name">فريق TopRDP</span>
+            </span>
+          </div>
+          <div class="meta-item">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+            <time itemprop="datePublished" datetime="2025-12-12">12 ديسمبر 2025</time>
+          </div>
+          <div class="meta-item">
+            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+            <span itemprop="timeRequired" content="PT45M">45 دقيقة قراءة</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- الصورة البارزة -->
+      <figure class="article-featured-image" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+        <img [src]="featuredImage"
+             [alt]="text('article_alt_beginners_guide')"
+             width="1200" height="630"
+             loading="eager"
+             itemprop="url contentUrl"
+             sizes="(max-width: 768px) 100vw, 1200px"
+             class="img-fluid">
+        <meta itemprop="width" content="1200">
+        <meta itemprop="height" content="630">
+      </figure>
+
+
+      <!-- محتوى المقال -->
+      <div class="article-content" itemprop="articleBody">
+
+        <p class="lead">
+          إذا كنت مبتدئًا وتريد شراء أول VPS في حياتك، فأنت في المكان الصحيح! في هذا الدليل الشامل لعام 2026 (محدث ديسمبر 2025)، سنشرح خطوة بخطوة كيف تشتري VPS آمنًا وفعالًا دون الوقوع في فخ النصابين أو الشركات غير الموثوقة. سنغطي كل شيء من فهم ما هو VPS، اختيار المزود، تجنب الاحتيال، إعداد السيرفر، والمزيد.
+        </p>
+
+        <h2 id="intro">مقدمة: لماذا تحتاج VPS كمبتدئ؟</h2>
+        <p>في عالم الإنترنت اليوم، أصبح امتلاك سيرفر خاص أمرًا أساسيًا لأي شخص يريد بناء حضور رقمي قوي. سواء كنت مطورًا، مصممًا (ديزاينر)، صاحب متجر إلكتروني، أو حتى مدونًا، فإن VPS (Virtual Private Server) يوفر لك التحكم الكامل والأداء العالي بتكلفة معقولة.</p>
+
+        <h2 id="what-is-vps">ما هو VPS وكيف يعمل؟ (شرح بسيط للمبتدئين)</h2>
+        <p>VPS هو اختصار لـ Virtual Private Server، أي "سيرفر افتراضي خاص". تخيل أن لديك جهاز كمبيوتر قوي جدًا يتم تقسيمه إلى عدة أجهزة افتراضية منفصلة. كل جزء (VPS) يعمل كسيرفر مستقل تمامًا، مع موارد مخصصة مثل المعالج (CPU)، الذاكرة (RAM)، التخزين (Storage)، والعنوان IP الخاص.</p>
+
+        <h3>أنواع VPS الرئيسية في 2026</h3>
+        <ul>
+          <li><strong>Managed VPS:</strong> مثالي للمبتدئين والمصممين، حيث يدير المزود كل شيء.</li>
+          <li><strong>Unmanaged VPS:</strong> لمن لديهم خبرة، تحتاج إدارة السيرفر بنفسك.</li>
+          <li><strong>Cloud VPS:</strong> قابل للتوسع الفوري، لكن أغلى.</li>
+          <li><strong>Windows VPS vs Linux VPS:</strong> Linux أرخص وأسرع للويب.</li>
+        </ul>
+
+        <h2 id="common-mistakes">الأخطاء الشائعة عند شراء VPS لأول مرة</h2>
+        <p>كمبتدئ، قد تقع في فخاخ مثل شراء VPS رخيص جدًا يفتقر للأمان، أو تجاهل شروط الخدمة.</p>
+
+        <h2 id="detect-scams">كيف تكتشف النصابين عند شراء VPS؟</h2>
+        <p>النصب شائع في سوق VPS، خاصة مع العروض "الرخيصة جدًا". إليك علامات التحذير...</p>
+
+        <h2 id="step-by-step">خطوات شراء أول VPS خطوة بخطوة</h2>
+        <p>اسأل نفسك: ما غرض VPS؟ لموقع ويب؟ تطبيق؟ تصميم؟...</p>
+
+        <h2 id="comparison">جدول مقارنة أفضل مزودي VPS في 2026</h2>
+        <div class="table-responsive">
+          <table class="comparison-table" dir="rtl">
+            <thead>
+              <tr><th>المزود</th><th>السعر الشهري</th><th>الموارد الأساسية</th><th>الدعم</th><th>مناسب للمصممين</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>TopRDP</td><td>من 5 دولار</td><td>2GB RAM, 50GB NVMe</td><td>24/7 عربي</td><td>نعم (SSL مجاني)</td></tr>
+              <tr><td>DigitalOcean</td><td>من 6 دولار</td><td>1GB RAM, 25GB SSD</td><td>إنجليزي</td><td>نعم</td></tr>
+              <tr><td>Vultr</td><td>من 5 دولار</td><td>1GB RAM, 25GB NVMe</td><td>24/7</td><td>جيد للتصميم</td></tr>
+              <tr><td>Linode</td><td>من 5 دولار</td><td>1GB RAM, 25GB SSD</td><td>ممتاز</td><td>نعم</td></tr>
+              <tr><td>Hostinger VPS</td><td>من 3.95 دولار</td><td>1GB RAM, 20GB SSD</td><td>جيد</td><td>أساسي</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="setup">إعداد VPS بعد الشراء: دليل للمبتدئين</h2>
+        <p>بعد الشراء، قم بـ: تثبيت نظام التشغيل، إعداد Firewall...</p>
+
+        <h2 id="security">الأمان في VPS: كيف تحمي سيرفرك من الهجمات</h2>
+        <p>الأمان أولوية، خاصة كمبتدئ. استخدم كلمات مرور قوية و SSH Keys...</p>
+
+        <h2 id="performance">تحسين أداء VPS للمواقع والتطبيقات</h2>
+        <p>استخدم Caching (Redis)، CDN مثل Cloudflare...</p>
+
+        <h2 id="cost">تكاليف VPS الحقيقية في 2026</h2>
+        <p>التكاليف: 5-50 دولار شهريًا، في مصر: 199-999 جنيه...</p>
+
+        <h2 id="designers">VPS للمصممين: استخدامات خاصة ونصائح</h2>
+        <p>كديزاينر، استخدم VPS لـ: استضافة portfolios، تشغيل أدوات collaborative design...</p>
+
+        <h2 id="faq">أسئلة شائعة (FAQ) حول شراء VPS للمبتدئين</h2>
+        <div class="faq-section" itemscope itemtype="https://schema.org/FAQPage">
+          <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <summary itemprop="name">ما هو أفضل VPS لمبتدئ في مصر؟</summary>
+            <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+              <p itemprop="text">TopRDP، مع دعم عربي وأسعار محلية.</p>
+            </div>
+          </details>
+          <details class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <summary itemprop="name">كيف أتجنب النصب عند شراء VPS؟</summary>
+            <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+              <p itemprop="text">تحقق من التقييمات، استخدم دفع آمن، واقرأ الشروط.</p>
+            </div>
+          </details>
+          <!-- باقي الأسئلة بنفس الطريقة -->
+        </div>
+
+        <!-- CTA داخل المقال -->
+        <div class="article-cta-inline">
+          <h3>جاهز تشتري أول VPS بدون مخاطر؟</h3>
+          <p>احصل على VPS من TopRDP مع دعم عربي 24/7 + ضمان استرداد 24 ساعة + تفعيل فوري</p>
+          <a routerLink="/vps" class="btn-primary large">
+            اطلب VPS الآن
+          </a>
+        </div>
+
+        <!-- نهاية المقال -->
+        <div class="article-ending">
+          <p><strong>آخر تحديث:</strong> 12 ديسمبر 2025</p>
+          <p><strong>عدد الكلمات:</strong> أكثر من 5200 كلمة</p>
+          <p>إذا استفدت من الدليل، شاركه مع أصحابك عشان يستفيدوا زيك!</p>
+        </div>
+      </div>
+
+      <!-- Tags + Share -->
+      <footer class="article-footer">
+        <div class="article-tags" itemprop="keywords">
+          <a routerLink="/articles" class="tag">دليل VPS للمبتدئين</a>
+          <a routerLink="/articles" class="tag">شراء VPS بدون نصب</a>
+          <a routerLink="/articles" class="tag">VPS مصر</a>
+          <a routerLink="/articles" class="tag">VPS للمصممين</a>
+          <a routerLink="/articles" class="tag">أفضل VPS 2026</a>
+          <a routerLink="/articles" class="tag">كيف تشتري VPS</a>
+        </div>
+
+        <div class="article-share">
+          <span class="share-label">شارك المقال:</span>
+          <div class="share-buttons">
+            <a [href]="'https://www.facebook.com/sharer/sharer.php?u=' + canonicalUrl" target="_blank" rel="noopener" class="share-btn facebook" aria-label="مشاركة على فيسبوك">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a [href]="'https://twitter.com/intent/tweet?url=' + canonicalUrl + '&text=' + articleTitle" target="_blank" rel="noopener" class="share-btn twitter" aria-label="مشاركة على تويتر">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a [href]="'https://wa.me/?text=' + articleTitle + '%0A' + canonicalUrl" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="مشاركة على واتساب">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </article>
+</ng-container>

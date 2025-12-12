@@ -1,9 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdminGuard } from './core/guards/admin.guard';
 
-export const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
-
+const sharedRoutes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
@@ -49,10 +47,37 @@ export const routes: Routes = [
     title: 'Admin - Dedicated'
   },
   {
-  path: 'order-checkout',
-  loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
-},
-
+    path: 'order-checkout',
+    loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
+  },
+  {
+    path: 'articles',
+    loadComponent: () => import('./articles/home-articles/home-articles.component').then(m => m.HomeArticlesComponent),
+  },
+  {
+    path: 'dedicated-vs-vps',
+    loadComponent: () => import('./articles/dedicated-vs-vps/dedicated-vs-vps.component').then(m => m.DedicatedVsVpsComponent),
+  },
+  {
+    path: 'beginners-guide',
+    loadComponent: () => import('./articles/beginner-guide/beginner-guide.component').then(m => m.BeginnerGuideComponent),
+  },
+  {
+    path: 'montage-guide',
+    loadComponent: () => import('./articles/montage-guide/montage-guide.component').then(m => m.MontageGuideComponent),
+  },
+  {
+    path: 'best-stores',
+    loadComponent: () => import('./articles/best-store/best-store.component').then(m => m.BestStoreComponent),
+  },
+  {
+    path: 'vps-protection',
+    loadComponent: () => import('./articles/vps-protection/vps-protection.component').then(m => m.VpsProtectionComponent),
+  },
+  {
+    path: 'best-vps-trading-ai',
+    loadComponent: () => import('./articles/trading-ai-vps/trading-ai-vps.component').then(m => m.TradingAiVpsComponent),
+  },
   {
     path: 'admin/promos',
     canActivate: [AdminGuard],
@@ -86,6 +111,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/contact/contact.component').then(m => m.ContactComponent),
     title: 'Contact Us - TopServers'
   },
+];
 
+export const routes: Routes = [
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'ar', redirectTo: '/ar/home', pathMatch: 'full' },
+  ...sharedRoutes,
+  {
+    path: 'ar',
+    children: sharedRoutes.map(route => ({
+      ...route,
+      path: route.path || ''
+    }))
+  },
   { path: '**', redirectTo: '/home' }
 ];

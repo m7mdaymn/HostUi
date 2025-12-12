@@ -52,12 +52,11 @@
               "src/assets/css/owl.theme.default.min.css",
               "src/assets/css/main.css"
             ],
-            "scripts": [
-            ]
+            "scripts": []
           },
           "configurations": {
-          "production": {
-            "budgets": [
+            "production": {
+              "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
@@ -69,8 +68,8 @@
                   "maximumError": "1mb"
                 }
               ],
-            "outputHashing": "all"
-          },
+              "outputHashing": "all"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -105,6 +104,8 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
+              "src/assets/robots.txt",
+              "src/assets/sitemap.xml",
               {
                 "glob": "**/*",
                 "input": "public",

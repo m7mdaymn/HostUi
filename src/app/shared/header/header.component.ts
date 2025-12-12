@@ -114,9 +114,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.translate.t(key);
   }
 
+  getLink(path: string): string {
+    return (this.translate.current === 'ar' ? '/ar' : '') + path;
+  }
+
   logout() {
     this.authService.logout();
-    this.router.navigate(['/home']);
+    this.router.navigateByUrl(this.getLink('/home'));
   }
 
   private preventBodyScroll() {
@@ -126,4 +130,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private allowBodyScroll() {
     document.body.style.overflow = 'auto';
   }
+
 }

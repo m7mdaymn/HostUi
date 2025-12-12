@@ -1,0 +1,36 @@
+User-agent: *
+Allow: /
+
+Allow: /home
+Allow: /vps
+Allow: /dedicated
+Allow: /promos
+Allow: /contact
+Allow: /articles
+Allow: /beginners-guide
+Allow: /vps-protection
+Allow: /dedicated-vs-vps
+Allow: /montage-guide
+Allow: /best-stores
+Allow: /best-vps-trading-ai
+allow: /signin
+allow: /signup
+
+Allow: /ar/
+Allow: /ar/home
+Allow: /ar/vps
+Allow: /ar/dedicated
+Allow: /ar/articles
+
+
+Disallow: /signin
+Disallow: /signup
+Disallow: /admin/
+Disallow: /order-checkout
+Disallow: /*?*
+
+Disallow: /assets/
+Disallow: /src/
+Disallow: /node_modules/
+
+Sitemap: https://www.toprdps.com/sitemap.xml

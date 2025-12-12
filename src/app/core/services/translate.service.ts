@@ -1,6 +1,8 @@
 // src/app/core/services/translate.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 type Lang = 'en' | 'ar';
 
@@ -216,6 +218,67 @@ const DICT: Record<Lang, Record<string, string>> = {
     navvps: 'VPS',
     selectOperatingSystem: 'Select Operating System',
      instantActivation: 'Instant Activation',
+      seo_articles_page_title: 'TopServers Official Blog - Technical Guides & Articles 2026',
+    seo_articles_page_description: 'Comprehensive technical guides and articles in Arabic and English. Learn about VPS, Dedicated Servers, Security, AI, Trading Bots, and more. Updated by expert team.',
+    seo_articles_page_keywords: 'VPS guides, dedicated server tutorials, server security, trading bots, AI hosting, server comparison, hosting guides 2026',
+
+    // Articles Hero Section
+    articles_hero_title: 'TopServers Official Blog',
+    articles_hero_subtitle: 'Comprehensive technical guides and articles for 2026 – continuously updated by our expert team',
+
+    // Article Categories
+    article_category_comprehensive: 'Comprehensive Guide',
+    article_category_security: 'Security & Servers',
+    article_category_comparisons: 'Comparisons',
+    article_category_creators: 'Creators & Designers',
+    article_category_comparisons_2026: 'Comparisons 2026',
+    article_category_trading_ai: 'Trading & AI',
+
+    // Article 1: Beginners Guide
+    article_title_beginners_guide: 'Beginners Guide: How to Buy Your First VPS Without Getting Scammed (2026)',
+    article_excerpt_beginners_guide: 'The most comprehensive guide in the Arab world for buying a secure VPS without fraud, with real comparisons and tips for designers and developers',
+    article_read_time_45: '45 min read',
+    article_alt_beginners_guide: 'Complete VPS buying guide for beginners',
+
+    // Article 2: VPS Protection
+    article_title_vps_protection: 'How to Protect Your VPS from DDoS Attacks and Hackers (Step by Step)',
+    article_excerpt_vps_protection: 'Complete practical guide to secure VPS with Cloudflare, Fail2Ban, SSH Keys, and latest 2026 technologies',
+    article_read_time_50: '50 min read',
+    article_alt_vps_protection: 'VPS protection from DDoS attacks guide',
+
+    // Article 3: Dedicated vs VPS
+    article_title_dedicated_vs_vps: 'VPS vs Dedicated Server: Which to Choose and Why? (Comprehensive Guide 2026)',
+    article_excerpt_dedicated_vs_vps: 'Comprehensive comparison table + when you need Dedicated and when a powerful next-gen VPS is enough',
+    article_read_time_15: '15 min read',
+    article_alt_dedicated_vs_vps: 'VPS and Dedicated Server comparison',
+
+    // Article 4: Montage Guide
+    article_title_montage_guide: 'How to Choose Your Server for Video Editing, Live Streaming, and Scripts',
+    article_excerpt_montage_guide: 'Ultimate guide to choosing VPS or Dedicated for video editing, live streaming, scripts, and designers',
+    article_alt_montage_guide: 'Server guide for video editing and streaming',
+
+    // Article 5: Best Stores
+    article_title_best_stores: 'Best Sites to Buy Dedicated Servers in the Middle East (Speed & Price Comparison)',
+    article_excerpt_best_stores: 'Updated list of top 7 providers in Egypt, Saudi Arabia, and UAE with real links and USD prices',
+    article_read_time_40: '40 min read',
+    article_alt_best_stores: 'Best Dedicated Server providers in Middle East',
+
+    // Article 6: Best VPS Trading AI
+    article_title_best_vps_trading_ai: 'Best VPS for Trading Bots and AI in 2026 (Complete Guide + Comparison)',
+    article_excerpt_best_vps_trading_ai: 'Top 8 global and local providers for running Forex and crypto bots and AI models (TensorFlow, Llama, Stable Diffusion) without lag or downtime',
+    article_read_time_55: '55 min read',
+    article_alt_best_vps_trading_ai: 'Best VPS for trading bots and AI 2026',
+
+    // Articles Actions
+    articles_read_article: 'Read Article',
+    articles_read_article_label: 'Read the full article',
+
+    // CTA Section
+    articles_cta_title: 'Have an Article Idea You Want',
+    articles_cta_subtitle: 'Request any technical topic and we will write a comprehensive guide within days',
+    articles_cta_button: 'Request Your Article Now',
+    articles_cta_button_label: 'Contact us to request a custom article',
+    blog: 'Blog'
 
   },
   ar: {
@@ -445,6 +508,61 @@ const DICT: Record<Lang, Record<string, string>> = {
       navvps: 'VPS',
       selectOperatingSystem: 'اختر نظام التشغيل',
        instantActivation: 'تفعيل فوري',
+          seo_articles_page_title: 'مدونة TopServers الرسمية - دلائل ومقالات تقنية 2026',
+    seo_articles_page_description: 'أقوى الدلائل والمقالات التقنية باللغة العربية والإنجليزية. تعلم عن VPS، الخوادم المخصصة، الأمان، الذكاء الاصطناعي، بوتات التداول والمزيد. محدثة من فريق الخبراء.',
+    seo_articles_page_keywords: 'دليل VPS, شرح الخوادم المخصصة, أمان الخوادم, بوتات التداول, استضافة الذكاء الاصطناعي, مقارنة الخوادم, دلائل الاستضافة 2026',
+    blog: 'المدونة',
+    articles_hero_title: 'مدونة TopServers الرسمية',
+    articles_hero_subtitle: 'أقوى الدلائل والمقالات التقنية باللغة العربية لعام 2026 – محدثة باستمرار من فريق الخبراء',
+    article_category_comprehensive: 'دليل شامل',
+    article_category_security: 'أمان وسيرفرات',
+    article_category_comparisons: 'مقارنات',
+    article_category_creators: 'كرييتورز وديزاينرز',
+    article_category_comparisons_2026: 'مقارنات 2026',
+    article_category_trading_ai: 'تريدنج وذكاء اصطناعي',
+    article_title_beginners_guide: 'دليل المبتدئين: كيف تشتري أول VPS في حياتك بدون ما تتضحك عليك (2026)',
+    article_excerpt_beginners_guide: 'الدليل الأكثر شمولاً في الوطن العربي لشراء VPS آمن بدون نصب، مع مقارنات حقيقية ونصائح للمصممين والمطورين',
+    article_read_time_45: '45 دقيقة قراءة',
+    article_alt_beginners_guide: 'دليل شراء VPS للمبتدئين',
+
+    // Article 2: VPS Protection
+    article_title_vps_protection: 'كيف تحمي VPS الخاص بك من الهجمات الـ DDoS والهاكرز (خطوة بخطوة)',
+    article_excerpt_vps_protection: 'دليل عملي كامل لتأمين VPS مع Cloudflare، Fail2Ban، SSH Keys، وأحدث تقنيات 2026',
+    article_read_time_50: '50 دقيقة قراءة',
+    article_alt_vps_protection: 'حماية VPS من DDoS',
+
+    // Article 3: Dedicated vs VPS
+    article_title_dedicated_vs_vps: 'الفرق بين VPS و Dedicated Server: أيهم تختار ولماذا؟ (دليل شامل 2026)',
+    article_excerpt_dedicated_vs_vps: 'جدول مقارنة شامل + متى تحتاج Dedicated ومتى يكفي VPS قوي من الجيل الجديد',
+    article_read_time_15: '15 دقيقة قراءة',
+    article_alt_dedicated_vs_vps: 'مقارنة VPS و Dedicated',
+
+    // Article 4: Montage Guide
+    article_title_montage_guide: 'ازاي تختار السيرفر بتاعك لو انت بتاع المونتاج والبث المباشر والاسكريبتات',
+    article_excerpt_montage_guide: 'الدليل النهائي لاختيار VPS أو Dedicated للمونتاج، البث المباشر، الاسكريبتات، والمصممين',
+    article_alt_montage_guide: 'سيرفر للمونتاج والبث',
+
+    // Article 5: Best Stores
+    article_title_best_stores: 'أفضل مواقع لشراء Dedicated Server في الشرق الأوسط (مقارنة سرعة وأسعار)',
+    article_excerpt_best_stores: 'قائمة محدثة بأفضل 7 مزودين في مصر والسعودية والإمارات مع روابط حقيقية وأسعار بالدولار',
+    article_read_time_40: '40 دقيقة قراءة',
+    article_alt_best_stores: 'أفضل Dedicated Server الشرق الأوسط',
+
+    // Article 6: Best VPS Trading AI
+    article_title_best_vps_trading_ai: 'أفضل VPS للـ Trading Bots والـ AI في 2026 (دليل شامل + مقارنة)',
+    article_excerpt_best_vps_trading_ai: 'أقوى 8 مزودين عالميًا ومحليًا لتشغيل بوتات الفوركس والكريبتو ونماذج الذكاء الاصطناعي (TensorFlow, Llama, Stable Diffusion) بدون لاج ولا انقطاع',
+    article_read_time_55: '55 دقيقة قراءة',
+    article_alt_best_vps_trading_ai: 'أفضل VPS للتريدنج بوتس والذكاء الاصطناعي 2026',
+
+    // Articles Actions
+    articles_read_article: 'اقرأ المقال',
+    articles_read_article_label: 'اقرأ المقال كاملاً',
+
+    // CTA Section
+    articles_cta_title: 'هل عندك فكرة مقال تريدها؟',
+    articles_cta_subtitle: 'اطلب مننا أي موضوع تقني وسيتم كتابة دليل شامل خلال أيام',
+    articles_cta_button: 'اطلب مقالك الآن',
+    articles_cta_button_label: 'تواصل معنا لطلب مقال مخصص',
 
   }
 };
@@ -456,21 +574,57 @@ export class TranslateService {
   private lang$ = new BehaviorSubject<Lang>('en');
   lang = this.lang$.asObservable();
 
+  private location = inject(Location);
+  private router = inject(Router); // أضف ده
+
   constructor() {
-    // Read saved language or default to 'en'
     const savedLang = (localStorage.getItem('lang') as Lang) || 'en';
     this.lang$.next(savedLang);
-    this.applyDirection(savedLang); // Critical: Apply direction on app start!
+    this.applyDirection(savedLang);
+
+    // مهم جدًا: نضمن إن الـ URL يتحدث لما الصفحة تتحمل أول مرة
+    this.syncUrlWithLanguage(savedLang);
   }
 
   get current(): Lang {
     return this.lang$.value;
   }
 
+  // دي الدالة الجديدة السحرية
+  private syncUrlWithLanguage(lang: Lang) {
+    const currentPath = this.location.path(true);
+    let expectedPath = currentPath;
+
+    if (lang === 'ar') {
+      if (!currentPath.startsWith('/ar')) {
+        expectedPath = '/ar' + (currentPath === '/' ? '' : currentPath);
+      }
+    } else {
+      if (currentPath.startsWith('/ar')) {
+        expectedPath = currentPath.substring(3) || '/';
+      }
+    }
+
+    if (expectedPath !== currentPath) {
+      this.location.go(expectedPath);
+    }
+  }
+
   setLang(lang: Lang) {
     this.lang$.next(lang);
     localStorage.setItem('lang', lang);
     this.applyDirection(lang);
+
+    // نغيّر الـ URL فورًا
+    this.syncUrlWithLanguage(lang);
+
+    // الحل الأقوى: نعمل navigate بنفس الروت مع اللغة الجديدة
+    const currentUrlTree = this.router.createUrlTree([], { relativeTo: null });
+    const currentUrl = this.router.serializeUrl(currentUrlTree);
+    const pathWithoutLang = this.location.path().replace(/^\/ar/, '') || '/';
+
+    const newPath = lang === 'ar' ? '/ar' + pathWithoutLang : pathWithoutLang;
+    this.router.navigateByUrl(newPath);
   }
 
   t(key: string): string {

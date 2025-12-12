@@ -1,0 +1,67 @@
+<ng-container>
+  <div class="articles-page">
+
+    <!-- Hero Section -->
+    <section class="articles-hero text-center">
+      <div class="container">
+        <h1>{{ text('articles_hero_title') }}</h1>
+        <p>{{ text('articles_hero_subtitle') }}</p>
+      </div>
+    </section>
+
+    <!-- Articles Grid -->
+    <section class="articles-grid-container">
+      <div class="container">
+        <div class="articles-grid">
+
+          <!-- Loop through articles -->
+          <div
+            *ngFor="let article of articles; trackBy: trackByArticle"
+            class="article-card"
+            [routerLink]="article.routePath"
+            role="article">
+            <img
+              [src]="article.image"
+              [alt]="text(article.altKey)"
+              class="article-image"
+              loading="lazy">
+            <div class="article-content">
+              <span class="article-category">{{ text(article.categoryKey) }}</span>
+              <h3 class="article-title">{{ text(article.titleKey) }}</h3>
+              <p class="article-excerpt">{{ text(article.excerptKey) }}</p>
+              <div class="article-meta">
+                <span class="read-time">TopServers</span>
+                <button class="read-more-btn" [attr.aria-label]="text('articles_read_article_label')">
+                  {{ text('articles_read_article') }}
+                  <i class="fa-solid" [ngClass]="text('current_lang') === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right'"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Footer -->
+    <section class="text-center py-5" style="background: #667eea; color: white;">
+      <div class="container">
+        <h3 style="font-size: 32px; margin-bottom: 16px;">
+          {{ text('articles_cta_title') }}
+        </h3>
+        <p style="font-size: 18px; opacity: 0.9; margin-bottom: 32px;">
+          {{ text('articles_cta_subtitle') }}
+        </p>
+        <a
+          routerLink="/contact"
+          class="btn"
+          style="background: white; color: #667eea; padding: 14px 40px; border-radius: 50px; font-weight: 700; font-size: 18px;"
+          [attr.aria-label]="text('articles_cta_button_label')">
+          {{ text('articles_cta_button') }}
+          <i class="fa-solid fa-paper-plane"></i>
+        </a>
+      </div>
+    </section>
+
+  </div>
+</ng-container>
