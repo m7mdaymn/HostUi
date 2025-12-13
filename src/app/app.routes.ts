@@ -51,7 +51,7 @@ const sharedRoutes: Routes = [
     loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
   },
   {
-    path: 'articles',
+    path: 'blog',
     loadComponent: () => import('./articles/home-articles/home-articles.component').then(m => m.HomeArticlesComponent),
   },
   {
@@ -121,8 +121,9 @@ export const routes: Routes = [
     path: 'ar',
     children: sharedRoutes.map(route => ({
       ...route,
-      path: route.path || ''
+      path: route.path
     }))
   },
+
   { path: '**', redirectTo: '/home' }
 ];

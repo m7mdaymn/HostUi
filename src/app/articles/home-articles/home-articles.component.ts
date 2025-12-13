@@ -177,7 +177,6 @@ export class HomeArticlesComponent implements OnInit {
       this.document.head.appendChild(link);
     });
 
-    // ==================== Schema.org (مع روابط صحيحة حسب اللغة) ====================
     const schema = {
       "@context": "https://schema.org",
       "@type": "CollectionPage",

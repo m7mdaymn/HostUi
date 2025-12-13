@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /signin
+Disallow: /signup
+Disallow: /assets/
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /*?*
+
+Sitemap: https://www.toprdps.com/sitemap.xml

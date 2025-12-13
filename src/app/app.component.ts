@@ -50,24 +50,19 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // الجزء السحري: تحديد اللغة من الـ URL
   private setupLanguageFromUrl() {
     const path = window.location.pathname;
     const isArabic = path === '/ar' || path.startsWith('/ar/');
 
     const lang: 'ar' | 'en' = isArabic ? 'ar' : 'en';
 
-    // 1. نحفظ اللغة في localStorage
     localStorage.setItem('lang', lang);
 
-    // 2. نطبقها على الـ TranslateService
     this.translate.setLang(lang);
 
-    // 3. نغير اتجاه و لغة الـ <html> فورًا
     this.renderer.setAttribute(this.document.documentElement, 'lang', lang);
     this.renderer.setAttribute(this.document.documentElement, 'dir', lang === 'ar' ? 'rtl' : 'ltr');
 
-    // 4. ننظف الـ URL من /ar (بدون ريفريش)
     if (isArabic && path.startsWith('/ar')) {
       const cleanPath = path.replace(/^\/ar/, '') || '/home';
       history.replaceState(null, '', cleanPath);
